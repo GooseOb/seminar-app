@@ -41,6 +41,7 @@
 		overflow: scroll;
 		overflow-x: hidden;
 		white-space: nowrap;
+		z-index: 1;
 	}
 	.sidebar.open {
 		width: 30%;

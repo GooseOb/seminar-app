@@ -1,4 +1,8 @@
 {
 	"$schema": "https://inlang.com/schema/inlang-message-format",
-	"search": "Szukaj..."
+	"search": "Szukaj...",
+	"chat": "Czat",
+	"files": "Pliki",
+	"members": "Członkowie",
+	"description": "Opis"
 }

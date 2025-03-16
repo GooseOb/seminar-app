@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { slide } from 'svelte/transition';
+	import { page } from '$app/state';
 
 	type Group = {
 		id: string;
@@ -19,6 +20,8 @@
 
 	const projects = $derived(group.projects.filter((project) => isSearched(project.name)));
 	const isGroupSearched = $derived(isSearched(group.name) || isSearched('General'));
+	const isPathnameActive = (pathname: string) => page.url.pathname.includes(pathname);
+	const href = `/groups/${group.id}`;
 </script>
 
 {#if projects.length > 0 || isGroupSearched}
@@ -30,12 +33,15 @@
 		{#if isOpen}
 			<ul class="nolist list" transition:slide={{ duration: 300 }}>
 				{#if isGroupSearched}
-					<a href={`/groups/${group.id}`}>
+					<a {href} class:active={isPathnameActive(href)}>
 						<li class="item">General</li>
 					</a>
 				{/if}
 				{#each projects as project}
-					<a href={`/projects/${project.id}`}>
+					<a
+						href={`/projects/${project.id}`}
+						class:active={isPathnameActive(`/projects/${project.id}`)}
+					>
 						<li class="item">
 							{project.name}
 						</li>
@@ -49,6 +55,11 @@
 <style>
 	a {
 		text-decoration: none;
+		background-color: var(--bg2-color);
+		transition: background-color 0.3s ease-out;
+	}
+	a.active {
+		background-color: var(--primary-color);
 	}
 	.accordion {
 		display: flex;
@@ -92,7 +103,6 @@
 		gap: 5px;
 	}
 	.item {
-		background-color: var(--bg2-color);
 		padding: 5px 20px;
 	}
 </style>
