@@ -38,6 +38,7 @@
 	}
 	:global(html, body) {
 		height: 100%;
+		background-color: var(--bg-color);
 	}
 	:global(*) {
 		color: var(--fg-color);
@@ -52,6 +53,10 @@
 	:global(.nolist) {
 		list-style-type: none;
 	}
+	:global(textarea) {
+		background-color: var(--bg2-color);
+		border: none;
+	}
 	.app {
 		height: 100%;
 		display: flex;
@@ -63,8 +68,9 @@
 		overflow: auto;
 	}
 	.content {
-		background-color: var(--bg-color);
 		padding: 20px;
 		width: 100%;
+		max-height: calc(100% - 20px);
+		box-sizing: border-box;
 	}
 </style>

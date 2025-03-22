@@ -12,7 +12,7 @@
 	items={[
 		{ name: m.chat(), href: `/projects/${id}` },
 		{ name: m.files(), href: `/projects/${id}/files` },
-		{ name: m.description(), href: `/projects/${id}/description` }
+		{ name: m.aboutProject(), href: `/projects/${id}/about` }
 	]}
 />
 {@render children()}

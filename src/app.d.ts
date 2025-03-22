@@ -8,6 +8,14 @@ declare global {
 		// interface PageState {}
 		// interface Platform {}
 	}
+
+	type Message = {
+		id: number;
+		text: string;
+		user: { id: string; name: string; photo?: string };
+		timestamp: Date;
+		isPending?: boolean;
+	};
 }
 
 export {};
