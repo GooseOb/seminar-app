@@ -48,6 +48,9 @@
 		display: flex;
 		flex-direction: column;
 		padding: 1rem;
+		overflow-y: auto;
+		max-height: 100%;
+		box-sizing: border-box;
 	}
 
 	.members-list {

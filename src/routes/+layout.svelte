@@ -73,6 +73,5 @@
 		width: 100%;
 		max-height: calc(100% - 20px);
 		box-sizing: border-box;
-		overflow-y: auto;
 	}
 </style>
