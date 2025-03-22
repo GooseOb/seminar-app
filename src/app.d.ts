@@ -9,10 +9,15 @@ declare global {
 		// interface Platform {}
 	}
 
+	type Project = {
+		id: string;
+		name: string;
+	};
+
 	type Group = {
 		id: string;
 		name: string;
-		photo?: string;
+		projects: Project[];
 	};
 
 	type User = {

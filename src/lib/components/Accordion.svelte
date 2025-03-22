@@ -2,15 +2,6 @@
 	import { slide } from 'svelte/transition';
 	import { page } from '$app/state';
 
-	type Group = {
-		id: string;
-		name: string;
-		projects: {
-			id: string;
-			name: string;
-		}[];
-	};
-
 	const { group, searchQueryLowerCase }: { group: Group; searchQueryLowerCase: string } = $props();
 
 	let isOpen = $state(true);

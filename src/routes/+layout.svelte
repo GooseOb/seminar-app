@@ -3,7 +3,10 @@
 	import Sidebar from '$lib/components/Sidebar.svelte';
 	import { i18n } from '$lib/i18n';
 	import { ParaglideJS } from '@inlang/paraglide-sveltekit';
-	const { children } = $props();
+	import type { LayoutProps } from './$types';
+
+	const { children, data }: LayoutProps = $props();
+
 	let isSidebarOpen = $state(true);
 </script>
 
@@ -11,7 +14,7 @@
 	<ParaglideJS {i18n}>
 		<Header bind:isBtnActive={isSidebarOpen} />
 		<div class="workspace">
-			<Sidebar isOpen={isSidebarOpen} />
+			<Sidebar isOpen={isSidebarOpen} groups={data.groups} />
 			<main class="content">
 				{@render children()}
 			</main>

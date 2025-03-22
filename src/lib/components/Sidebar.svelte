@@ -2,18 +2,9 @@
 	import Accordion from '$lib/components/Accordion.svelte';
 	import Search from '$lib/components/Search.svelte';
 	import { switchToLanguage } from '$lib/i18n';
-	let { isOpen }: { isOpen: boolean } = $props();
+	let { isOpen, groups }: { isOpen: boolean; groups: Group[] } = $props();
 	let searchQuery = $state('');
 	const searchQueryLowerCase = $derived(searchQuery.toLowerCase());
-	let projectId = 0;
-	const groups = Array.from({ length: 7 }, (_, i) => ({
-		id: i.toString(),
-		name: 'Group ' + i,
-		projects: Array.from({ length: Math.floor(Math.random() * 5) }, () => ({
-			id: `${projectId}`,
-			name: `Project ${projectId++}`
-		}))
-	}));
 </script>
 
 <aside class="sidebar" class:open={isOpen}>
