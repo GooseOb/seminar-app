@@ -141,6 +141,7 @@
 		margin-bottom: 1rem;
 		padding: 1rem;
 		width: 100%;
+		border-radius: 8px;
 	}
 
 	.message {
