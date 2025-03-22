@@ -33,7 +33,8 @@ export default ts.config(
 	},
 	{
 		rules: {
-			'no-undef': 'off'
+			'no-undef': 'off',
+			'no-constant-condition': 'off'
 		}
 	}
 );

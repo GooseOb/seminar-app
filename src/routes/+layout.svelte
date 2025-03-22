@@ -26,6 +26,7 @@
 		--bg2-color: #d8d9da;
 		--bg3-color: #c1c3c5;
 		--primary-color: #007bff;
+		--danger-color: #dc3545;
 	}
 	@media (prefers-color-scheme: dark) {
 		:root {
@@ -72,5 +73,6 @@
 		width: 100%;
 		max-height: calc(100% - 20px);
 		box-sizing: border-box;
+		overflow-y: auto;
 	}
 </style>

@@ -14,7 +14,7 @@
 	const user = {
 		id: 'user1',
 		name: 'You'
-	};
+	} as User;
 
 	const sendMessage = () => {
 		const text = newMessage.trim();

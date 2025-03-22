@@ -9,10 +9,23 @@ declare global {
 		// interface Platform {}
 	}
 
+	type Group = {
+		id: string;
+		name: string;
+		photo?: string;
+	};
+
+	type User = {
+		id: string;
+		name: string;
+		isOnline: boolean;
+		photo?: string;
+	};
+
 	type Message = {
 		id: number;
 		text: string;
-		user: { id: string; name: string; photo?: string };
+		user: User;
 		timestamp: Date;
 		isPending?: boolean;
 	};
