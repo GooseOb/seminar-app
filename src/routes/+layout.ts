@@ -8,7 +8,11 @@ export const load: LayoutLoad<{ groups: Group[] }> = async () => {
 			name: 'Group ' + i,
 			projects: Array.from({ length: Math.floor(Math.random() * 5) }, () => ({
 				id: `${projectId}`,
-				name: `Project ${projectId++}`
+				name: {
+					en: `Project ${projectId}`,
+					pl: `Projekt ${projectId++}`
+				},
+				description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
 			}))
 		}))
 	};

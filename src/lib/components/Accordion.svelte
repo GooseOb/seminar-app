@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { slide } from 'svelte/transition';
 	import { page } from '$app/state';
+	import { languageTag } from '$lib/paraglide/runtime.js';
 
 	const { group, searchQueryLowerCase }: { group: Group; searchQueryLowerCase: string } = $props();
 
@@ -9,7 +10,12 @@
 	const isSearched = (value: string) =>
 		searchQueryLowerCase === '' || value.toLowerCase().includes(searchQueryLowerCase);
 
-	const projects = $derived(group.projects.filter((project) => isSearched(project.name)));
+	const lang = languageTag();
+	const projects = $derived(
+		group.projects
+			.map((project) => ({ ...project, name: project.name[lang] || project.name.en }))
+			.filter((project) => isSearched(project.name))
+	);
 	const isGroupSearched = $derived(isSearched(group.name) || isSearched('General'));
 	const isPathnameActive = (pathname: string) => page.url.pathname.includes(pathname);
 	const href = `/groups/${group.id}`;

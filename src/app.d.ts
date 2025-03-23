@@ -11,7 +11,11 @@ declare global {
 
 	type Project = {
 		id: string;
-		name: string;
+		name: {
+			en: string;
+			pl: string;
+		};
+		description: string;
 	};
 
 	type Group = {
