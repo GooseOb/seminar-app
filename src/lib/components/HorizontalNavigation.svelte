@@ -4,9 +4,10 @@
 	const { items }: { items: { name: string; href: string }[] } = $props();
 
 	let underline: HTMLElement;
-	let activeElement = $state<HTMLAnchorElement | null>(null)!;
+	let activeElement = $state<HTMLAnchorElement | null>(null);
 
 	$effect(() => {
+		if (!activeElement) return;
 		const { width, left } = activeElement.getBoundingClientRect();
 		const parentRect = underline.parentElement!.getBoundingClientRect();
 		underline.style.width = `${width}px`;
