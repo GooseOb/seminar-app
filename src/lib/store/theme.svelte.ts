@@ -15,6 +15,7 @@ export const theme = writable<Theme>(
 if (browser) {
 	let isInitial = true;
 	theme.subscribe((value) => {
+		document.documentElement.className = value;
 		if (isInitial) {
 			isInitial = false;
 		} else {
