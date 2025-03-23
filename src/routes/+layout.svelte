@@ -4,13 +4,14 @@
 	import { i18n } from '$lib/i18n';
 	import { ParaglideJS } from '@inlang/paraglide-sveltekit';
 	import type { LayoutProps } from './$types';
+	import { theme } from '$lib/store/theme.svelte';
 
 	const { children, data }: LayoutProps = $props();
 
 	let isSidebarOpen = $state(true);
 </script>
 
-<div class="app">
+<div class={`app ${$theme}`}>
 	<ParaglideJS {i18n}>
 		<Header bind:isBtnActive={isSidebarOpen} />
 		<div class="workspace">
@@ -23,26 +24,25 @@
 </div>
 
 <style>
-	:root {
+	.app {
+		--fg-color: #fff;
+		--bg-color: #333;
+		--bg2-color: #222;
+		--bg3-color: #111;
+		--primary-color: #0d6efd;
+		--danger-color: #dc3545;
+	}
+
+	.app.light {
 		--fg-color: #000;
 		--bg-color: #f0f0f0;
 		--bg2-color: #d8d9da;
 		--bg3-color: #c1c3c5;
 		--primary-color: #007bff;
-		--danger-color: #dc3545;
 	}
-	@media (prefers-color-scheme: dark) {
-		:root {
-			--fg-color: #fff;
-			--bg-color: #333;
-			--bg2-color: #222;
-			--bg3-color: #111;
-			--primary-color: #0d6efd;
-		}
-	}
+
 	:global(html, body) {
 		height: 100%;
-		background-color: var(--bg-color);
 	}
 	:global(*) {
 		color: var(--fg-color);
@@ -68,6 +68,7 @@
 		height: 100%;
 		display: flex;
 		flex-direction: column;
+		background-color: var(--bg-color);
 	}
 	.workspace {
 		display: flex;

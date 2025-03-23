@@ -1,4 +1,6 @@
 <script lang="ts">
+	import type { ChangeEventHandler } from 'svelte/elements';
+
 	const {
 		label,
 		onchange,
@@ -6,7 +8,7 @@
 		options
 	}: {
 		label: string;
-		onchange: (event: Event) => void;
+		onchange: ChangeEventHandler<HTMLSelectElement>;
 		value: string;
 		options: readonly string[];
 	} = $props();

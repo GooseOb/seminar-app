@@ -124,15 +124,13 @@
 		border: none;
 		border-radius: 4px;
 		cursor: pointer;
-		transition: box-shadow 0.2s;
-		/* opacity: 0.8; */
+		transition: opacity 0.2s;
+		text-decoration: none;
+		opacity: 0.8;
 	}
 
 	.btn:hover {
-		box-shadow:
-			0 0 8px var(--fg-color),
-			inset 0 0 2px var(--bg-color);
-		/* opacity: 1; */
+		opacity: 1;
 	}
 
 	.danger {
