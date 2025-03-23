@@ -61,6 +61,9 @@
 		background-color: var(--bg2-color);
 		border: none;
 	}
+	:global(a) {
+		text-decoration: none;
+	}
 	.app {
 		height: 100%;
 		display: flex;

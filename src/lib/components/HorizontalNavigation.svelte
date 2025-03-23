@@ -40,7 +40,6 @@
 			position: relative;
 		}
 		a {
-			text-decoration: none;
 			padding-bottom: 4px;
 			display: block;
 		}

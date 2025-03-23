@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { slide } from 'svelte/transition';
-	import { page } from '$app/state';
+	import { isPathnameStart } from '$lib/pathname';
 	import { languageTag } from '$lib/paraglide/runtime.js';
 
 	const { group, searchQueryLowerCase }: { group: Group; searchQueryLowerCase: string } = $props();
@@ -17,8 +17,6 @@
 			.filter((project) => isSearched(project.name))
 	);
 	const isGroupSearched = $derived(isSearched(group.name) || isSearched('General'));
-	const isPathnameActive = (pathname: string) => page.url.pathname.includes(pathname);
-	const href = `/groups/${group.id}`;
 </script>
 
 {#if projects.length > 0 || isGroupSearched}
@@ -30,15 +28,14 @@
 		{#if isOpen}
 			<ul class="nolist list" transition:slide={{ duration: 300 }}>
 				{#if isGroupSearched}
-					<a {href} class:active={isPathnameActive(href)}>
+					{@const href = `/groups/${group.id}`}
+					<a {href} class:active={isPathnameStart(href)}>
 						<li class="item">General</li>
 					</a>
 				{/if}
 				{#each projects as project}
-					<a
-						href={`/projects/${project.id}`}
-						class:active={isPathnameActive(`/projects/${project.id}`)}
-					>
+					{@const href = `/projects/${project.id}`}
+					<a {href} class:active={isPathnameStart(href)}>
 						<li class="item">
 							{project.name}
 						</li>
@@ -51,7 +48,6 @@
 
 <style>
 	a {
-		text-decoration: none;
 		background-color: var(--bg2-color);
 		transition: background-color 0.3s ease-out;
 	}

@@ -125,7 +125,6 @@
 		border-radius: 4px;
 		cursor: pointer;
 		transition: opacity 0.2s;
-		text-decoration: none;
 		opacity: 0.8;
 	}
 
