@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { page } from '$app/state';
+	import { isPathnameStart } from '$lib/pathname';
 
-	const { items } = $props<{ items: { name: string; href: string }[] }>();
+	const { items }: { items: { name: string; href: string }[] } = $props();
 
 	let underline: HTMLElement;
 	let activeElement = $state<HTMLAnchorElement | null>(null)!;
@@ -18,7 +18,7 @@
 	<ul>
 		{#each items as { name, href }}
 			<li>
-				{#if href === page.url.pathname}
+				{#if isPathnameStart(href)}
 					<a {href} bind:this={activeElement} class="active">{name}</a>
 				{:else}
 					<a {href}>{name}</a>

@@ -10,7 +10,7 @@
 
 <HorizontalNavigation
 	items={[
-		{ name: m.chat(), href: `/groups/${id}` },
+		{ name: m.chat(), href: `/groups/${id}/chat` },
 		{ name: m.files(), href: `/groups/${id}/files` },
 		{ name: m.members(), href: `/groups/${id}/members` }
 	]}
