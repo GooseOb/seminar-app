@@ -52,7 +52,7 @@
 
 <div class="chat-container">
 	<div class="chat-messages" bind:this={chatContainer}>
-		{#each messages as message (message.id)}
+		{#each messages as message}
 			<div
 				class="message"
 				class:self={message.user.id === user.id}

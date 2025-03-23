@@ -5,7 +5,7 @@
 
 	const { children } = $props();
 
-	const id = $derived(page.params.id);
+	const id = page.params.id;
 </script>
 
 <HorizontalNavigation
