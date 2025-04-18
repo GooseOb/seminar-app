@@ -1,6 +1,6 @@
 <script lang="ts">
-	import * as m from '$lib/paraglide/messages.js';
-	let { value = $bindable() }: { value: string } = $props();
+import * as m from '$lib/paraglide/messages.js';
+let { value = $bindable() }: { value: string } = $props();
 </script>
 
 <input bind:value class="search" type="text" placeholder={m.search()} />

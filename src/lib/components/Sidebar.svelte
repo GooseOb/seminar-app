@@ -1,10 +1,15 @@
 <script lang="ts">
-	import Accordion from '$lib/components/Accordion.svelte';
-	import Search from '$lib/components/Search.svelte';
-	import { isPathnameStart } from '$lib/pathname';
-	let { isOpen, groups }: { isOpen: boolean; groups: Group[] } = $props();
-	let searchQuery = $state('');
-	const searchQueryLowerCase = $derived(searchQuery.toLowerCase());
+import Accordion from '$lib/components/Accordion.svelte';
+import Search from '$lib/components/Search.svelte';
+import { goto } from '$lib/i18n';
+import { isPathnameStart } from '$lib/pathname';
+let { isOpen, groups }: { isOpen: boolean; groups: Group[] } = $props();
+let searchQuery = $state('');
+const searchQueryLowerCase = $derived(searchQuery.toLowerCase());
+
+const onLogout = () => {
+	goto('/login');
+};
 </script>
 
 <aside class="sidebar" class:open={isOpen}>
@@ -25,7 +30,7 @@
 	</nav>
 	<div class="footer">
 		<a href="/settings" class="footer-item" class:active={isPathnameStart('/settings')}>Settings</a>
-		<button class="footer-item">Log out</button>
+		<button onclick={onLogout} class="footer-item">Log out</button>
 	</div>
 </aside>
 
@@ -69,6 +74,7 @@
 		transition: background-color 0.3s ease-out;
 		padding: 0.5rem;
 		cursor: pointer;
+		font-size: 1em;
 	}
 	@media (max-width: 768px) {
 		.sidebar {

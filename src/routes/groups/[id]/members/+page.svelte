@@ -1,8 +1,8 @@
 <script lang="ts">
-	import type { PageProps } from './$types';
+import type { PageProps } from './$types';
 
-	let { data }: PageProps = $props();
-	let members = $state(data.members ?? []);
+const { data }: PageProps = $props();
+const members = $state(data.members ?? []);
 </script>
 
 <div class="members-container">
@@ -115,22 +115,6 @@
 		display: flex;
 		gap: 0.5rem;
 		margin-left: auto;
-	}
-
-	.btn {
-		padding: 0.5rem 1rem;
-		background: var(--primary-color);
-		color: white;
-		border: none;
-		border-radius: 4px;
-		cursor: pointer;
-		transition: opacity 0.2s;
-		text-decoration: none;
-		opacity: 0.8;
-	}
-
-	.btn:hover {
-		opacity: 1;
 	}
 
 	.danger {

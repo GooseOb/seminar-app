@@ -1,18 +1,18 @@
 <script lang="ts">
-	import { isPathnameStart } from '$lib/pathname';
+import { isPathnameStart } from '$lib/pathname';
 
-	const { items }: { items: { name: string; href: string }[] } = $props();
+const { items }: { items: { name: string; href: string }[] } = $props();
 
-	let underline: HTMLElement;
-	let activeElement = $state<HTMLAnchorElement | null>(null);
+let underline: HTMLElement;
+let activeElement = $state<HTMLAnchorElement | null>(null);
 
-	$effect(() => {
-		if (!activeElement) return;
-		const { width, left } = activeElement.getBoundingClientRect();
-		const parentRect = underline.parentElement!.getBoundingClientRect();
-		underline.style.width = `${width}px`;
-		underline.style.left = `${left - parentRect.left}px`;
-	});
+$effect(() => {
+	if (!activeElement) return;
+	const { width, left } = activeElement.getBoundingClientRect();
+	const parentRect = underline.parentElement!.getBoundingClientRect();
+	underline.style.width = `${width}px`;
+	underline.style.left = `${left - parentRect.left}px`;
+});
 </script>
 
 <nav class="horizontal-navigation">

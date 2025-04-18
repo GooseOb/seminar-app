@@ -10,10 +10,10 @@ export const load: LayoutLoad<{ groups: Group[] }> = async () => {
 				id: `${projectId}`,
 				name: {
 					en: `Project ${projectId}`,
-					pl: `Projekt ${projectId++}`
+					pl: `Projekt ${projectId++}`,
 				},
-				description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
-			}))
-		}))
+				description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+			})),
+		})),
 	};
 };

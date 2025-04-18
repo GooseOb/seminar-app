@@ -1,4 +1,2 @@
 bun check &&
-bun format &&
-bun lint &&
 git add -A
