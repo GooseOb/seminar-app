@@ -1,8 +1,8 @@
 <script lang="ts">
-	import type { PageProps } from './$types';
+import type { PageProps } from './$types';
 
-	let { data }: PageProps = $props();
-	let members = $state(data.members ?? []);
+const { data }: PageProps = $props();
+const members = $state(data.members ?? []);
 </script>
 
 <div class="members-container">

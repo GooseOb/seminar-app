@@ -1,5 +1,5 @@
 <script lang="ts">
-	let { isBtnActive = $bindable() }: { isBtnActive: boolean } = $props();
+let { isBtnActive = $bindable() }: { isBtnActive: boolean } = $props();
 </script>
 
 <header class="header">

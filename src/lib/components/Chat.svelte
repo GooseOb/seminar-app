@@ -1,53 +1,53 @@
 <script lang="ts">
-	let {
-		messages: _messages,
-		doShowSenderName = true
-	}: {
-		messages: Message[];
-		doShowSenderName?: boolean;
-	} = $props();
+const {
+	messages: _messages,
+	doShowSenderName = true,
+}: {
+	messages: Message[];
+	doShowSenderName?: boolean;
+} = $props();
 
-	const messages: Message[] = $state(_messages);
-	let newMessage = $state('');
-	let chatContainer: HTMLDivElement;
+const messages: Message[] = $state(_messages);
+let newMessage = $state('');
+let chatContainer: HTMLDivElement;
 
-	const user = {
-		id: 'user1',
-		name: 'You'
-	} as User;
+const user = {
+	id: 'user1',
+	name: 'You',
+} as User;
 
-	const sendMessage = () => {
-		const text = newMessage.trim();
-		if (text === '') return;
-		const message = $state({
-			id: -1,
-			text,
-			user,
-			timestamp: new Date()
-		});
+const sendMessage = () => {
+	const text = newMessage.trim();
+	if (text === '') return;
+	const message = $state({
+		id: -1,
+		text,
+		user,
+		timestamp: new Date(),
+	});
 
-		new Promise<number>((resolve) => {
-			setTimeout(() => {
-				resolve(Date.now());
-			}, 1000);
-		}).then((id) => {
-			message.id = id;
-		});
-
-		messages.push(message);
-		newMessage = '';
-
+	new Promise<number>((resolve) => {
 		setTimeout(() => {
-			chatContainer.scrollTop = chatContainer.scrollHeight;
-		}, 0);
-	};
+			resolve(Date.now());
+		}, 1000);
+	}).then((id) => {
+		message.id = id;
+	});
 
-	const handleKeyPress = (event: KeyboardEvent) => {
-		if (event.key === 'Enter' && !event.shiftKey) {
-			event.preventDefault();
-			sendMessage();
-		}
-	};
+	messages.push(message);
+	newMessage = '';
+
+	setTimeout(() => {
+		chatContainer.scrollTop = chatContainer.scrollHeight;
+	}, 0);
+};
+
+const handleKeyPress = (event: KeyboardEvent) => {
+	if (event.key === 'Enter' && !event.shiftKey) {
+		event.preventDefault();
+		sendMessage();
+	}
+};
 </script>
 
 <div class="chat-container">

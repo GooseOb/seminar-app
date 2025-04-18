@@ -1,8 +1,8 @@
-import * as runtime from '$lib/paraglide/runtime';
-import { createI18n } from '@inlang/paraglide-sveltekit';
-import type { AvailableLanguageTag } from '$lib/paraglide/runtime';
-import { page } from '$app/state';
 import { goto } from '$app/navigation';
+import { page } from '$app/state';
+import * as runtime from '$lib/paraglide/runtime';
+import type { AvailableLanguageTag } from '$lib/paraglide/runtime';
+import { createI18n } from '@inlang/paraglide-sveltekit';
 import { redirect as _redirect } from '@sveltejs/kit';
 
 export const i18n = createI18n(runtime);
