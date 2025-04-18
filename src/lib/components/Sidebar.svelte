@@ -10,6 +10,11 @@
 <aside class="sidebar" class:open={isOpen}>
 	<Search bind:value={searchQuery} />
 	<nav class="groups">
+		{#if true}
+			<!-- teacher: add group -->
+			{@const href = '/groups/new'}
+			<a {href} class="add-group-btn" class:active={isPathnameStart(href)}>Add group</a>
+		{/if}
 		<ul class="nolist">
 			{#each groups as group}
 				<li>
@@ -19,7 +24,7 @@
 		</ul>
 	</nav>
 	<div class="footer">
-		<a class="footer-item" href="/settings" class:active={isPathnameStart('/settings')}>Settings</a>
+		<a href="/settings" class="footer-item" class:active={isPathnameStart('/settings')}>Settings</a>
 		<button class="footer-item">Log out</button>
 	</div>
 </aside>
@@ -38,6 +43,12 @@
 	.groups {
 		overflow-y: auto;
 	}
+	.add-group-btn {
+		display: flex;
+		justify-content: center;
+		background-color: var(--bg2-color);
+		padding: 0.25rem;
+	}
 	.sidebar.open {
 		width: 30%;
 	}
@@ -48,9 +59,9 @@
 		flex-direction: column;
 		padding: 0.5rem 0;
 	}
-	.footer-item.active {
+	a.active {
 		background-color: var(--primary-color);
-		color: white;
+		color: #fff;
 	}
 	.footer-item {
 		text-align: center;

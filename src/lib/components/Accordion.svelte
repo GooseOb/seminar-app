@@ -41,6 +41,13 @@
 						</li>
 					</a>
 				{/each}
+				{#if true}
+					<!-- student: add project -->
+					{@const href = `/projects/new?group=${group.id}`}
+					<a {href} class:active={isPathnameStart(href)}>
+						<li class="item">Add project</li>
+					</a>
+				{/if}
 			</ul>
 		{/if}
 	</div>

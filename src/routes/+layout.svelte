@@ -38,14 +38,15 @@
 			--bg3-color: #c1c3c5;
 			--primary-color: #007bff;
 		}
-
+	}
+	:global(body, input, button, textarea, a, select) {
 		background-color: var(--bg-color);
+		color: var(--fg-color);
 	}
 	:global(html, body) {
 		height: 100%;
 	}
 	:global(*) {
-		color: var(--fg-color);
 		margin: 0;
 		padding: 0;
 		font-family: sans-serif;
