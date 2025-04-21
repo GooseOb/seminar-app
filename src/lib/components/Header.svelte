@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { ComponentProps, SvelteComponent } from 'svelte';
+	import type { ComponentProps, SvelteComponent } from 'svelte';
 
-const { children }: ComponentProps<SvelteComponent> = $props();
+	const { children }: ComponentProps<SvelteComponent> = $props();
 </script>
 
 <header class="header">

@@ -1,11 +1,11 @@
 <script lang="ts">
-import { page } from '$app/state';
-import HorizontalNavigation from '$lib/components/HorizontalNavigation.svelte';
-import * as m from '$lib/paraglide/messages.js';
+	import { page } from '$app/state';
+	import HorizontalNavigation from '$lib/components/HorizontalNavigation.svelte';
+	import * as m from '$lib/paraglide/messages.js';
 
-const { children } = $props();
+	const { children } = $props();
 
-const id = page.params.id;
+	const id = page.params.id;
 </script>
 
 <HorizontalNavigation

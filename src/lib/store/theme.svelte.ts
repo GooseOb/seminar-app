@@ -8,9 +8,7 @@ export type Theme = (typeof themes)[number];
 export const theme = writable<Theme>(
 	browser
 		? (localStorage.getItem('theme') as Theme) ||
-				(window.matchMedia('(prefers-color-scheme: dark)').matches
-					? 'dark'
-					: 'light')
+				(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
 		: 'dark'
 );
 

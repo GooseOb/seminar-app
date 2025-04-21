@@ -8,7 +8,7 @@ import {
 	serial,
 	text,
 	timestamp,
-	varchar,
+	varchar
 } from 'drizzle-orm/pg-core';
 
 import type { InferSelectModel } from 'drizzle-orm';
@@ -21,7 +21,7 @@ export const userTable = pgTable('user', {
 	id: serial('id').primaryKey(),
 	name: varchar({ length: 255 }).notNull(),
 	email: varchar({ length: 255 }).notNull().unique(),
-	role: roleEnum().notNull(),
+	role: roleEnum().notNull()
 });
 
 export const roomKindEnum = pgEnum('room_kind', ['group', 'project']);
@@ -32,13 +32,13 @@ const roomTable = pgTable('room', {
 	ownerId: integer('owner_id')
 		.notNull()
 		.references(() => userTable.id),
-	kind: roomKindEnum().notNull(),
+	kind: roomKindEnum().notNull()
 });
 
 export const groupTable = pgTable('group', {
 	id: serial('id')
 		.primaryKey()
-		.references(() => roomTable.id),
+		.references(() => roomTable.id)
 });
 
 export const groupMembershipTable = pgTable(
@@ -50,7 +50,7 @@ export const groupMembershipTable = pgTable(
 			.references(() => userTable.id),
 		groupId: integer('group_id')
 			.notNull()
-			.references(() => groupTable.id),
+			.references(() => groupTable.id)
 	},
 	(table) => [primaryKey({ columns: [table.userId, table.groupId] })]
 );
@@ -61,14 +61,14 @@ export const projectTable = pgTable('project', {
 		.references(() => roomTable.id),
 	groupId: integer('group_id')
 		.notNull()
-		.references(() => groupTable.id),
+		.references(() => groupTable.id)
 });
 
 export const messageTable = pgTable('message', {
 	id: serial('id').primaryKey(),
 	createdAt: timestamp('created_at', {
 		withTimezone: true,
-		mode: 'date',
+		mode: 'date'
 	}).notNull(),
 	roomId: integer('room_id')
 		.notNull()
@@ -76,7 +76,7 @@ export const messageTable = pgTable('message', {
 	senderId: integer('sender_id')
 		.notNull()
 		.references(() => userTable.id),
-	text: text('text').notNull(),
+	text: text('text').notNull()
 });
 
 export const sessionTable = pgTable('session', {
@@ -86,8 +86,8 @@ export const sessionTable = pgTable('session', {
 		.references(() => userTable.id),
 	expiresAt: timestamp('expires_at', {
 		withTimezone: true,
-		mode: 'date',
-	}).notNull(),
+		mode: 'date'
+	}).notNull()
 });
 
 export type User = InferSelectModel<typeof userTable>;

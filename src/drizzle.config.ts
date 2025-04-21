@@ -6,6 +6,6 @@ export default {
 	schema: './src/db/schema.ts',
 	dialect: 'postgresql',
 	dbCredentials: {
-		url: DATABASE_URL,
-	},
+		url: DATABASE_URL
+	}
 } satisfies Config;

@@ -7,8 +7,8 @@ export const load: PageLoad = async () => {
 				id: 1,
 				text: 'Hey there!',
 				user: { id: 'bot1', name: 'User' },
-				timestamp: new Date(),
-			},
-		] as Message[],
+				timestamp: new Date()
+			}
+		] as Message[]
 	};
 };

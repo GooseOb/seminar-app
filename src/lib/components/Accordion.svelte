@@ -1,31 +1,25 @@
 <script lang="ts">
-import { languageTag } from '$lib/paraglide/runtime.js';
-import { isPathnameStart } from '$lib/pathname';
-import { slide } from 'svelte/transition';
+	import { languageTag } from '$lib/paraglide/runtime.js';
+	import { isPathnameStart } from '$lib/pathname';
+	import { slide } from 'svelte/transition';
 
-const {
-	group,
-	searchQueryLowerCase,
-}: { group: Group; searchQueryLowerCase: string } = $props();
+	const { group, searchQueryLowerCase }: { group: Group; searchQueryLowerCase: string } = $props();
 
-let isOpen = $state(true);
+	let isOpen = $state(true);
 
-const isSearched = (value: string) =>
-	searchQueryLowerCase === '' ||
-	value.toLowerCase().includes(searchQueryLowerCase);
+	const isSearched = (value: string) =>
+		searchQueryLowerCase === '' || value.toLowerCase().includes(searchQueryLowerCase);
 
-const lang = languageTag();
-const projects = $derived(
-	group.projects
-		.map((project) => ({
-			...project,
-			name: project.name[lang] || project.name.en,
-		}))
-		.filter((project) => isSearched(project.name))
-);
-const isGroupSearched = $derived(
-	isSearched(group.name) || isSearched('General')
-);
+	const lang = languageTag();
+	const projects = $derived(
+		group.projects
+			.map((project) => ({
+				...project,
+				name: project.name[lang] || project.name.en
+			}))
+			.filter((project) => isSearched(project.name))
+	);
+	const isGroupSearched = $derived(isSearched(group.name) || isSearched('General'));
 </script>
 
 {#if projects.length > 0 || isGroupSearched}

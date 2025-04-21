@@ -1,15 +1,15 @@
 <script lang="ts">
-import Accordion from '$lib/components/Accordion.svelte';
-import Search from '$lib/components/Search.svelte';
-import { goto } from '$lib/i18n';
-import { isPathnameStart } from '$lib/pathname';
-let { isOpen, groups }: { isOpen: boolean; groups: Group[] } = $props();
-let searchQuery = $state('');
-const searchQueryLowerCase = $derived(searchQuery.toLowerCase());
+	import Accordion from '$lib/components/Accordion.svelte';
+	import Search from '$lib/components/Search.svelte';
+	import { goto } from '$lib/i18n';
+	import { isPathnameStart } from '$lib/pathname';
+	let { isOpen, groups }: { isOpen: boolean; groups: Group[] } = $props();
+	let searchQuery = $state('');
+	const searchQueryLowerCase = $derived(searchQuery.toLowerCase());
 
-const onLogout = () => {
-	goto('/login');
-};
+	const onLogout = () => {
+		goto('/login');
+	};
 </script>
 
 <aside class="sidebar" class:open={isOpen}>

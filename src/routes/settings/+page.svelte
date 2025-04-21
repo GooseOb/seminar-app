@@ -1,8 +1,8 @@
 <script lang="ts">
-import Select from '$lib/components/Select.svelte';
-import { switchToLanguage } from '$lib/i18n';
-import { availableLanguageTags, languageTag } from '$lib/paraglide/runtime';
-import { type Theme, theme, themes } from '$lib/store/theme.svelte';
+	import Select from '$lib/components/Select.svelte';
+	import { switchToLanguage } from '$lib/i18n';
+	import { availableLanguageTags, languageTag } from '$lib/paraglide/runtime';
+	import { type Theme, theme, themes } from '$lib/store/theme.svelte';
 </script>
 
 <Select

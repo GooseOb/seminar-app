@@ -1,14 +1,14 @@
 <script lang="ts">
-import Header from '$lib/components/Header.svelte';
-import Sidebar from '$lib/components/Sidebar.svelte';
-import { i18n } from '$lib/i18n';
-import { isLoginPage } from '$lib/pathname';
-import { ParaglideJS } from '@inlang/paraglide-sveltekit';
-import type { LayoutProps } from './$types';
+	import Header from '$lib/components/Header.svelte';
+	import Sidebar from '$lib/components/Sidebar.svelte';
+	import { i18n } from '$lib/i18n';
+	import { isLoginPage } from '$lib/pathname';
+	import { ParaglideJS } from '@inlang/paraglide-sveltekit';
+	import type { LayoutProps } from './$types';
 
-const { children, data }: LayoutProps = $props();
+	const { children, data }: LayoutProps = $props();
 
-let isSidebarOpen = $state(true);
+	let isSidebarOpen = $state(true);
 </script>
 
 <div class="app">

@@ -1,8 +1,5 @@
 import { sha256 } from '@oslojs/crypto/sha2';
-import {
-	encodeBase32LowerCaseNoPadding,
-	encodeHexLowerCase,
-} from '@oslojs/encoding';
+import { encodeBase32LowerCaseNoPadding, encodeHexLowerCase } from '@oslojs/encoding';
 import { eq } from 'drizzle-orm';
 import { type Session, type User, db, sessionTable, userTable } from './db';
 
@@ -13,23 +10,18 @@ export const generateSessionToken = (): string => {
 	return token;
 };
 
-export const createSession = async (
-	token: string,
-	userId: number
-): Promise<Session> => {
+export const createSession = async (token: string, userId: number): Promise<Session> => {
 	const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
 	const session: Session = {
 		id: sessionId,
 		userId,
-		expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
+		expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30)
 	};
 	await db.insert(sessionTable).values(session);
 	return session;
 };
 
-export const validateSessionToken = async (
-	token: string
-): Promise<SessionValidationResult> => {
+export const validateSessionToken = async (token: string): Promise<SessionValidationResult> => {
 	const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
 	const result = await db
 		.select({ user: userTable, session: sessionTable })
@@ -49,7 +41,7 @@ export const validateSessionToken = async (
 		await db
 			.update(sessionTable)
 			.set({
-				expiresAt: session.expiresAt,
+				expiresAt: session.expiresAt
 			})
 			.where(eq(sessionTable.id, session.id));
 	}

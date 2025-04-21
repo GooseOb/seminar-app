@@ -1,9 +1,9 @@
 <script lang="ts">
-import { enhance } from '$app/forms';
+	import { enhance } from '$app/forms';
 
-let { form } = $props();
+	let { form } = $props();
 
-console.log('Form data:', form);
+	console.log('Form data:', form);
 </script>
 
 <div class="container">
