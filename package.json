@@ -14,6 +14,8 @@
 		"@sveltejs/adapter-auto": "^4.0.0",
 		"@sveltejs/kit": "^2.20.2",
 		"@sveltejs/vite-plugin-svelte": "^5.0.3",
+		"@types/pg": "^8.11.13",
+		"drizzle-kit": "^0.31.0",
 		"globals": "^15.15.0",
 		"husky": "^9.1.7",
 		"svelte": "^5.25.2",
@@ -22,6 +24,10 @@
 		"vite": "^6.2.2"
 	},
 	"dependencies": {
-		"@inlang/paraglide-sveltekit": "^0.15.5"
+		"@inlang/paraglide-sveltekit": "^0.15.5",
+		"@oslojs/crypto": "^1.0.1",
+		"@oslojs/encoding": "^1.1.0",
+		"drizzle-orm": "^0.42.0",
+		"pg": "^8.14.1"
 	}
 }
