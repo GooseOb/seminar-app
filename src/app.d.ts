@@ -21,12 +21,6 @@ declare global {
 		description: string;
 	};
 
-	type Group = {
-		id: string;
-		name: string;
-		projects: Project[];
-	};
-
 	// type User = {
 	// 	id: string;
 	// 	name: string;

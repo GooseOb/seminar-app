@@ -13,7 +13,10 @@ export const handle: Handle = async (input) => {
 
 	const token = cookies.get('session');
 
-	if (canonicalPath.startsWith('/login') || canonicalPath.startsWith('/register')) {
+	if (
+		canonicalPath.startsWith('/login') ||
+		canonicalPath.startsWith('/register')
+	) {
 		if (token) {
 			throw redirect(303, i18n.resolveRoute('/', lang));
 		} else {

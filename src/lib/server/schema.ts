@@ -19,6 +19,7 @@ export const userTable = pgTable('user', {
 	lastname: varchar({ length: 255 }).notNull(),
 	email: varchar({ length: 255 }).notNull().unique(),
 	password: varchar({ length: 255 }).notNull(),
+	photo: varchar({ length: 255 }),
 	role: roleEnum().notNull()
 });
 

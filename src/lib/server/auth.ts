@@ -6,8 +6,17 @@ export const hashPassword = (password: string): string => {
 	return `${salt}:${hash}`;
 };
 
-export const verifyPassword = (storedPassword: string, providedPassword: string): boolean => {
+export const verifyPassword = (
+	storedPassword: string,
+	providedPassword: string
+): boolean => {
 	const [salt, originalHash] = storedPassword.split(':');
-	const hash = pbkdf2Sync(providedPassword, salt, 100000, 64, 'sha512').toString('hex');
+	const hash = pbkdf2Sync(
+		providedPassword,
+		salt,
+		100000,
+		64,
+		'sha512'
+	).toString('hex');
 	return hash === originalHash;
 };

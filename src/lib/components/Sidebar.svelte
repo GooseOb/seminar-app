@@ -4,6 +4,7 @@
 	import Search from '$lib/components/Search.svelte';
 	import { isPathnameStart } from '$lib/pathname';
 	import type { Role } from '$lib/server/schema';
+	import type { GroupWithProjects } from '$lib/server/queries';
 
 	let {
 		isOpen,
@@ -11,7 +12,7 @@
 		role
 	}: {
 		isOpen: boolean;
-		groups: Group[];
+		groups: GroupWithProjects[];
 		role: Role;
 	} = $props();
 
@@ -24,7 +25,9 @@
 	<nav class="groups">
 		{#if role === 'teacher'}
 			{@const href = '/groups/new'}
-			<a {href} class="add-group-btn" class:active={isPathnameStart(href)}>Add group</a>
+			<a {href} class="add-group-btn" class:active={isPathnameStart(href)}
+				>Add group</a
+			>
 		{/if}
 		<ul class="nolist">
 			{#each groups as group}
@@ -35,7 +38,11 @@
 		</ul>
 	</nav>
 	<div class="footer">
-		<a href="/settings" class="footer-item" class:active={isPathnameStart('/settings')}>Settings</a>
+		<a
+			href="/settings"
+			class="footer-item"
+			class:active={isPathnameStart('/settings')}>Settings</a
+		>
 		<form method="POST" action="/logout" use:enhance>
 			<button type="submit" class="footer-item logout-btn">Log out</button>
 		</form>

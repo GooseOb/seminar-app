@@ -17,7 +17,11 @@ export const actions: Actions = {
 		}
 
 		try {
-			const [user] = await db.select().from(userTable).where(eq(userTable.email, email)).limit(1);
+			const [user] = await db
+				.select()
+				.from(userTable)
+				.where(eq(userTable.email, email))
+				.limit(1);
 
 			if (!user || !verifyPassword(user.password, password)) {
 				return fail(401, { error: 'Invalid email or password' });

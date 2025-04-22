@@ -9,7 +9,9 @@
 	label="Language"
 	value={languageTag()}
 	onchange={({ currentTarget }) => {
-		switchToLanguage(currentTarget.value as (typeof availableLanguageTags)[number]);
+		switchToLanguage(
+			currentTarget.value as (typeof availableLanguageTags)[number]
+		);
 	}}
 	options={availableLanguageTags}
 />

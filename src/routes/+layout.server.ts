@@ -1,21 +1,16 @@
 import type { LayoutServerLoad } from './$types';
+import { getUserGroupsAndProjects } from '$lib/server/queries';
 
-export const load: LayoutServerLoad = async ({ locals }) => {
-	console.log('locals', locals);
-	let projectId = 0;
+export const load: LayoutServerLoad = async ({ locals: { user } }) => {
+	if (user) {
+		const { id, role } = user;
+		return {
+			groups: await getUserGroupsAndProjects(id),
+			role
+		};
+	}
 	return {
-		groups: Array.from({ length: 7 }, (_, i) => ({
-			id: i.toString(),
-			name: 'Group ' + i,
-			projects: Array.from({ length: Math.floor(Math.random() * 5) }, () => ({
-				id: `${projectId}`,
-				name: {
-					en: `Project ${projectId}`,
-					pl: `Projekt ${projectId++}`
-				},
-				description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
-			}))
-		})),
-		role: locals.user?.role
+		groups: [],
+		role: null
 	};
 };

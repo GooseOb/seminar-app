@@ -2,41 +2,41 @@
 	import type { PageProps } from './$types';
 
 	const { data }: PageProps = $props();
-	const members = $state(data.members ?? []);
+	const { members, error } = data;
 </script>
 
 <div class="members-container">
-	{#if data.error}
-		<div class="message">{data.error}</div>
+	{#if error}
+		<div class="message">{error}</div>
 	{:else if members.length === 0}
 		<div class="message">No members found in this group.</div>
 	{:else}
 		<div class="members-list">
-			<button
-				class="btn add"
-				onclick={() => members.push({ id: `${members.length + 1}`, name: 'New Member' } as User)}
-			>
-				Add
-			</button>
-			{#each members as member (member.id)}
+			<button class="btn add"> Add </button>
+			{#each members as member}
 				<div class="member-card">
 					{#if member.photo}
 						<img src={member.photo} alt="" class="photo" />
 					{:else}
-						<div class="photo-placeholder">{member.name[0]}</div>
+						<div class="photo-placeholder">{member.firstname[0]}</div>
 					{/if}
 					<div class="member-info">
-						<span class="member-name">{member.name}</span>
-						<span class="member-status" class:online={member.isOnline}>
-							{member.isOnline ? 'Online' : 'Offline'}
+						<span class="member-name">{member.firstname} {member.lastname}</span
+						>
+						<span class="project-name">
+							{member.projectName}
 						</span>
 					</div>
-					<div class="member-actions">
-						{#if member.projectId}
-							<a href={`/projects/${member.projectId}`} class="btn"> Project </a>
-						{/if}
-						<button class="btn danger"> Remove </button>
-					</div>
+					{#if data.role === 'teacher'}
+						<div class="member-actions">
+							{#if member.projectId}
+								<a href={`/projects/${member.projectId}`} class="btn">
+									Project
+								</a>
+							{/if}
+							<button class="btn danger"> Remove </button>
+						</div>
+					{/if}
 				</div>
 			{/each}
 		</div>
@@ -102,13 +102,9 @@
 		color: var(--text-color);
 	}
 
-	.member-status {
+	.project-name {
 		font-size: 0.85rem;
 		color: #666;
-	}
-
-	.member-status.online {
-		color: #28a745;
 	}
 
 	.member-actions {
