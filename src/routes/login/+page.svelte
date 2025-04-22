@@ -3,8 +3,6 @@
 	import Input from '$lib/form/input.svelte';
 
 	const { form } = $props();
-
-	console.log(form);
 </script>
 
 <div class="container">

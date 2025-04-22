@@ -1,8 +1,10 @@
 <script lang="ts">
+	import { enhance } from '$app/forms';
 	import Accordion from '$lib/components/Accordion.svelte';
 	import Search from '$lib/components/Search.svelte';
 	import { isPathnameStart } from '$lib/pathname';
 	import type { Role } from '$lib/server/schema';
+
 	let {
 		isOpen,
 		groups,
@@ -12,6 +14,7 @@
 		groups: Group[];
 		role: Role;
 	} = $props();
+
 	let searchQuery = $state('');
 	const searchQueryLowerCase = $derived(searchQuery.toLowerCase());
 </script>
@@ -33,7 +36,7 @@
 	</nav>
 	<div class="footer">
 		<a href="/settings" class="footer-item" class:active={isPathnameStart('/settings')}>Settings</a>
-		<form method="POST" action="/logout">
+		<form method="POST" action="/logout" use:enhance>
 			<button type="submit" class="footer-item logout-btn">Log out</button>
 		</form>
 	</div>

@@ -27,6 +27,8 @@ export const handle: Handle = async (input) => {
 			locals.session = session;
 			locals.user = user;
 			return handleParaglide(input);
+		} else {
+			cookies.delete('session', { path: '/' });
 		}
 	}
 
