@@ -1,7 +1,9 @@
-import type { LayoutLoad } from './$types';
+import type { LayoutServerLoad } from './$types';
 
-export const load: LayoutLoad<{ groups: Group[] }> = async () => {
+export const load: LayoutServerLoad = async ({ locals }) => {
 	let projectId = 0;
+	console.log('locals', locals);
+	const { role } = locals.user;
 	return {
 		groups: Array.from({ length: 7 }, (_, i) => ({
 			id: i.toString(),
@@ -14,6 +16,7 @@ export const load: LayoutLoad<{ groups: Group[] }> = async () => {
 				},
 				description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
 			}))
-		}))
+		})),
+		role
 	};
 };

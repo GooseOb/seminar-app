@@ -9,7 +9,7 @@ import {
 	varchar
 } from 'drizzle-orm/pg-core';
 
-import type { InferSelectModel } from 'drizzle-orm';
+import type { InferEnum, InferSelectModel } from 'drizzle-orm';
 
 export const roleEnum = pgEnum('role', ['student', 'teacher']);
 
@@ -92,3 +92,4 @@ export type Session = InferSelectModel<typeof sessionTable>;
 export type Group = InferSelectModel<typeof groupTable>;
 export type Project = InferSelectModel<typeof projectTable>;
 export type Message = InferSelectModel<typeof messageTable>;
+export type Role = InferEnum<typeof roleEnum>;

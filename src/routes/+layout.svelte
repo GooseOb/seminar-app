@@ -28,7 +28,7 @@
 				</label>
 			</Header>
 			<div class="workspace">
-				<Sidebar isOpen={isSidebarOpen} groups={data.groups} />
+				<Sidebar isOpen={isSidebarOpen} groups={data.groups} role={data.role} />
 				<main class="content">
 					{@render children()}
 				</main>

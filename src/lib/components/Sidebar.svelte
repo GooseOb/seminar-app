@@ -2,7 +2,16 @@
 	import Accordion from '$lib/components/Accordion.svelte';
 	import Search from '$lib/components/Search.svelte';
 	import { isPathnameStart } from '$lib/pathname';
-	let { isOpen, groups }: { isOpen: boolean; groups: Group[] } = $props();
+	import type { Role } from '$lib/server/schema';
+	let {
+		isOpen,
+		groups,
+		role
+	}: {
+		isOpen: boolean;
+		groups: Group[];
+		role: Role;
+	} = $props();
 	let searchQuery = $state('');
 	const searchQueryLowerCase = $derived(searchQuery.toLowerCase());
 </script>
@@ -10,15 +19,14 @@
 <aside class="sidebar" class:open={isOpen}>
 	<Search bind:value={searchQuery} />
 	<nav class="groups">
-		{#if true}
-			<!-- teacher: add group -->
+		{#if role === 'teacher'}
 			{@const href = '/groups/new'}
 			<a {href} class="add-group-btn" class:active={isPathnameStart(href)}>Add group</a>
 		{/if}
 		<ul class="nolist">
 			{#each groups as group}
 				<li>
-					<Accordion {group} {searchQueryLowerCase} />
+					<Accordion {group} {searchQueryLowerCase} {role} />
 				</li>
 			{/each}
 		</ul>

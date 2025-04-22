@@ -1,9 +1,14 @@
 <script lang="ts">
 	import { languageTag } from '$lib/paraglide/runtime.js';
 	import { isPathnameStart } from '$lib/pathname';
+	import type { Role } from '$lib/server/schema';
 	import { slide } from 'svelte/transition';
 
-	const { group, searchQueryLowerCase }: { group: Group; searchQueryLowerCase: string } = $props();
+	const {
+		group,
+		searchQueryLowerCase,
+		role
+	}: { group: Group; searchQueryLowerCase: string; role: Role } = $props();
 
 	let isOpen = $state(true);
 
@@ -44,8 +49,7 @@
 						</li>
 					</a>
 				{/each}
-				{#if true}
-					<!-- student: add project -->
+				{#if role === 'student'}
 					{@const href = `/projects/new?group=${group.id}`}
 					<a {href} class:active={isPathnameStart(href)}>
 						<li class="item">Add project</li>
