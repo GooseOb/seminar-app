@@ -7,7 +7,7 @@ import {
 	roomTable,
 	userTable
 } from './db';
-import { eq, and } from 'drizzle-orm';
+import { eq, and, sql } from 'drizzle-orm';
 
 export type GroupWithProjects = {
 	id: number;
@@ -18,26 +18,27 @@ export type GroupWithProjects = {
 	}[];
 };
 
+const projectRoomTable = alias(roomTable, 'project_room');
+const userGroupsAndProjectsQuery = db
+	.select({
+		groupId: groupTable.id,
+		groupName: roomTable.name,
+		isOwner: eq(roomTable.ownerId, sql.placeholder('userId')),
+		projectId: projectTable.id,
+		projectName: projectRoomTable.name
+	})
+	.from(groupMembershipTable)
+	.innerJoin(groupTable, eq(groupMembershipTable.groupId, groupTable.id))
+	.innerJoin(roomTable, eq(groupTable.id, roomTable.id))
+	.leftJoin(projectTable, eq(projectTable.groupId, groupTable.id))
+	.leftJoin(projectRoomTable, eq(projectTable.id, projectRoomTable.id))
+	.where(eq(groupMembershipTable.userId, sql.placeholder('userId')))
+	.orderBy(groupTable.id);
+
 export const getUserGroupsAndProjects = async (
 	userId: number
 ): Promise<GroupWithProjects[]> => {
-	const projectRoomTable = alias(roomTable, 'project_room');
-	const results = await db
-		.select({
-			groupId: groupTable.id,
-			groupName: roomTable.name,
-			isOwner: eq(roomTable.ownerId, userId),
-			projectId: projectTable.id,
-			projectName: projectRoomTable.name
-		})
-		.from(groupMembershipTable)
-		.innerJoin(groupTable, eq(groupMembershipTable.groupId, groupTable.id))
-		.innerJoin(roomTable, eq(groupTable.id, roomTable.id))
-		.leftJoin(projectTable, eq(projectTable.groupId, groupTable.id))
-		.leftJoin(projectRoomTable, eq(projectTable.id, projectRoomTable.id))
-		.where(eq(groupMembershipTable.userId, userId))
-		.orderBy(groupTable.id);
-
+	const results = await userGroupsAndProjectsQuery.execute({ userId });
 	const groups: Record<
 		number,
 		{ id: number; name: string; projects: { id: number; name: string }[] }
@@ -64,43 +65,49 @@ export const getUserGroupsAndProjects = async (
 	return Object.values(groups);
 };
 
-export const isMemberOfGroup = async (
+const membershipQuery = db
+	.select()
+	.from(groupMembershipTable)
+	.where(
+		and(
+			eq(groupMembershipTable.userId, sql.placeholder('userId')),
+			eq(groupMembershipTable.groupId, sql.placeholder('groupId'))
+		)
+	)
+	.limit(1);
+
+export const isMemberOfGroup = (
 	userId: number,
 	groupId: number
-): Promise<boolean> => {
-	const { length } = await db
-		.select()
-		.from(groupMembershipTable)
-		.where(
-			and(
-				eq(groupMembershipTable.userId, userId),
-				eq(groupMembershipTable.groupId, groupId)
-			)
-		)
-		.limit(1);
+): Promise<boolean> =>
+	membershipQuery
+		.execute({
+			userId,
+			groupId
+		})
+		.then(({ length }) => length > 0);
 
-	return length > 0;
-};
+const groupMembersWithProjectsQuery = db
+	.select({
+		userId: userTable.id,
+		firstname: userTable.firstname,
+		lastname: userTable.lastname,
+		photo: userTable.photo,
+		role: userTable.role,
+		projectId: roomTable.id,
+		projectName: roomTable.name
+	})
+	.from(groupMembershipTable)
+	.where(eq(groupMembershipTable.groupId, sql.placeholder('groupId')))
+	.innerJoin(userTable, eq(groupMembershipTable.userId, userTable.id))
+	.leftJoin(
+		roomTable,
+		and(eq(roomTable.ownerId, userTable.id), eq(roomTable.kind, 'project'))
+	);
 
 export const getGroupMembersWithProjects = async (groupId: number) => {
 	try {
-		return await db
-			.select({
-				userId: userTable.id,
-				firstname: userTable.firstname,
-				lastname: userTable.lastname,
-				photo: userTable.photo,
-				role: userTable.role,
-				projectId: roomTable.id,
-				projectName: roomTable.name
-			})
-			.from(groupMembershipTable)
-			.where(eq(groupMembershipTable.groupId, groupId))
-			.innerJoin(userTable, eq(groupMembershipTable.userId, userTable.id))
-			.leftJoin(
-				roomTable,
-				and(eq(roomTable.ownerId, userTable.id), eq(roomTable.kind, 'project'))
-			);
+		return await groupMembersWithProjectsQuery.execute({ groupId });
 	} catch (error) {
 		console.error('Error querying group members with projects:', error);
 		throw new Error('Failed to fetch group members with projects');
