@@ -1,4 +1,5 @@
-import { fail, redirect } from '@sveltejs/kit';
+import { fail } from '@sveltejs/kit';
+import { redirect } from '$lib/i18n';
 import { eq } from 'drizzle-orm';
 import { userTable } from '$lib/server/db';
 import { createSession, generateSessionToken } from '$lib/server/sessions';

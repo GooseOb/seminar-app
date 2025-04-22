@@ -6,17 +6,21 @@ import { redirect } from '@sveltejs/kit';
 const handleParaglide: Handle = i18n.handle();
 
 export const handle: Handle = async (input) => {
-	const {
-		url: { pathname },
-		cookies,
-		locals
-	} = input.event;
+	const { url, cookies, locals } = input.event;
 
-	if (pathname.startsWith('/login') || pathname.startsWith('/register')) {
-		return handleParaglide(input);
-	}
+	const canonicalPath = i18n.route(url.pathname);
+	const lang = i18n.getLanguageFromUrl(url);
 
 	const token = cookies.get('session');
+
+	if (canonicalPath.startsWith('/login') || canonicalPath.startsWith('/register')) {
+		if (token) {
+			throw redirect(303, i18n.resolveRoute('/', lang));
+		} else {
+			return handleParaglide(input);
+		}
+	}
+
 	if (token) {
 		const { session, user } = await validateSessionToken(token);
 		if (session && user) {
@@ -26,5 +30,5 @@ export const handle: Handle = async (input) => {
 		}
 	}
 
-	throw redirect(303, '/login');
+	throw redirect(303, i18n.resolveRoute('/login', lang));
 };

@@ -1,5 +1,5 @@
 import { invalidateSession, validateSessionToken } from '$lib/server/sessions';
-import { redirect } from '@sveltejs/kit';
+import { redirect } from '$lib/i18n';
 import type { Actions } from './$types';
 
 export const actions: Actions = {
