@@ -3,6 +3,8 @@
 	import Input from '$lib/form/input.svelte';
 
 	const { form } = $props();
+
+	console.log(form);
 </script>
 
 <div class="container">
@@ -14,8 +16,8 @@
 
 		<button type="submit" class="btn">Log in</button>
 
-		{#if form?.message}
-			<div class="error">{form.message}</div>
+		{#if form?.error}
+			<div class="error">{form.error}</div>
 		{/if}
 	</form>
 	<a href="/register">Create an account</a>

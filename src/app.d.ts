@@ -3,7 +3,10 @@
 declare global {
 	namespace App {
 		// interface Error {}
-		// interface Locals {}
+		interface Locals {
+			session?: Session;
+			user?: User;
+		}
 		// interface PageData {}
 		// interface PageState {}
 		// interface Platform {}
@@ -24,12 +27,12 @@ declare global {
 		projects: Project[];
 	};
 
-	type User = {
-		id: string;
-		name: string;
-		isOnline: boolean;
-		photo?: string;
-	};
+	// type User = {
+	// 	id: string;
+	// 	name: string;
+	// 	isOnline: boolean;
+	// 	photo?: string;
+	// };
 
 	type Message = {
 		id: number;

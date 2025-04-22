@@ -18,8 +18,8 @@
 
 		<button type="submit" class="btn">Sign up</button>
 
-		{#if form?.message}
-			<div class="error">{form.message}</div>
+		{#if form?.error}
+			<div class="error">{form.error}</div>
 		{/if}
 	</form>
 </div>
