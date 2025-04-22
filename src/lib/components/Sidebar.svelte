@@ -54,6 +54,7 @@
 		width: 100%;
 	}
 	.sidebar {
+		width: 0;
 		display: flex;
 		flex-direction: column;
 		background-color: var(--bg3-color);
@@ -64,6 +65,7 @@
 		max-height: 100%;
 	}
 	.groups {
+		height: 100%;
 		overflow-y: auto;
 	}
 	.add-group-btn {
