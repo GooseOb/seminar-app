@@ -6,8 +6,17 @@
 	import { isLoginPage } from '$lib/pathname';
 	import { ParaglideJS } from '@inlang/paraglide-sveltekit';
 	import type { LayoutProps } from './$types';
+	import { browser } from '$app/environment';
 
 	const { children, data }: LayoutProps = $props();
+
+	if (data.theme === 'auto' && browser) {
+		const theme = window.matchMedia('(prefers-color-scheme: dark)').matches
+			? 'dark'
+			: 'light';
+		document.cookie = `last_theme=${theme}; path=/; max-age=31536000;`;
+		document.documentElement.className = theme;
+	}
 
 	let isOpen = $state(true);
 </script>
