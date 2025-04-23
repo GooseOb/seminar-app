@@ -1,11 +1,11 @@
 import { alias } from 'drizzle-orm/pg-core';
 import {
 	db,
-	groupMembershipTable,
-	groupTable,
-	projectTable,
-	roomTable,
-	userTable
+	groupMembershipTable as groupMembership,
+	groupTable as group,
+	projectTable as project,
+	roomTable as room,
+	userTable as user
 } from './db';
 import { eq, and, sql } from 'drizzle-orm';
 
@@ -18,22 +18,22 @@ export type GroupWithProjects = {
 	}[];
 };
 
-const projectRoomTable = alias(roomTable, 'project_room');
+const projectRoom = alias(room, 'project_room');
 const userGroupsAndProjectsQuery = db
 	.select({
-		groupId: groupTable.id,
-		groupName: roomTable.name,
-		isOwner: eq(roomTable.ownerId, sql.placeholder('userId')),
-		projectId: projectTable.id,
-		projectName: projectRoomTable.name
+		groupId: group.id,
+		groupName: room.name,
+		isOwner: eq(room.ownerId, sql.placeholder('userId')),
+		projectId: project.id,
+		projectName: projectRoom.name
 	})
-	.from(groupMembershipTable)
-	.innerJoin(groupTable, eq(groupMembershipTable.groupId, groupTable.id))
-	.innerJoin(roomTable, eq(groupTable.id, roomTable.id))
-	.leftJoin(projectTable, eq(projectTable.groupId, groupTable.id))
-	.leftJoin(projectRoomTable, eq(projectTable.id, projectRoomTable.id))
-	.where(eq(groupMembershipTable.userId, sql.placeholder('userId')))
-	.orderBy(groupTable.id);
+	.from(groupMembership)
+	.innerJoin(group, eq(groupMembership.groupId, group.id))
+	.innerJoin(room, eq(group.id, room.id))
+	.leftJoin(project, eq(project.groupId, group.id))
+	.leftJoin(projectRoom, eq(project.id, projectRoom.id))
+	.where(eq(groupMembership.userId, sql.placeholder('userId')))
+	.orderBy(group.id);
 
 export const getUserGroupsAndProjects = async (
 	userId: number
@@ -67,11 +67,11 @@ export const getUserGroupsAndProjects = async (
 
 const membershipQuery = db
 	.select()
-	.from(groupMembershipTable)
+	.from(groupMembership)
 	.where(
 		and(
-			eq(groupMembershipTable.userId, sql.placeholder('userId')),
-			eq(groupMembershipTable.groupId, sql.placeholder('groupId'))
+			eq(groupMembership.userId, sql.placeholder('userId')),
+			eq(groupMembership.groupId, sql.placeholder('groupId'))
 		)
 	)
 	.limit(1);
@@ -89,25 +89,30 @@ export const isMemberOfGroup = (
 
 const groupMembersWithProjectsQuery = db
 	.select({
-		userId: userTable.id,
-		firstname: userTable.firstname,
-		lastname: userTable.lastname,
-		photo: userTable.photo,
-		role: userTable.role,
-		projectId: roomTable.id,
-		projectName: roomTable.name
+		userId: user.id,
+		firstname: user.firstname,
+		lastname: user.lastname,
+		photo: user.photo,
+		role: user.role,
+		projectId: projectRoom.id,
+		projectName: projectRoom.name
 	})
-	.from(groupMembershipTable)
-	.where(eq(groupMembershipTable.groupId, sql.placeholder('groupId')))
-	.innerJoin(userTable, eq(groupMembershipTable.userId, userTable.id))
+	.from(groupMembership)
+	.where(eq(groupMembership.groupId, sql.placeholder('groupId')))
+	.innerJoin(user, eq(groupMembership.userId, user.id))
 	.leftJoin(
-		roomTable,
-		and(eq(roomTable.ownerId, userTable.id), eq(roomTable.kind, 'project'))
+		projectRoom,
+		and(eq(projectRoom.ownerId, user.id), eq(projectRoom.kind, 'project'))
 	);
 
 export const getGroupMembersWithProjects = async (groupId: number) => {
 	try {
-		return await groupMembersWithProjectsQuery.execute({ groupId });
+		const members = await groupMembersWithProjectsQuery.execute({ groupId });
+
+		return {
+			teacher: members.find((member) => member.role === 'teacher')!,
+			students: members.filter((member) => member.role === 'student')
+		};
 	} catch (error) {
 		console.error('Error querying group members with projects:', error);
 		throw new Error('Failed to fetch group members with projects');

@@ -12,7 +12,6 @@ export const load: PageServerLoad = async ({
 		const members = await getGroupMembersWithProjects(+id);
 		return {
 			members,
-			error: null,
 			role
 		};
 	} catch (err) {

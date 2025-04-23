@@ -2,35 +2,49 @@
 	import type { PageProps } from './$types';
 
 	const { data }: PageProps = $props();
-	const { members, error } = data;
+	const {
+		members: { students, teacher }
+	} = data;
 </script>
 
 <div class="members-container">
-	{#if error}
-		<div class="message">{error}</div>
-	{:else if members.length === 0}
-		<div class="message">No members found in this group.</div>
-	{:else}
-		<div class="members-list">
+	<div class="member-list">
+		<div class="member-card">
+			{#if teacher.photo}
+				<img src={teacher.photo} alt="" class="photo" />
+			{:else}
+				<div class="photo-placeholder">{teacher.firstname[0]}</div>
+			{/if}
+			<div class="member-info">
+				<span class="member-name">{teacher.firstname} {teacher.lastname}</span>
+				<span class="member-text"> Teacher </span>
+			</div>
+		</div>
+		{#if data.role === 'teacher'}
 			<button class="btn add"> Add </button>
-			{#each members as member}
+		{/if}
+		{#if students.length === 0}
+			<div class="message">No students found in this group.</div>
+		{:else}
+			{#each students as student}
 				<div class="member-card">
-					{#if member.photo}
-						<img src={member.photo} alt="" class="photo" />
+					{#if student.photo}
+						<img src={student.photo} alt="" class="photo" />
 					{:else}
-						<div class="photo-placeholder">{member.firstname[0]}</div>
+						<div class="photo-placeholder">{student.firstname[0]}</div>
 					{/if}
 					<div class="member-info">
-						<span class="member-name">{member.firstname} {member.lastname}</span
+						<span class="member-name"
+							>{student.firstname} {student.lastname}</span
 						>
-						<span class="project-name">
-							{member.projectName}
+						<span class="member-text">
+							{student.projectName}
 						</span>
 					</div>
 					{#if data.role === 'teacher'}
 						<div class="member-actions">
-							{#if member.projectId}
-								<a href={`/projects/${member.projectId}`} class="btn">
+							{#if student.projectId}
+								<a href={`/projects/${student.projectId}`} class="btn">
 									Project
 								</a>
 							{/if}
@@ -39,8 +53,8 @@
 					{/if}
 				</div>
 			{/each}
-		</div>
-	{/if}
+		{/if}
+	</div>
 </div>
 
 <style>
@@ -53,7 +67,7 @@
 		box-sizing: border-box;
 	}
 
-	.members-list {
+	.member-list {
 		flex: 1;
 		overflow-y: auto;
 	}
@@ -102,7 +116,7 @@
 		color: var(--text-color);
 	}
 
-	.project-name {
+	.member-text {
 		font-size: 0.85rem;
 		color: #666;
 	}
