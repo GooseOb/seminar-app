@@ -5,7 +5,8 @@ import {
 	groupTable as group,
 	projectTable as project,
 	roomTable as room,
-	userTable as user
+	userTable as user,
+	type User
 } from './db';
 import { eq, and, sql } from 'drizzle-orm';
 
@@ -117,4 +118,29 @@ export const getGroupMembersWithProjects = async (groupId: number) => {
 		console.error('Error querying group members with projects:', error);
 		throw new Error('Failed to fetch group members with projects');
 	}
+};
+
+const userByEmailQuery = db
+	.select()
+	.from(user)
+	.where(eq(user.email, sql.placeholder('email')))
+	.limit(1);
+
+export const getUserByEmail = async (email: string) => {
+	return await userByEmailQuery.execute({ email });
+};
+
+const insertUserQuery = db
+	.insert(user)
+	.values({
+		firstname: sql.placeholder('firstname'),
+		lastname: sql.placeholder('lastname'),
+		email: sql.placeholder('email'),
+		password: sql.placeholder('password'),
+		role: sql.placeholder('role')
+	})
+	.returning();
+
+export const insertUser = async (userData: Omit<User, 'id' | 'photo'>) => {
+	return await insertUserQuery.execute(userData);
 };

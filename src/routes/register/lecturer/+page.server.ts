@@ -1,11 +1,9 @@
 import { fail } from '@sveltejs/kit';
 import { redirect } from '$lib/i18n';
-import { eq } from 'drizzle-orm';
-import { userTable } from '$lib/server/db';
 import { createSession, generateSessionToken } from '$lib/server/sessions';
-import { db } from '$lib/server/db';
 import { hashPassword } from '$lib/server/auth';
 import type { Actions } from './$types';
+import { getUserByEmail, insertUser } from '$lib/server/queries';
 
 export const actions: Actions = {
 	default: async ({ request, cookies }) => {
@@ -20,27 +18,20 @@ export const actions: Actions = {
 		}
 
 		try {
-			const existingUser = await db
-				.select()
-				.from(userTable)
-				.where(eq(userTable.email, email))
-				.limit(1);
+			const existingUser = await getUserByEmail(email);
 
 			if (existingUser.length > 0) {
 				return fail(400, { error: 'Email already exists' });
 			}
 
 			const hashedPassword = hashPassword(password);
-			const [user] = await db
-				.insert(userTable)
-				.values({
-					firstname,
-					lastname,
-					email,
-					password: hashedPassword,
-					role: 'lecturer'
-				})
-				.returning();
+			const [user] = await insertUser({
+				firstname,
+				lastname,
+				email,
+				password: hashedPassword,
+				role: 'lecturer'
+			});
 
 			const token = generateSessionToken();
 			await createSession(token, user.id);
