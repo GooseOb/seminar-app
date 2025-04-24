@@ -16,19 +16,19 @@ import { hashPassword } from '../src/lib/server/auth';
 try {
 	const hashedPassword = hashPassword('123');
 
-	// Create teacher
-	const [teacher] = await db
+	// Create lecturer
+	const [lecturer] = await db
 		.insert(userTable)
 		.values({
 			firstname: 'Jane',
 			lastname: 'Doe',
-			email: 'teacher@example.com',
+			email: 'lecturer@example.com',
 			password: hashedPassword,
-			role: 'teacher'
+			role: 'lecturer'
 		})
 		.returning();
-	const teacherToken = generateSessionToken();
-	await createSession(teacherToken, teacher.id);
+	const lecturerToken = generateSessionToken();
+	await createSession(lecturerToken, lecturer.id);
 
 	// Create students
 	const studentsData = [
@@ -62,7 +62,7 @@ try {
 		.insert(roomTable)
 		.values({
 			name: 'Study Group 1',
-			ownerId: teacher.id, // Teacher can still own the group
+			ownerId: lecturer.id, // Teacher can still own the group
 			kind: 'group'
 		})
 		.returning();
@@ -73,7 +73,7 @@ try {
 
 	// Create group memberships
 	const memberships = [
-		{ userId: teacher.id, groupId: groupRoom.id },
+		{ userId: lecturer.id, groupId: groupRoom.id },
 		...students.map((student) => ({
 			userId: student.id,
 			groupId: groupRoom.id

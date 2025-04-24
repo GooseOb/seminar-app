@@ -3,24 +3,25 @@
 
 	const { data }: PageProps = $props();
 	const {
-		members: { students, teacher }
+		members: { students, lecturer }
 	} = data;
 </script>
 
 <div class="members-container">
 	<div class="member-list">
 		<div class="member-card">
-			{#if teacher.photo}
-				<img src={teacher.photo} alt="" class="photo" />
+			{#if lecturer.photo}
+				<img src={lecturer.photo} alt="" class="photo" />
 			{:else}
-				<div class="photo-placeholder">{teacher.firstname[0]}</div>
+				<div class="photo-placeholder">{lecturer.firstname[0]}</div>
 			{/if}
 			<div class="member-info">
-				<span class="member-name">{teacher.firstname} {teacher.lastname}</span>
-				<span class="member-text"> Teacher </span>
+				<span class="member-name">{lecturer.firstname} {lecturer.lastname}</span
+				>
+				<span class="member-text"> Lecturer </span>
 			</div>
 		</div>
-		{#if data.role === 'teacher'}
+		{#if data.role === 'lecturer'}
 			<button class="btn add"> Add </button>
 		{/if}
 		{#if students.length === 0}
@@ -41,7 +42,7 @@
 							{student.projectName}
 						</span>
 					</div>
-					{#if data.role === 'teacher'}
+					{#if data.role === 'lecturer'}
 						<div class="member-actions">
 							{#if student.projectId}
 								<a href={`/projects/${student.projectId}`} class="btn">

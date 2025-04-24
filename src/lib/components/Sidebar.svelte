@@ -23,7 +23,7 @@
 <aside class="sidebar" class:open={isOpen}>
 	<Search bind:value={searchQuery} />
 	<nav class="groups">
-		{#if role === 'teacher'}
+		{#if role === 'lecturer'}
 			{@const href = '/groups/new'}
 			<a {href} class="add-group-btn" class:active={isPathnameStart(href)}
 				>Add group</a

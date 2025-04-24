@@ -11,7 +11,7 @@ import {
 
 import type { InferEnum, InferSelectModel } from 'drizzle-orm';
 
-export const roleEnum = pgEnum('role', ['student', 'teacher']);
+export const roleEnum = pgEnum('role', ['student', 'lecturer']);
 
 export const userTable = pgTable('user', {
 	id: serial('id').primaryKey(),

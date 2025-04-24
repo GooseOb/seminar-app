@@ -1,7 +1,7 @@
 <div class="container">
 	<a href="/register/student"> Student </a>
 	<hr />
-	<a href="/register/teacher"> Teacher </a>
+	<a href="/register/lecturer"> Lecturer </a>
 </div>
 
 <style>

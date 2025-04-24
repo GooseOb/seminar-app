@@ -38,7 +38,7 @@ export const actions: Actions = {
 					lastname,
 					email,
 					password: hashedPassword,
-					role: 'teacher'
+					role: 'lecturer'
 				})
 				.returning();
 

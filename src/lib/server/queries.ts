@@ -110,7 +110,7 @@ export const getGroupMembersWithProjects = async (groupId: number) => {
 		const members = await groupMembersWithProjectsQuery.execute({ groupId });
 
 		return {
-			teacher: members.find((member) => member.role === 'teacher')!,
+			lecturer: members.find((member) => member.role === 'lecturer')!,
 			students: members.filter((member) => member.role === 'student')
 		};
 	} catch (error) {
