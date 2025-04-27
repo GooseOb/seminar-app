@@ -12,13 +12,13 @@
 		<Input type="text" name="firstname" label="Firstname" />
 		<Input type="text" name="lastname" label="Lastname" />
 		<hr />
-		<Input type="email" name="email" label="Email" />
+		<Input type="login" name="login" label="Login" />
 		<Input type="password" name="password" label="Password" />
 
 		<button type="submit" class="btn">Sign up</button>
 
-		{#if form?.message}
-			<div class="error">{form.message}</div>
+		{#if form?.error}
+			<div class="error">{form.error}</div>
 		{/if}
 	</form>
 </div>

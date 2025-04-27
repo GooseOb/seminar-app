@@ -22,7 +22,7 @@ try {
 		.values({
 			firstname: 'Jane',
 			lastname: 'Doe',
-			email: 'lecturer@example.com',
+			login: 'lecturer@example.com',
 			password: hashedPassword,
 			role: 'lecturer'
 		})
@@ -32,12 +32,12 @@ try {
 
 	// Create students
 	const studentsData = [
-		{ firstname: 'Alice', lastname: 'Smith', email: 'alice@example.com' },
-		{ firstname: 'Bob', lastname: 'Jones', email: 'bob@example.com' },
-		{ firstname: 'Charlie', lastname: 'Brown', email: 'charlie@example.com' },
-		{ firstname: 'David', lastname: 'Wilson', email: 'david@example.com' },
-		{ firstname: 'Emma', lastname: 'Taylor', email: 'emma@example.com' },
-		{ firstname: 'Fiona', lastname: 'Clark', email: 'fiona@example.com' }
+		{ firstname: 'Alice', lastname: 'Smith', login: 'alice@example.com' },
+		{ firstname: 'Bob', lastname: 'Jones', login: 'bob@example.com' },
+		{ firstname: 'Charlie', lastname: 'Brown', login: 'charlie@example.com' },
+		{ firstname: 'David', lastname: 'Wilson', login: 'david@example.com' },
+		{ firstname: 'Emma', lastname: 'Taylor', login: 'emma@example.com' },
+		{ firstname: 'Fiona', lastname: 'Clark', login: 'fiona@example.com' }
 	];
 
 	const students: User[] = [];
@@ -47,7 +47,7 @@ try {
 			.values({
 				firstname: student.firstname,
 				lastname: student.lastname,
-				email: student.email,
+				login: student.login,
 				password: hashedPassword,
 				role: 'student'
 			})

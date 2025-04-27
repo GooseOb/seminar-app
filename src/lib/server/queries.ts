@@ -120,14 +120,14 @@ export const getGroupMembersWithProjects = async (groupId: number) => {
 	}
 };
 
-const userByEmailQuery = db
+const userByLoginQuery = db
 	.select()
 	.from(user)
-	.where(eq(user.email, sql.placeholder('email')))
+	.where(eq(user.login, sql.placeholder('login')))
 	.limit(1);
 
-export const getUserByEmail = async (email: string) => {
-	return await userByEmailQuery.execute({ email });
+export const getUserByLogin = async (login: string) => {
+	return await userByLoginQuery.execute({ login });
 };
 
 const insertUserQuery = db
@@ -135,7 +135,7 @@ const insertUserQuery = db
 	.values({
 		firstname: sql.placeholder('firstname'),
 		lastname: sql.placeholder('lastname'),
-		email: sql.placeholder('email'),
+		login: sql.placeholder('login'),
 		password: sql.placeholder('password'),
 		role: sql.placeholder('role')
 	})

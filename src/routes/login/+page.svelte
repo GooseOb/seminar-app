@@ -9,7 +9,7 @@
 	<form method="POST" use:enhance>
 		<h2 class="header">Login</h2>
 
-		<Input type="email" name="email" label="Email" />
+		<Input type="text" name="login" label="Login" />
 		<Input type="password" name="password" label="Password" />
 
 		<button type="submit" class="btn">Log in</button>

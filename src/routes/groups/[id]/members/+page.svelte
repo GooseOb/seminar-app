@@ -49,7 +49,7 @@
 									Project
 								</a>
 							{/if}
-							<button class="btn danger"> Remove </button>
+							<button class="btn danger-btn"> Remove </button>
 						</div>
 					{/if}
 				</div>
@@ -126,10 +126,6 @@
 		display: flex;
 		gap: 0.5rem;
 		margin-left: auto;
-	}
-
-	.danger {
-		background: var(--danger-color);
 	}
 
 	.add {

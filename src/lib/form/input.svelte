@@ -1,9 +1,15 @@
 <script lang="ts">
-	const { type, name, label } = $props();
+	let {
+		type,
+		name = '',
+		required = true,
+		label,
+		value = $bindable()
+	} = $props();
 </script>
 
 <div class="form-group">
-	<input {type} {name} required placeholder=" " />
+	<input bind:value {type} {name} {required} placeholder=" " />
 	<label for={name}>{label}</label>
 </div>
 

@@ -114,6 +114,9 @@
 			opacity: 0.5;
 			cursor: not-allowed;
 		}
+		.danger-btn {
+			background: var(--danger-color);
+		}
 	}
 	.app {
 		height: 100%;

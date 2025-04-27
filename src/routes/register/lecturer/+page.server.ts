@@ -3,32 +3,32 @@ import { redirect } from '$lib/i18n';
 import { createSession, generateSessionToken } from '$lib/server/sessions';
 import { hashPassword } from '$lib/server/auth';
 import type { Actions } from './$types';
-import { getUserByEmail, insertUser } from '$lib/server/queries';
+import { getUserByLogin, insertUser } from '$lib/server/queries';
 
 export const actions: Actions = {
 	default: async ({ request, cookies }) => {
 		const form = await request.formData();
 		const firstname = form.get('firstname')?.toString();
 		const lastname = form.get('lastname')?.toString();
-		const email = form.get('email')?.toString();
+		const login = form.get('login')?.toString();
 		const password = form.get('password')?.toString();
 
-		if (!firstname || !lastname || !email || !password) {
+		if (!firstname || !lastname || !login || !password) {
 			return fail(400, { error: 'All fields are required' });
 		}
 
 		try {
-			const existingUser = await getUserByEmail(email);
+			const existingUser = await getUserByLogin(login);
 
 			if (existingUser.length > 0) {
-				return fail(400, { error: 'Email already exists' });
+				return fail(400, { error: 'Login already exists' });
 			}
 
 			const hashedPassword = hashPassword(password);
 			const [user] = await insertUser({
 				firstname,
 				lastname,
-				email,
+				login,
 				password: hashedPassword,
 				role: 'lecturer'
 			});

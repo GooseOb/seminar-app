@@ -13,7 +13,7 @@
 		<Input type="text" name="lastname" label="Lastname" />
 		<!-- <Input type="text" name="nr" label="Student Number" /> -->
 		<hr />
-		<Input type="email" name="email" label="Email" />
+		<Input type="login" name="login" label="Login" />
 		<Input type="password" name="password" label="Password" />
 
 		<button type="submit" class="btn">Sign up</button>
