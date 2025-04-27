@@ -35,9 +35,11 @@
 						<div class="photo-placeholder">{student.firstname[0]}</div>
 					{/if}
 					<div class="member-info">
-						<span class="member-name"
-							>{student.firstname} {student.lastname}</span
-						>
+						<span class="member-name">
+							{student.firstname}
+							{student.lastname}
+							<span class="student-number">{student.login}</span>
+						</span>
 						<span class="member-text">
 							{student.projectName}
 						</span>
@@ -112,14 +114,25 @@
 	}
 
 	.member-name {
+		display: flex;
+		align-items: center;
 		font-weight: 600;
 		font-size: 1.1rem;
 		color: var(--text-color);
 	}
 
+	.student-number {
+		background-color: var(--bg-color);
+		color: #888;
+		border-radius: 1rem;
+		padding: 0 0.25rem;
+		font-size: 0.8rem;
+		margin-left: 0.5rem;
+	}
+
 	.member-text {
 		font-size: 0.85rem;
-		color: #666;
+		color: #888;
 	}
 
 	.member-actions {

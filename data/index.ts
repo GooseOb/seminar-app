@@ -32,12 +32,12 @@ try {
 
 	// Create students
 	const studentsData = [
-		{ firstname: 'Alice', lastname: 'Smith', login: 'alice@example.com' },
-		{ firstname: 'Bob', lastname: 'Jones', login: 'bob@example.com' },
-		{ firstname: 'Charlie', lastname: 'Brown', login: 'charlie@example.com' },
-		{ firstname: 'David', lastname: 'Wilson', login: 'david@example.com' },
-		{ firstname: 'Emma', lastname: 'Taylor', login: 'emma@example.com' },
-		{ firstname: 'Fiona', lastname: 'Clark', login: 'fiona@example.com' }
+		{ firstname: 'Alice', lastname: 'Smith', login: '415060' },
+		{ firstname: 'Bob', lastname: 'Jones', login: '415061' },
+		{ firstname: 'Charlie', lastname: 'Brown', login: '415070' },
+		{ firstname: 'David', lastname: 'Wilson', login: '415066' },
+		{ firstname: 'Emma', lastname: 'Taylor', login: '415067' },
+		{ firstname: 'Fiona', lastname: 'Clark', login: '415064' }
 	];
 
 	const students: User[] = [];

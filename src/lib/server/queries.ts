@@ -93,6 +93,7 @@ const groupMembersWithProjectsQuery = db
 		userId: user.id,
 		firstname: user.firstname,
 		lastname: user.lastname,
+		login: user.login,
 		photo: user.photo,
 		role: user.role,
 		projectId: projectRoom.id,
@@ -110,8 +111,14 @@ export const getGroupMembersWithProjects = async (groupId: number) => {
 	try {
 		const members = await groupMembersWithProjectsQuery.execute({ groupId });
 
+		const lecturer: Omit<(typeof members)[number], 'login'> = members.find(
+			(member) => member.role === 'lecturer'
+		)!;
+		// @ts-expect-error Hide teacher login
+		delete lecturer.login;
+
 		return {
-			lecturer: members.find((member) => member.role === 'lecturer')!,
+			lecturer,
 			students: members.filter((member) => member.role === 'student')
 		};
 	} catch (error) {
