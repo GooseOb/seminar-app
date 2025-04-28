@@ -7,6 +7,21 @@
 	import { ParaglideJS } from '@inlang/paraglide-sveltekit';
 	import type { LayoutProps } from './$types';
 	import { browser } from '$app/environment';
+	import { mainResizeObserver } from '$lib/resize';
+
+	let mainElement = $state(null);
+	if (browser) {
+		$effect(() => {
+			if (mainElement) {
+				mainResizeObserver.observe(mainElement);
+			}
+			return () => {
+				if (mainElement) {
+					mainResizeObserver.unobserve(mainElement);
+				}
+			};
+		});
+	}
 
 	const { children, data }: LayoutProps = $props();
 
@@ -36,7 +51,7 @@
 			</Header>
 			<div class="workspace">
 				<Sidebar {isOpen} groups={data.groups} role={data.role} />
-				<main class="content">
+				<main class="content" bind:this={mainElement}>
 					{@render children()}
 				</main>
 			</div>
@@ -51,11 +66,13 @@
 			--bg-color: #333;
 			--bg2-color: #222;
 			--bg3-color: #111;
+			--bg4-color: #252525;
 			--primary-color: #0d6efd;
 			--danger-color: #dc3545;
 
 			&.light {
 				--fg-color: #000;
+				--bg4-color: #444;
 				--bg-color: #f0f0f0;
 				--bg2-color: #d8d9da;
 				--bg3-color: #c1c3c5;
@@ -129,9 +146,16 @@
 		overflow: auto;
 	}
 	.content {
+		display: flex;
+		flex-direction: column;
 		padding: 20px;
 		width: 100%;
 		max-height: calc(100% - 20px);
 		box-sizing: border-box;
+	}
+	@media (max-width: 768px) {
+		.content {
+			padding: 10px 5px;
+		}
 	}
 </style>

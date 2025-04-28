@@ -51,7 +51,6 @@
 									Project
 								</a>
 							{/if}
-							<button class="btn danger-btn"> Remove </button>
 						</div>
 					{/if}
 				</div>
@@ -64,7 +63,7 @@
 	.members-container {
 		display: flex;
 		flex-direction: column;
-		padding: 1rem;
+		padding: 1rem 0;
 		overflow-y: auto;
 		max-height: 100%;
 		box-sizing: border-box;
@@ -77,6 +76,7 @@
 
 	.member-card {
 		display: flex;
+		flex-wrap: wrap;
 		align-items: center;
 		padding: 1rem;
 		margin-bottom: 0.5rem;
