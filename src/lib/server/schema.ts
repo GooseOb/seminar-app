@@ -23,6 +23,16 @@ export const userTable = pgTable('user', {
 	role: roleEnum().notNull()
 });
 
+export const studentLecturerTable = pgTable('student_lecturer', {
+	studentId: integer('student_id')
+		.notNull()
+		.references(() => userTable.id),
+	// added by
+	lecturerId: integer('lecturer_id')
+		.notNull()
+		.references(() => userTable.id)
+});
+
 export const roomKindEnum = pgEnum('room_kind', ['group', 'project']);
 
 export const roomTable = pgTable('room', {
@@ -94,3 +104,7 @@ export type Group = InferSelectModel<typeof groupTable>;
 export type Project = InferSelectModel<typeof projectTable>;
 export type Message = InferSelectModel<typeof messageTable>;
 export type Role = InferEnum<typeof roleEnum>;
+export type RoomKind = InferEnum<typeof roomKindEnum>;
+export type GroupMembership = InferSelectModel<typeof groupMembershipTable>;
+export type StudentLecturer = InferSelectModel<typeof studentLecturerTable>;
+export type Room = InferSelectModel<typeof roomTable>;

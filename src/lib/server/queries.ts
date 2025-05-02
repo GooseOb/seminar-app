@@ -3,12 +3,15 @@ import {
 	db,
 	groupMembershipTable as groupMembership,
 	groupTable as group,
-	projectTable as project,
-	roomTable as room,
+	projectTable as projectTable,
+	roomTable as roomTable,
 	userTable as user,
-	type User
+	type User,
+	studentLecturerTable as studentLecturer,
+	type Room
 } from './db';
 import { eq, and, sql } from 'drizzle-orm';
+import { hashPassword } from './auth';
 
 export type GroupWithProjects = {
 	id: number;
@@ -19,20 +22,20 @@ export type GroupWithProjects = {
 	}[];
 };
 
-const projectRoom = alias(room, 'project_room');
+const projectRoom = alias(roomTable, 'project_room');
 const userGroupsAndProjectsQuery = db
 	.select({
 		groupId: group.id,
-		groupName: room.name,
-		isOwner: eq(room.ownerId, sql.placeholder('userId')),
-		projectId: project.id,
+		groupName: roomTable.name,
+		isOwner: eq(roomTable.ownerId, sql.placeholder('userId')),
+		projectId: projectTable.id,
 		projectName: projectRoom.name
 	})
 	.from(groupMembership)
 	.innerJoin(group, eq(groupMembership.groupId, group.id))
-	.innerJoin(room, eq(group.id, room.id))
-	.leftJoin(project, eq(project.groupId, group.id))
-	.leftJoin(projectRoom, eq(project.id, projectRoom.id))
+	.innerJoin(roomTable, eq(group.id, roomTable.id))
+	.leftJoin(projectTable, eq(projectTable.groupId, group.id))
+	.leftJoin(projectRoom, eq(projectTable.id, projectRoom.id))
 	.where(eq(groupMembership.userId, sql.placeholder('userId')))
 	.orderBy(group.id);
 
@@ -144,10 +147,77 @@ const insertUserQuery = db
 		lastname: sql.placeholder('lastname'),
 		login: sql.placeholder('login'),
 		password: sql.placeholder('password'),
-		role: sql.placeholder('role')
+		role: sql.placeholder('role'),
+		photo: sql.placeholder('photo')
 	})
 	.returning();
 
-export const insertUser = async (userData: Omit<User, 'id' | 'photo'>) => {
-	return await insertUserQuery.execute(userData);
+type NoId<T> = Omit<T, 'id'>;
+
+export const insertUser = async (userData: NoId<User>) => {
+	userData.password = hashPassword(userData.password);
+	return (await insertUserQuery.execute(userData))[0];
+};
+
+export const insertLecturerStudentQuery = db.insert(studentLecturer).values({
+	studentId: sql.placeholder('studentId'),
+	lecturerId: sql.placeholder('lecturerId')
+});
+
+export const insertStudent = async (
+	userData: NoId<User>,
+	lecturerId: number
+) => {
+	const result = await insertUser(userData);
+	await insertLecturerStudentQuery.execute({
+		studentId: result.id,
+		lecturerId
+	});
+	return result;
+};
+
+const insertRoomQuery = db
+	.insert(roomTable)
+	.values({
+		name: sql.placeholder('name'),
+		ownerId: sql.placeholder('ownerId'),
+		kind: sql.placeholder('kind')
+	})
+	.returning();
+
+const insertProjectQuery = db.insert(projectTable).values({
+	id: sql.placeholder('id'),
+	groupId: sql.placeholder('groupId')
+});
+
+export const insertProject = async (room: NoId<Room>, groupId: number) => {
+	const result = (await insertRoomQuery.execute(room))[0];
+	await insertProjectQuery.execute({
+		id: result.id,
+		groupId
+	});
+	return result;
+};
+
+export const insertGroup = async (
+	room: NoId<Room>,
+	lecturerId: number,
+	students: { id: number }[]
+) => {
+	const result = (await insertRoomQuery.execute(room))[0];
+
+	await db.insert(group).values({
+		id: result.id
+	});
+
+	const memberships = [
+		{ userId: lecturerId, groupId: result.id },
+		...students.map(({ id }) => ({
+			userId: id,
+			groupId: result.id
+		}))
+	];
+	await db.insert(groupMembership).values(memberships);
+
+	return result;
 };

@@ -1,7 +1,6 @@
 import { fail } from '@sveltejs/kit';
 import { redirect } from '$lib/i18n';
 import { createSession, generateSessionToken } from '$lib/server/sessions';
-import { hashPassword } from '$lib/server/auth';
 import type { Actions } from './$types';
 import { getUserByLogin, insertUser } from '$lib/server/queries';
 
@@ -24,13 +23,13 @@ export const actions: Actions = {
 				return fail(400, { error: 'Login already exists' });
 			}
 
-			const hashedPassword = hashPassword(password);
-			const [user] = await insertUser({
+			const user = await insertUser({
 				firstname,
 				lastname,
 				login,
-				password: hashedPassword,
-				role: 'student'
+				password,
+				role: 'student',
+				photo: null
 			});
 
 			const token = generateSessionToken();
