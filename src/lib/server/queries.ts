@@ -8,7 +8,8 @@ import {
 	userTable as user,
 	type User,
 	studentLecturerTable as studentLecturer,
-	type Room
+	type Room,
+	type NoId
 } from './db';
 import { eq, and, sql } from 'drizzle-orm';
 import { hashPassword } from './auth';
@@ -37,7 +38,8 @@ const userGroupsAndProjectsQuery = db
 	.leftJoin(projectTable, eq(projectTable.groupId, group.id))
 	.leftJoin(projectRoom, eq(projectTable.id, projectRoom.id))
 	.where(eq(groupMembership.userId, sql.placeholder('userId')))
-	.orderBy(group.id);
+	.orderBy(group.id)
+	.prepare('userGroupsAndProjectsQuery');
 
 export const getUserGroupsAndProjects = async (
 	userId: number
@@ -78,7 +80,8 @@ const membershipQuery = db
 			eq(groupMembership.groupId, sql.placeholder('groupId'))
 		)
 	)
-	.limit(1);
+	.limit(1)
+	.prepare('membershipQuery');
 
 export const isMemberOfGroup = (
 	userId: number,
@@ -108,7 +111,8 @@ const groupMembersWithProjectsQuery = db
 	.leftJoin(
 		projectRoom,
 		and(eq(projectRoom.ownerId, user.id), eq(projectRoom.kind, 'project'))
-	);
+	)
+	.prepare('groupMembersWithProjectsQuery');
 
 export const getGroupMembersWithProjects = async (groupId: number) => {
 	try {
@@ -134,7 +138,8 @@ const userByLoginQuery = db
 	.select()
 	.from(user)
 	.where(eq(user.login, sql.placeholder('login')))
-	.limit(1);
+	.limit(1)
+	.prepare('userByLoginQuery');
 
 export const getUserByLogin = async (login: string) => {
 	return await userByLoginQuery.execute({ login });
@@ -150,9 +155,8 @@ const insertUserQuery = db
 		role: sql.placeholder('role'),
 		photo: sql.placeholder('photo')
 	})
-	.returning();
-
-type NoId<T> = Omit<T, 'id'>;
+	.returning()
+	.prepare('insertUserQuery');
 
 export const insertUser = async (userData: NoId<User>) => {
 	userData.password = hashPassword(userData.password);
@@ -183,15 +187,19 @@ const insertRoomQuery = db
 		ownerId: sql.placeholder('ownerId'),
 		kind: sql.placeholder('kind')
 	})
-	.returning();
+	.returning()
+	.prepare('insertRoomQuery');
 
-const insertProjectQuery = db.insert(projectTable).values({
-	id: sql.placeholder('id'),
-	groupId: sql.placeholder('groupId')
-});
+const insertProjectQuery = db
+	.insert(projectTable)
+	.values({
+		id: sql.placeholder('id'),
+		groupId: sql.placeholder('groupId')
+	})
+	.prepare('insertProjectQuery');
 
 export const insertProject = async (room: NoId<Room>, groupId: number) => {
-	const result = (await insertRoomQuery.execute(room))[0];
+	const [result] = await insertRoomQuery.execute(room);
 	await insertProjectQuery.execute({
 		id: result.id,
 		groupId
@@ -200,11 +208,15 @@ export const insertProject = async (room: NoId<Room>, groupId: number) => {
 };
 
 export const insertGroup = async (
-	room: NoId<Room>,
+	name: string,
 	lecturerId: number,
 	students: { id: number }[]
 ) => {
-	const result = (await insertRoomQuery.execute(room))[0];
+	const [result] = await insertRoomQuery.execute({
+		name,
+		ownerId: lecturerId,
+		kind: 'group'
+	});
 
 	await db.insert(group).values({
 		id: result.id
@@ -220,4 +232,18 @@ export const insertGroup = async (
 	await db.insert(groupMembership).values(memberships);
 
 	return result;
+};
+
+export const insertGroupWithStudents = async (
+	name: string,
+	lecturerId: number,
+	students: NoId<User>[]
+) => {
+	const studentsWithIds = await Promise.all(
+		students.map((student) => insertStudent(student, lecturerId))
+	);
+	return {
+		group: await insertGroup(name, lecturerId, studentsWithIds),
+		students: studentsWithIds
+	};
 };

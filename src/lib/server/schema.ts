@@ -98,6 +98,7 @@ export const sessionTable = pgTable('session', {
 	}).notNull()
 });
 
+export type NoId<T> = Omit<T, 'id'>;
 export type User = InferSelectModel<typeof userTable>;
 export type Session = InferSelectModel<typeof sessionTable>;
 export type Group = InferSelectModel<typeof groupTable>;

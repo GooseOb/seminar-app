@@ -8,7 +8,7 @@ export const load: LayoutServerLoad = async ({ locals, params: { id } }) => {
 			message: 'Group ID is required'
 		});
 	}
-	if (!(await isMemberOfGroup(locals.user.id, +id))) {
+	if (!(await isMemberOfGroup(locals.user!.id, +id))) {
 		return error(403, {
 			message: 'You are not a member of this group'
 		});

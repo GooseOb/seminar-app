@@ -1,3 +1,5 @@
+import type { User } from '$lib/server/schema';
+
 // See https://svelte.dev/docs/kit/types#app.d.ts
 // for information about these interfaces
 declare global {
@@ -11,30 +13,6 @@ declare global {
 		// interface PageState {}
 		// interface Platform {}
 	}
-
-	type Project = {
-		id: string;
-		name: {
-			en: string;
-			pl: string;
-		};
-		description: string;
-	};
-
-	// type User = {
-	// 	id: string;
-	// 	name: string;
-	// 	isOnline: boolean;
-	// 	photo?: string;
-	// };
-
-	type Message = {
-		id: number;
-		text: string;
-		user: User;
-		timestamp: Date;
-		isPending?: boolean;
-	};
 }
 
 export {};

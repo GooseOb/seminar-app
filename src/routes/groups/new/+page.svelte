@@ -1,20 +1,21 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import Input from '$lib/form/input.svelte';
+	import type { StudentData } from './dto';
 
-	const emptyStudent = () => ({
-		firstName: '',
-		lastName: '',
-		number: '',
+	const emptyStudent = (): StudentData => ({
+		firstname: '',
+		lastname: '',
+		login: '',
 		password: ''
 	});
 
 	let currentStudent = $state(emptyStudent());
-	const students: (typeof currentStudent)[] = $state([
+	const students: StudentData[] = $state([
 		{
-			firstName: 'ghnm',
-			lastName: 'ghj',
-			number: '3456',
+			firstname: 'ghnm',
+			lastname: 'ghj',
+			login: '3456',
 			password: 'hj'
 		}
 	]);
@@ -49,16 +50,28 @@
 <hr />
 <form onsubmit={onUserSubmit}>
 	<h2>Students</h2>
-	<Input type="text" label="First Name" bind:value={currentStudent.firstName} />
-	<Input type="text" label="Last Name" bind:value={currentStudent.lastName} />
+	<Input
+		type="text"
+		label="First Name"
+		name="student_firstname"
+		bind:value={currentStudent.firstname}
+	/>
+	<Input
+		type="text"
+		label="Last Name"
+		name="student_lastname"
+		bind:value={currentStudent.lastname}
+	/>
 	<Input
 		type="text"
 		label="Student Number"
-		bind:value={currentStudent.number}
+		name="student_number"
+		bind:value={currentStudent.login}
 	/>
 	<Input
-		type="password"
+		type="text"
 		label="Password"
+		name="student_password"
 		bind:value={currentStudent.password}
 	/>
 
@@ -66,9 +79,9 @@
 	{#each students as student, i}
 		<div class="student">
 			<div class="student-data">
-				<p>First Name: {student.firstName}</p>
-				<p>Last Name: {student.lastName}</p>
-				<p>Student Number: {student.number}</p>
+				<p>First Name: {student.firstname}</p>
+				<p>Last Name: {student.lastname}</p>
+				<p>Student Number: {student.login}</p>
 				<p>Password: {student.password}</p>
 			</div>
 			<div class="actions">

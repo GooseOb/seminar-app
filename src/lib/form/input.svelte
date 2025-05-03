@@ -9,7 +9,7 @@
 </script>
 
 <div class="form-group">
-	<input bind:value {type} {name} {required} placeholder=" " />
+	<input bind:value {type} {name} {required} placeholder="" />
 	<label for={name}>{label}</label>
 </div>
 

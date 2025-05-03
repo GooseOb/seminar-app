@@ -1,9 +1,7 @@
-import type { User } from '../src/lib/server/db';
 import {
 	insertUser,
-	insertStudent,
 	insertProject,
-	insertGroup
+	insertGroupWithStudents
 } from '../src/lib/server/queries';
 
 const password = '123';
@@ -17,37 +15,24 @@ const lecturer = await insertUser({
 	photo: null
 });
 
-const students: User[] = [];
-for (const student of [
-	{ firstname: 'Alice', lastname: 'Smith', login: '415060' },
-	{ firstname: 'Bob', lastname: 'Jones', login: '415061' },
-	{ firstname: 'Charlie', lastname: 'Brown', login: '415070' },
-	{ firstname: 'David', lastname: 'Wilson', login: '415066' },
-	{ firstname: 'Emma', lastname: 'Taylor', login: '415067' },
-	{ firstname: 'Fiona', lastname: 'Clark', login: '415064' }
-]) {
-	const newStudent = await insertStudent(
-		{
-			firstname: student.firstname,
-			lastname: student.lastname,
-			login: student.login,
-			password,
-			role: 'student',
-			photo: null
-		},
-		lecturer.id
-	);
-	students.push(newStudent);
-}
-
-const group = await insertGroup(
-	{
-		name: 'Study Group 1',
-		ownerId: lecturer.id,
-		kind: 'group'
-	},
+const { group, students } = await insertGroupWithStudents(
+	'Study Group 1',
 	lecturer.id,
-	students
+	[
+		{ firstname: 'Alice', lastname: 'Smith', login: '415060' },
+		{ firstname: 'Bob', lastname: 'Jones', login: '415061' },
+		{ firstname: 'Charlie', lastname: 'Brown', login: '415070' },
+		{ firstname: 'David', lastname: 'Wilson', login: '415066' },
+		{ firstname: 'Emma', lastname: 'Taylor', login: '415067' },
+		{ firstname: 'Fiona', lastname: 'Clark', login: '415064' }
+	].map(({ firstname, lastname, login }) => ({
+		firstname,
+		lastname,
+		login,
+		password,
+		role: 'student',
+		photo: null
+	}))
 );
 
 await insertProject(
