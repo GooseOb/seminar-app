@@ -1,33 +1,29 @@
+<script lang="ts">
+	import { enhance } from '$app/forms';
+	import PasswordInput from '$lib/components/PasswordInput.svelte';
+	import Input from '$lib/form/input.svelte';
+
+	const { form } = $props();
+</script>
+
 <div class="container">
-	<a href="/register/student"> Student </a>
-	<hr />
-	<a href="/register/lecturer"> Lecturer </a>
+	<h2 class="header">Sign up</h2>
+
+	<form method="POST" use:enhance>
+		<Input type="text" name="firstname" label="Firstname" />
+		<Input type="text" name="lastname" label="Lastname" />
+		<hr />
+		<Input type="login" name="login" label="Login" />
+		<PasswordInput />
+
+		<button type="submit" class="btn">Sign up</button>
+
+		{#if form?.error}
+			<div class="error">{form.error}</div>
+		{/if}
+	</form>
 </div>
 
 <style>
-	.container {
-		display: flex;
-		flex-direction: column;
-		gap: 3rem;
-		align-items: center;
-		height: 100%;
-	}
-	hr {
-		color: var(--fg-color);
-		width: 100%;
-	}
-	a {
-		display: flex;
-		flex: 1;
-		align-items: center;
-		justify-content: center;
-		width: 100%;
-		font-size: min(15vw, 20vh);
-		background-color: var(--bg2-color);
-		transition: background-color 0.2s;
-		border-radius: 0.2em;
-	}
-	a:hover {
-		background-color: var(--bg3-color);
-	}
+	@import '$lib/form/styles.css';
 </style>
