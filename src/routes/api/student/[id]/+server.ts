@@ -1,8 +1,21 @@
 import {
 	isStudentCreatedByLecturer,
-	removeStudentFromGroup
+	removeStudentFromGroup,
+	getUserByLogin
 } from '$lib/server/queries';
 import type { RequestHandler } from './$types';
+
+export const GET: RequestHandler = async ({ params: { id: login } }) => {
+	const student = await getUserByLogin(login);
+
+	if (!student) {
+		return new Response('Student not found', { status: 404 });
+	}
+
+	return new Response(JSON.stringify(student), {
+		headers: { 'Content-Type': 'application/json' }
+	});
+};
 
 export const DELETE: RequestHandler = async ({
 	locals,
@@ -10,17 +23,17 @@ export const DELETE: RequestHandler = async ({
 	request
 }) => {
 	const { groupId } = await request.json();
-	console.log(id, await isStudentCreatedByLecturer(+id, locals.user.id));
-	if (
-		!locals.user ||
-		!(await isStudentCreatedByLecturer(+id, locals.user.id))
-	) {
-		return new Response('Unauthorized', { status: 401 });
-	}
 
 	if (!groupId) {
-		// TODO: handle account deletion
-		return new Response('Missing group ID', { status: 400 });
+		if (await isStudentCreatedByLecturer(+id, locals.user!.id)) {
+			// TODO: handle account deletion
+			return new Response('Missing group ID', { status: 400 });
+		} else {
+			return new Response(
+				'Only the lecturer who created the student account, can delete it',
+				{ status: 401 }
+			);
+		}
 	}
 
 	try {

@@ -2,7 +2,7 @@ import { fail } from '@sveltejs/kit';
 import { redirect } from '$lib/i18n';
 import { createSession, generateSessionToken } from '$lib/server/sessions';
 import type { Actions } from './$types';
-import { getUserByLogin, insertUser } from '$lib/server/queries';
+import { getUserByLogin, insertUsers } from '$lib/server/queries';
 
 export const actions: Actions = {
 	default: async ({ request, cookies }) => {
@@ -17,20 +17,20 @@ export const actions: Actions = {
 		}
 
 		try {
-			const existingUser = await getUserByLogin(login);
-
-			if (existingUser.length > 0) {
+			if (await getUserByLogin(login)) {
 				return fail(400, { error: 'Login already exists' });
 			}
 
-			const user = await insertUser({
-				firstname,
-				lastname,
-				login,
-				password,
-				role: 'lecturer',
-				photo: null
-			});
+			const [user] = await insertUsers([
+				{
+					firstname,
+					lastname,
+					login,
+					password,
+					role: 'lecturer',
+					photo: null
+				}
+			]);
 
 			const token = generateSessionToken();
 			await createSession(token, user.id);

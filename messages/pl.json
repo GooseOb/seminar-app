@@ -4,5 +4,6 @@
 	"chat": "Czat",
 	"files": "Pliki",
 	"members": "Członkowie",
-	"aboutProject": "O projekcie"
+	"aboutProject": "O projekcie",
+	"studentAlreadyExists": "Student z numerem albumu {number} już istnieje"
 }

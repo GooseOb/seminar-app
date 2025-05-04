@@ -3,6 +3,10 @@
 	import Input from '$lib/form/input.svelte';
 	import type { StudentData } from './dto';
 	import StudentList from '$lib/components/StudentList.svelte';
+	import type { User } from '$lib/server/db';
+	import type { PageProps } from './$types';
+
+	let { form }: PageProps = $props();
 
 	const emptyStudent = (): StudentData => ({
 		firstname: '',
@@ -12,6 +16,7 @@
 	});
 
 	let currentStudent = $state(emptyStudent());
+	let currentInviteeNumber = $state('');
 	const students: StudentData[] = $state([
 		{
 			firstname: 'ghnm',
@@ -21,34 +26,41 @@
 		}
 	]);
 	let studentsString = $state('');
-	const existingStudents = $state([]);
+	const existingStudents: User[] = $state([]);
 	let existingStudentsString = $state('');
 
 	let groupName = $state('');
 
 	let studentI = 0;
-	const onUserSubmit = (e: FormDataEvent) => {
+	const onUserSubmit = (e: SubmitEvent) => {
 		e.preventDefault();
 		students[studentI] = currentStudent;
 		currentStudent = emptyStudent();
 		studentI = students.length;
 	};
+
 	const onSubmit = () => {
 		studentsString = JSON.stringify(students);
 		existingStudentsString = JSON.stringify(
 			existingStudents.map(({ id }) => id)
 		);
 	};
-	const onInviteSubmit = async (e: FormDataEvent) => {
+
+	const onInviteSubmit = async (e: SubmitEvent) => {
 		e.preventDefault();
-		const studentNumber = e.formData.get('student_number') as string;
-		// TODO: fetch student
-		const student = null;
+		const student = await fetch(`/api/student/${currentInviteeNumber}`).then(
+			(res) => res.json()
+		);
 		if (student) {
+			currentInviteeNumber = '';
 			existingStudents.push(student);
 		}
 	};
 </script>
+
+{#if form?.error}
+	<p class="error">{form.error}</p>
+{/if}
 
 <form onsubmit={onSubmit} method="POST" use:enhance>
 	<h1>{groupName || 'New Group'}</h1>
@@ -130,9 +142,9 @@
 	<div class="input-group">
 		<Input
 			type="text"
+			bind:value={currentInviteeNumber}
 			label="Student Number"
-			name="student_number"
-			bind:value={currentStudent.login}
+			name="invitee_number"
 		/>
 
 		<button type="submit" class="btn invite"> Add </button>
@@ -169,5 +181,14 @@
 	}
 	.invite {
 		flex: 0.25;
+	}
+
+	.error {
+		background-color: var(--bg3-color);
+		font-weight: bold;
+		padding: 0.5rem;
+		border-radius: 0.5rem;
+		text-align: center;
+		color: var(--danger-color);
 	}
 </style>

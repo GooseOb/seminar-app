@@ -17,11 +17,13 @@ const getHandleFinal =
 					.replace('%paraglide.lang%', lang)
 					.replace('%paraglide.textDirection%', textDirection)
 		});
+
 export const handle: Handle = async (input) => {
 	const { url, cookies, locals } = input.event;
 
 	const canonicalPath = i18n.route(url.pathname);
 	const lang = i18n.getLanguageFromUrl(url);
+	i18n.config.runtime.setLanguageTag(lang);
 
 	let theme = cookies.get('theme');
 	if (!theme) {

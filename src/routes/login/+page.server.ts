@@ -2,7 +2,7 @@ import { fail, redirect } from '@sveltejs/kit';
 import { createSession, generateSessionToken } from '$lib/server/sessions';
 import { verifyPassword } from '$lib/server/auth'; // Import verifyPassword
 import type { Actions } from './$types';
-import { getUserByLogin } from '$lib/server/queries';
+import { getUserWithPasswordByLogin } from '$lib/server/queries';
 
 export const actions: Actions = {
 	default: async ({ request, cookies }) => {
@@ -15,7 +15,7 @@ export const actions: Actions = {
 		}
 
 		try {
-			const [user] = await getUserByLogin(login);
+			const user = await getUserWithPasswordByLogin(login);
 			if (!user || !verifyPassword(user.password, password)) {
 				return fail(401, { error: 'Invalid login or password' });
 			}

@@ -1,7 +1,10 @@
 import { insertGroupWithStudents } from '$lib/server/queries';
 import type { NoId, User } from '$lib/server/schema';
+import { fail } from '@sveltejs/kit';
 import type { Actions } from './$types';
 import type { StudentData } from './dto';
+import * as m from '$lib/paraglide/messages';
+import { i18n, redirect } from '$lib/i18n';
 
 export const actions: Actions = {
 	default: async ({ request, locals }) => {
@@ -19,8 +22,34 @@ export const actions: Actions = {
 		);
 
 		// TODO: handle invited students
-		const invitedStudents = JSON.parse(form.get('invitees') as string);
+		const inviteeIds = JSON.parse(form.get('invitees') as string);
+		let groupId: number;
+		try {
+			groupId = (
+				await insertGroupWithStudents(
+					name,
+					locals.user!.id,
+					students,
+					inviteeIds
+				)
+			).group.id;
+		} catch (error) {
+			const number = /Key \(login\)=\(([^)]*)\) already exists/.exec(
+				error.detail
+			)?.[1];
 
-		await insertGroupWithStudents(name, locals.user!.id, students);
+			if (number) {
+				return fail(400, {
+					error: m.studentAlreadyExists({ number })
+				});
+			}
+
+			console.error('Error inserting group with students:', error);
+			return fail(500, {
+				error: 'An error occurred while creating the group'
+			});
+		}
+
+		throw redirect(303, `/groups/${groupId}/members`);
 	}
 };

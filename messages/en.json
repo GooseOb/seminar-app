@@ -4,5 +4,6 @@
 	"chat": "Chat",
 	"files": "Files",
 	"members": "Members",
-	"aboutProject": "About"
+	"aboutProject": "About",
+	"studentAlreadyExists": "Student with number {number} already exists"
 }

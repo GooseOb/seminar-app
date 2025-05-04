@@ -14,7 +14,7 @@ import type { InferEnum, InferSelectModel } from 'drizzle-orm';
 export const roleEnum = pgEnum('role', ['student', 'lecturer']);
 
 export const userTable = pgTable('user', {
-	id: serial('id').primaryKey(),
+	id: serial().primaryKey(),
 	firstname: varchar({ length: 255 }).notNull(),
 	lastname: varchar({ length: 255 }).notNull(),
 	login: varchar({ length: 255 }).notNull().unique(),
@@ -24,11 +24,11 @@ export const userTable = pgTable('user', {
 });
 
 export const studentLecturerTable = pgTable('student_lecturer', {
-	studentId: integer('student_id')
+	studentId: integer()
 		.notNull()
 		.references(() => userTable.id),
 	// added by
-	lecturerId: integer('lecturer_id')
+	lecturerId: integer()
 		.notNull()
 		.references(() => userTable.id)
 });
@@ -36,16 +36,16 @@ export const studentLecturerTable = pgTable('student_lecturer', {
 export const roomKindEnum = pgEnum('room_kind', ['group', 'project']);
 
 export const roomTable = pgTable('room', {
-	id: serial('id').primaryKey(),
+	id: serial().primaryKey(),
 	name: varchar({ length: 255 }).notNull(),
-	ownerId: integer('owner_id')
+	ownerId: integer()
 		.notNull()
 		.references(() => userTable.id),
 	kind: roomKindEnum().notNull()
 });
 
 export const groupTable = pgTable('group', {
-	id: serial('id')
+	id: serial()
 		.primaryKey()
 		.references(() => roomTable.id)
 });
@@ -53,10 +53,10 @@ export const groupTable = pgTable('group', {
 export const groupMembershipTable = pgTable(
 	'group_membership',
 	{
-		userId: integer('user_id')
+		userId: integer()
 			.notNull()
 			.references(() => userTable.id),
-		groupId: integer('group_id')
+		groupId: integer()
 			.notNull()
 			.references(() => groupTable.id)
 	},
@@ -64,35 +64,38 @@ export const groupMembershipTable = pgTable(
 );
 
 export const projectTable = pgTable('project', {
-	id: serial('id')
+	id: serial()
 		.primaryKey()
 		.references(() => roomTable.id),
-	groupId: integer('group_id')
+	groupId: integer()
 		.notNull()
-		.references(() => groupTable.id)
+		.references(() => groupTable.id),
+	namePl: varchar({ length: 255 }).notNull(),
+	description: text(),
+	thesis: text()
 });
 
 export const messageTable = pgTable('message', {
-	id: serial('id').primaryKey(),
-	createdAt: timestamp('created_at', {
+	id: serial().primaryKey(),
+	createdAt: timestamp({
 		withTimezone: true,
 		mode: 'date'
 	}).notNull(),
-	roomId: integer('room_id')
+	roomId: integer()
 		.notNull()
 		.references(() => roomTable.id),
-	senderId: integer('sender_id')
+	senderId: integer()
 		.notNull()
 		.references(() => userTable.id),
-	text: text('text').notNull()
+	text: text().notNull()
 });
 
 export const sessionTable = pgTable('session', {
-	id: text('id').primaryKey(),
-	userId: integer('user_id')
+	id: text().primaryKey(),
+	userId: integer()
 		.notNull()
 		.references(() => userTable.id),
-	expiresAt: timestamp('expires_at', {
+	expiresAt: timestamp({
 		withTimezone: true,
 		mode: 'date'
 	}).notNull()
@@ -103,6 +106,7 @@ export type User = InferSelectModel<typeof userTable>;
 export type Session = InferSelectModel<typeof sessionTable>;
 export type Group = InferSelectModel<typeof groupTable>;
 export type Project = InferSelectModel<typeof projectTable>;
+export type ProjectRoom = Room & Omit<Project, 'groupId'>;
 export type Message = InferSelectModel<typeof messageTable>;
 export type Role = InferEnum<typeof roleEnum>;
 export type RoomKind = InferEnum<typeof roomKindEnum>;

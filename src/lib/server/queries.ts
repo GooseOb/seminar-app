@@ -6,13 +6,12 @@ import {
 	projectTable as projectTable,
 	roomTable as roomTable,
 	userTable as user,
-	type User,
 	studentLecturerTable as studentLecturer,
-	type Room,
+	type User,
 	type NoId,
-	studentLecturerTable
+	type ProjectRoom
 } from './db';
-import { eq, and, sql, exists } from 'drizzle-orm';
+import { eq, and, sql, exists, getTableColumns } from 'drizzle-orm';
 import { hashPassword } from './auth';
 
 export type GroupWithProjects = {
@@ -192,49 +191,55 @@ export const isStudentCreatedByLecturer = (
 		})
 		.then(({ length }) => length > 0);
 
+const { password: _, ...userData } = getTableColumns(user);
+
 const userByLoginQuery = db
-	.select()
+	.select(userData)
 	.from(user)
 	.where(eq(user.login, sql.placeholder('login')))
 	.limit(1)
 	.prepare('userByLoginQuery');
 
 export const getUserByLogin = async (login: string) => {
-	return await userByLoginQuery.execute({ login });
+	return (await userByLoginQuery.execute({ login }))[0];
 };
 
-const insertUserQuery = db
-	.insert(user)
-	.values({
-		firstname: sql.placeholder('firstname'),
-		lastname: sql.placeholder('lastname'),
-		login: sql.placeholder('login'),
-		password: sql.placeholder('password'),
-		role: sql.placeholder('role'),
-		photo: sql.placeholder('photo')
-	})
-	.returning()
-	.prepare('insertUserQuery');
+const userWithPasswordByLoginQuery = db
+	.select()
+	.from(user)
+	.where(eq(user.login, sql.placeholder('login')))
+	.limit(1)
+	.prepare('userByLoginQuery');
 
-export const insertUser = async (userData: NoId<User>) => {
-	userData.password = hashPassword(userData.password);
-	return (await insertUserQuery.execute(userData))[0];
+export const getUserWithPasswordByLogin = async (login: string) => {
+	return (await userWithPasswordByLoginQuery.execute({ login }))[0];
 };
 
-export const insertLecturerStudentQuery = db.insert(studentLecturer).values({
-	studentId: sql.placeholder('studentId'),
-	lecturerId: sql.placeholder('lecturerId')
-});
+export const insertUsers = async (userDatas: NoId<User>[]) => {
+	if (userDatas.length === 0) {
+		return [];
+	}
+	for (const userData of userDatas) {
+		userData.password = hashPassword(userData.password);
+	}
+	return await db.insert(user).values(userDatas).returning();
+};
 
-export const insertStudent = async (
-	userData: NoId<User>,
+export const insertStudents = async (
+	userDatas: NoId<User>[],
 	lecturerId: number
 ) => {
-	const result = await insertUser(userData);
-	await insertLecturerStudentQuery.execute({
-		studentId: result.id,
-		lecturerId
-	});
+	if (userDatas.length === 0) {
+		return [];
+	}
+	const result = await insertUsers(userDatas);
+	await db.insert(studentLecturer).values(
+		result.map(({ id: studentId }) => ({
+			studentId,
+			lecturerId
+		}))
+	);
+
 	return result;
 };
 
@@ -252,24 +257,30 @@ const insertProjectQuery = db
 	.insert(projectTable)
 	.values({
 		id: sql.placeholder('id'),
-		groupId: sql.placeholder('groupId')
+		groupId: sql.placeholder('groupId'),
+		namePl: sql.placeholder('namePl'),
+		description: sql.placeholder('description'),
+		thesis: sql.placeholder('thesis')
 	})
 	.prepare('insertProjectQuery');
 
-export const insertProject = async (room: NoId<Room>, groupId: number) => {
+export const insertProject = async (
+	room: Optional<NoId<ProjectRoom>, 'kind'>,
+	groupId: number
+) => {
+	room.kind = 'project';
 	const [result] = await insertRoomQuery.execute(room);
 	await insertProjectQuery.execute({
 		id: result.id,
-		groupId
+		groupId,
+		namePl: room.namePl,
+		description: room.description,
+		thesis: room.thesis
 	});
 	return result;
 };
 
-export const insertGroup = async (
-	name: string,
-	lecturerId: number,
-	students: { id: number }[]
-) => {
+export const insertGroup = async (name: string, lecturerId: number) => {
 	const [result] = await insertRoomQuery.execute({
 		name,
 		ownerId: lecturerId,
@@ -280,28 +291,39 @@ export const insertGroup = async (
 		id: result.id
 	});
 
-	const memberships = [
-		{ userId: lecturerId, groupId: result.id },
-		...students.map(({ id }) => ({
-			userId: id,
-			groupId: result.id
-		}))
-	];
-	await db.insert(groupMembership).values(memberships);
-
 	return result;
+};
+
+export const insertGroupMembers = async (
+	studentIds: number[],
+	groupId: number
+) => {
+	await db.insert(groupMembership).values(
+		studentIds.map((studentId) => ({
+			userId: studentId,
+			groupId
+		}))
+	);
 };
 
 export const insertGroupWithStudents = async (
 	name: string,
 	lecturerId: number,
-	students: NoId<User>[]
+	students: NoId<User>[],
+	inviteeIds: number[]
 ) => {
-	const studentsWithIds = await Promise.all(
-		students.map((student) => insertStudent(student, lecturerId))
+	const studentsWithIds = students.length
+		? await insertStudents(students, lecturerId)
+		: [];
+	const group = await insertGroup(name, lecturerId);
+
+	await insertGroupMembers(
+		[...studentsWithIds.map(({ id }) => id), ...inviteeIds, lecturerId],
+		group.id
 	);
+
 	return {
-		group: await insertGroup(name, lecturerId, studentsWithIds),
+		group: group,
 		students: studentsWithIds
 	};
 };
