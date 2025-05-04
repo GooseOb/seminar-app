@@ -19,6 +19,7 @@
 		flex-direction: column;
 		gap: 0.5rem;
 		position: relative;
+		flex: 1;
 	}
 
 	label {

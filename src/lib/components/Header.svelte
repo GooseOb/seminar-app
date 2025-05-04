@@ -1,7 +1,5 @@
 <script lang="ts">
-	import type { ComponentProps, SvelteComponent } from 'svelte';
-
-	const { children }: ComponentProps<SvelteComponent> = $props();
+	const { children } = $props();
 </script>
 
 <header class="header">

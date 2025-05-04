@@ -9,7 +9,7 @@
 	import { browser } from '$app/environment';
 	import { mainResizeObserver } from '$lib/resize';
 
-	let mainElement = $state(null);
+	let mainElement: HTMLElement = $state(null)!;
 	if (browser) {
 		$effect(() => {
 			if (mainElement) {
@@ -50,7 +50,7 @@
 				<BurgerButton bind:isOpen />
 			</Header>
 			<div class="workspace">
-				<Sidebar {isOpen} groups={data.groups} role={data.role} />
+				<Sidebar {isOpen} groups={data.groups} role={data.role!} />
 				<main class="content" bind:this={mainElement}>
 					{@render children()}
 				</main>
@@ -121,6 +121,7 @@
 			cursor: pointer;
 			opacity: 0.8;
 			transition: opacity 0.2s;
+			text-align: center;
 		}
 
 		.btn:hover {

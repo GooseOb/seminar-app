@@ -2,6 +2,7 @@
 	import { enhance } from '$app/forms';
 	import Input from '$lib/form/input.svelte';
 	import type { StudentData } from './dto';
+	import StudentList from '$lib/components/StudentList.svelte';
 
 	const emptyStudent = (): StudentData => ({
 		firstname: '',
@@ -20,17 +21,32 @@
 		}
 	]);
 	let studentsString = $state('');
+	const existingStudents = $state([]);
+	let existingStudentsString = $state('');
 
 	let groupName = $state('');
 
 	let studentI = 0;
-	const onUserSubmit = () => {
+	const onUserSubmit = (e: FormDataEvent) => {
+		e.preventDefault();
 		students[studentI] = currentStudent;
 		currentStudent = emptyStudent();
 		studentI = students.length;
 	};
 	const onSubmit = () => {
 		studentsString = JSON.stringify(students);
+		existingStudentsString = JSON.stringify(
+			existingStudents.map(({ id }) => id)
+		);
+	};
+	const onInviteSubmit = async (e: FormDataEvent) => {
+		e.preventDefault();
+		const studentNumber = e.formData.get('student_number') as string;
+		// TODO: fetch student
+		const student = null;
+		if (student) {
+			existingStudents.push(student);
+		}
 	};
 </script>
 
@@ -45,6 +61,13 @@
 		hidden
 		name="students"
 		bind:value={studentsString}
+	/>
+	<input
+		type="text"
+		required={false}
+		hidden
+		name="invitees"
+		bind:value={existingStudentsString}
 	/>
 </form>
 <hr />
@@ -76,34 +99,56 @@
 	/>
 
 	<button type="submit" class="btn"> Submit student </button>
-	{#each students as student, i}
-		<div class="student">
-			<div class="student-data">
-				<p>First Name: {student.firstname}</p>
-				<p>Last Name: {student.lastname}</p>
-				<p>Student Number: {student.login}</p>
-				<p>Password: {student.password}</p>
-			</div>
-			<div class="actions">
-				<button
-					type="button"
-					class="btn"
-					onclick={() => {
-						studentI = i;
-						currentStudent = students[i];
-					}}>Edit</button
-				>
-				<button
-					type="button"
-					class="btn danger-btn"
-					onclick={() => {
-						students.splice(i, 1);
-						if (studentI > i) studentI--;
-					}}>Delete</button
-				>
-			</div>
-		</div>
-	{/each}
+
+	<StudentList {students} role="lecturer">
+		{#snippet children(_: (typeof students)[number], i: number)}
+			<button
+				type="button"
+				class="btn"
+				onclick={() => {
+					studentI = i;
+					currentStudent = students[i];
+				}}>Edit</button
+			>
+			<button
+				type="button"
+				class="btn danger-btn"
+				onclick={() => {
+					students.splice(i, 1);
+					if (studentI > i) studentI--;
+				}}>Delete</button
+			>
+		{/snippet}
+	</StudentList>
+</form>
+
+<hr />
+
+<form onsubmit={onInviteSubmit}>
+	<h2>Invite existing students</h2>
+
+	<div class="input-group">
+		<Input
+			type="text"
+			label="Student Number"
+			name="student_number"
+			bind:value={currentStudent.login}
+		/>
+
+		<button type="submit" class="btn invite"> Add </button>
+	</div>
+
+	<StudentList students={existingStudents} role="lecturer">
+		{#snippet children(_: (typeof existingStudents)[number], i: number)}
+			<button
+				type="button"
+				class="btn danger-btn"
+				onclick={() => {
+					existingStudents.splice(i, 1);
+				}}>Remove</button
+			>
+		{/snippet}
+	</StudentList>
 </form>
 
 <style>
@@ -118,22 +163,11 @@
 	hr {
 		margin: 1rem 0;
 	}
-	.student {
+	.input-group {
 		display: flex;
 		gap: 1rem;
-		flex-wrap: wrap;
-		padding: 1rem;
-		background: var(--bg2-color);
-		border-radius: 8px;
-		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 	}
-	.student-data {
-		flex: 1 1 14em;
-	}
-	.actions {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-		gap: 0.5rem;
+	.invite {
+		flex: 0.25;
 	}
 </style>

@@ -18,6 +18,9 @@ export const actions: Actions = {
 			})
 		);
 
+		// TODO: handle invited students
+		const invitedStudents = JSON.parse(form.get('invitees') as string);
+
 		await insertGroupWithStudents(name, locals.user!.id, students);
 	}
 };

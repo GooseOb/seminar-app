@@ -9,9 +9,10 @@ import {
 	type User,
 	studentLecturerTable as studentLecturer,
 	type Room,
-	type NoId
+	type NoId,
+	studentLecturerTable
 } from './db';
-import { eq, and, sql } from 'drizzle-orm';
+import { eq, and, sql, exists } from 'drizzle-orm';
 import { hashPassword } from './auth';
 
 export type GroupWithProjects = {
@@ -134,6 +135,63 @@ export const getGroupMembersWithProjects = async (groupId: number) => {
 	}
 };
 
+const getStudentCreatedByLecturerSubQuery = (userId: any) =>
+	db
+		.select()
+		.from(studentLecturer)
+		.where(
+			and(
+				eq(studentLecturer.studentId, userId),
+				eq(studentLecturer.lecturerId, sql.placeholder('lecturerId'))
+			)
+		);
+
+export const studentsInGroupQuery = db
+	.select({
+		id: user.id,
+		firstname: user.firstname,
+		lastname: user.lastname,
+		login: user.login,
+		photo: user.photo,
+		canEdit: exists(getStudentCreatedByLecturerSubQuery(user.id))
+	})
+	.from(groupMembership)
+	.where(
+		and(
+			eq(groupMembership.groupId, sql.placeholder('groupId')),
+			eq(user.role, 'student')
+		)
+	)
+	.innerJoin(user, eq(groupMembership.userId, user.id))
+	.prepare('studentsInGroupQuery');
+
+export const getStudentsInGroup = async (
+	groupId: number,
+	lecturerId: number
+) => {
+	return await studentsInGroupQuery.execute({
+		groupId,
+		lecturerId
+	});
+};
+
+const isStudentCreatedByLecturerQuery = getStudentCreatedByLecturerSubQuery(
+	sql.placeholder('studentId')
+)
+	.limit(1)
+	.prepare('isStudentCreatedByLecturerQuery');
+
+export const isStudentCreatedByLecturer = (
+	studentId: number,
+	lecturerId: number
+) =>
+	isStudentCreatedByLecturerQuery
+		.execute({
+			studentId,
+			lecturerId
+		})
+		.then(({ length }) => length > 0);
+
 const userByLoginQuery = db
 	.select()
 	.from(user)
@@ -246,4 +304,24 @@ export const insertGroupWithStudents = async (
 		group: await insertGroup(name, lecturerId, studentsWithIds),
 		students: studentsWithIds
 	};
+};
+
+const removeStudentFromGroupQuery = db
+	.delete(groupMembership)
+	.where(
+		and(
+			eq(groupMembership.userId, sql.placeholder('studentId')),
+			eq(groupMembership.groupId, sql.placeholder('groupId'))
+		)
+	)
+	.prepare('removeStudentFromGroupQuery');
+
+export const removeStudentFromGroup = async (
+	studentId: number,
+	groupId: number
+) => {
+	await removeStudentFromGroupQuery.execute({
+		studentId,
+		groupId
+	});
 };

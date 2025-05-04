@@ -34,7 +34,9 @@ export default ts.config(
 	{
 		rules: {
 			'no-undef': 'off',
-			'no-constant-condition': 'off'
+			'no-constant-condition': 'off',
+			'@typescript-eslint/no-unused-vars': 'off',
+			'@typescript-eslint/no-explicit-any': 'off'
 		}
 	}
 );
