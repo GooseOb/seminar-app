@@ -3,8 +3,8 @@ import {
 	db,
 	groupMembershipTable as groupMembership,
 	groupTable as group,
-	projectTable as projectTable,
-	roomTable as roomTable,
+	projectTable as project,
+	roomTable as room,
 	userTable as user,
 	studentLecturerTable as studentLecturer,
 	type User,
@@ -23,20 +23,23 @@ export type GroupWithProjects = {
 	}[];
 };
 
-const projectRoom = alias(roomTable, 'project_room');
+const { password: _, ...userData } = getTableColumns(user);
+
+const projectRoom = alias(room, 'project_room');
 const userGroupsAndProjectsQuery = db
 	.select({
 		groupId: group.id,
-		groupName: roomTable.name,
-		isOwner: eq(roomTable.ownerId, sql.placeholder('userId')),
-		projectId: projectTable.id,
-		projectName: projectRoom.name
+		groupName: room.name,
+		isOwner: eq(room.ownerId, sql.placeholder('userId')),
+		projectId: project.id,
+		projectName: projectRoom.name,
+		projectNamePl: project.namePl
 	})
 	.from(groupMembership)
 	.innerJoin(group, eq(groupMembership.groupId, group.id))
-	.innerJoin(roomTable, eq(group.id, roomTable.id))
-	.leftJoin(projectTable, eq(projectTable.groupId, group.id))
-	.leftJoin(projectRoom, eq(projectTable.id, projectRoom.id))
+	.innerJoin(room, eq(group.id, room.id))
+	.leftJoin(project, eq(project.groupId, group.id))
+	.leftJoin(projectRoom, eq(project.id, projectRoom.id))
 	.where(eq(groupMembership.userId, sql.placeholder('userId')))
 	.orderBy(group.id)
 	.prepare('userGroupsAndProjectsQuery');
@@ -69,6 +72,35 @@ export const getUserGroupsAndProjects = async (
 	}
 
 	return Object.values(groups);
+};
+
+const getProjectQuery = db
+	.select({
+		name: room.name,
+		ownerId: room.ownerId,
+		namePl: project.namePl,
+		description: project.description,
+		thesis: project.thesis
+	})
+	.from(room)
+	.where(and(eq(room.id, sql.placeholder('id'))))
+	.innerJoin(project, eq(project.id, room.id))
+	.limit(1)
+	.prepare('getProjectQuery');
+
+export const getProject = async (id: number) => {
+	return (await getProjectQuery.execute({ id }))[0];
+};
+
+const getUserByIdQuery = db
+	.select(userData)
+	.from(user)
+	.where(eq(user.id, sql.placeholder('id')))
+	.limit(1)
+	.prepare('getUserByIdQuery');
+
+export const getUserById = async (id: number) => {
+	return (await getUserByIdQuery.execute({ id }))[0];
 };
 
 const membershipQuery = db
@@ -191,8 +223,6 @@ export const isStudentCreatedByLecturer = (
 		})
 		.then(({ length }) => length > 0);
 
-const { password: _, ...userData } = getTableColumns(user);
-
 const userByLoginQuery = db
 	.select(userData)
 	.from(user)
@@ -244,7 +274,7 @@ export const insertStudents = async (
 };
 
 const insertRoomQuery = db
-	.insert(roomTable)
+	.insert(room)
 	.values({
 		name: sql.placeholder('name'),
 		ownerId: sql.placeholder('ownerId'),
@@ -254,7 +284,7 @@ const insertRoomQuery = db
 	.prepare('insertRoomQuery');
 
 const insertProjectQuery = db
-	.insert(projectTable)
+	.insert(project)
 	.values({
 		id: sql.placeholder('id'),
 		groupId: sql.placeholder('groupId'),
@@ -265,17 +295,17 @@ const insertProjectQuery = db
 	.prepare('insertProjectQuery');
 
 export const insertProject = async (
-	room: Optional<NoId<ProjectRoom>, 'kind'>,
+	roomData: Optional<NoId<ProjectRoom>, 'kind'>,
 	groupId: number
 ) => {
-	room.kind = 'project';
-	const [result] = await insertRoomQuery.execute(room);
+	roomData.kind = 'project';
+	const [result] = await insertRoomQuery.execute(roomData);
 	await insertProjectQuery.execute({
 		id: result.id,
 		groupId,
-		namePl: room.namePl,
-		description: room.description,
-		thesis: room.thesis
+		namePl: roomData.namePl,
+		description: roomData.description,
+		thesis: roomData.thesis
 	});
 	return result;
 };
@@ -346,4 +376,63 @@ export const removeStudentFromGroup = async (
 		studentId,
 		groupId
 	});
+};
+
+// either user is owner, or user is owner of the group the project belongs to
+// const hasAccessToProjectQuery = db
+// 	.select()
+// 	.from(projectRoom)
+// 	.where(
+// 		and(
+// 			eq(projectRoom.id, sql.placeholder('projectId')),
+// 			or(
+// 				eq(projectRoom.ownerId, sql.placeholder('userId')),
+// 				exists(
+// 					db
+// 						.select()
+// 						.from(room)
+// 						.where(eq(room.ownerId, sql.placeholder('userId')))
+// 				)
+// 			)
+// 		)
+// 	);
+//
+// export const hasAccessToProject = (
+// 	projectId: number,
+// 	userId: number
+// ): Promise<boolean> =>
+// 	hasAccessToProjectQuery
+// 		.execute({
+// 			projectId,
+// 			userId
+// 		})
+// 		.then(({ length }) => length > 0);
+
+export const updateProject = async (
+	id: number,
+	data: {
+		name: string;
+		namePl: string;
+		description: string;
+		thesis: string;
+	}
+) => {
+	await db
+		.update(project)
+		.set({
+			namePl: data.namePl,
+			description: data.description,
+			thesis: data.thesis
+		})
+		.where(eq(project.id, id))
+		.execute();
+
+	if (data.name)
+		await db
+			.update(room)
+			.set({
+				name: data.name
+			})
+			.where(eq(room.id, id))
+			.execute();
 };

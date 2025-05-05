@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import Input from '$lib/form/input.svelte';
+	import Input from '$lib/components/Input.svelte';
 	import type { StudentData } from './dto';
 	import StudentList from '$lib/components/StudentList.svelte';
 	import type { User } from '$lib/server/db';
@@ -48,7 +48,7 @@
 
 	const onInviteSubmit = async (e: SubmitEvent) => {
 		e.preventDefault();
-		const student = await fetch(`/api/student/${currentInviteeNumber}`).then(
+		const student = await fetch(`/api/students/${currentInviteeNumber}`).then(
 			(res) => res.json()
 		);
 		if (student) {
@@ -181,14 +181,5 @@
 	}
 	.invite {
 		flex: 0.25;
-	}
-
-	.error {
-		background-color: var(--bg3-color);
-		font-weight: bold;
-		padding: 0.5rem;
-		border-radius: 0.5rem;
-		text-align: center;
-		color: var(--danger-color);
 	}
 </style>

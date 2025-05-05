@@ -69,6 +69,7 @@
 			--bg4-color: #252525;
 			--primary-color: #0d6efd;
 			--danger-color: #dc3545;
+			--success-color: #19bb54;
 
 			&.light {
 				--fg-color: #000;
@@ -134,6 +135,24 @@
 		}
 		.danger-btn {
 			background: var(--danger-color);
+		}
+
+		.error {
+			background-color: var(--bg3-color);
+			font-weight: bold;
+			padding: 0.5rem;
+			border-radius: 0.5rem;
+			text-align: center;
+			color: var(--danger-color);
+		}
+
+		.success {
+			background-color: var(--bg3-color);
+			font-weight: bold;
+			padding: 0.5rem;
+			border-radius: 0.5rem;
+			text-align: center;
+			color: var(--success-color);
 		}
 	}
 	.app {

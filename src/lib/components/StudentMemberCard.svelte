@@ -1,7 +1,16 @@
 <script lang="ts">
+	import type { Role } from '$lib/server/db';
 	import MemberCard from './MemberCard.svelte';
 
-	const { student, role, children } = $props();
+	const {
+		student,
+		role,
+		children
+	}: {
+		student: any;
+		role: Role;
+		children?: (student: any) => any;
+	} = $props();
 </script>
 
 <MemberCard
@@ -15,7 +24,7 @@
 		{/if}
 	{/snippet}
 
-	{#if role === 'lecturer'}
+	{#if role === 'lecturer' && children}
 		<div class="member-actions">
 			{@render children(student)}
 		</div>

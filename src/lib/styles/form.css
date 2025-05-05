@@ -29,11 +29,6 @@ h2 {
 	padding: 0.5em;
 }
 
-.error {
-	color: var(--danger-color);
-	text-align: center;
-}
-
 a {
 	text-decoration: underline;
 	text-align: center;

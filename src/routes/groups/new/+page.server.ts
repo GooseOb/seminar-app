@@ -4,7 +4,7 @@ import { fail } from '@sveltejs/kit';
 import type { Actions } from './$types';
 import type { StudentData } from './dto';
 import * as m from '$lib/paraglide/messages';
-import { i18n, redirect } from '$lib/i18n';
+import { redirect } from '$lib/i18n';
 
 export const actions: Actions = {
 	default: async ({ request, locals }) => {
@@ -21,7 +21,6 @@ export const actions: Actions = {
 			})
 		);
 
-		// TODO: handle invited students
 		const inviteeIds = JSON.parse(form.get('invitees') as string);
 		let groupId: number;
 		try {

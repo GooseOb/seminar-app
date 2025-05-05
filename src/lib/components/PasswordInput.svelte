@@ -4,17 +4,17 @@
 	let hidden = $state(true);
 </script>
 
-<div class="form-group">
+<div class="textfield-group">
 	<div class="input-wrapper">
 		<input
+			class="textfield"
 			bind:value
 			type={hidden ? 'password' : 'text'}
 			{name}
 			{required}
 			placeholder=""
-			id={name}
 		/>
-		<label for={name}>Password</label>
+		<label for={name} class:required>Password</label>
 		<button
 			type="button"
 			class="toggle-button"
@@ -43,37 +43,15 @@
 </div>
 
 <style>
-	.form-group {
-		display: flex;
-		flex-direction: column;
-		gap: 0.5rem;
-		position: relative;
-	}
+	@import '$lib/styles/textfield.css';
 
 	.input-wrapper {
 		position: relative;
 		display: flex;
 	}
 
-	input {
-		font-size: 1em;
-		padding: 0.75em 2.5em 0.75em 0.75em;
-		border-radius: 0.5em;
-		background-color: var(--bg2-color);
-		color: var(--fg-color);
+	.textfield {
 		width: 100%;
-		border: none;
-	}
-
-	label {
-		position: absolute;
-		left: 0.75em;
-		top: 50%;
-		transform: translateY(-50%);
-		color: var(--fg-color);
-		font-size: 1em;
-		pointer-events: none;
-		transition: all 0.2s ease;
 	}
 
 	.toggle-button {
@@ -102,23 +80,5 @@
 
 	.toggle-button:hover {
 		opacity: 1;
-	}
-
-	input:focus,
-	input:not(:placeholder-shown) {
-		padding-top: 1.25em;
-		padding-bottom: 0.25em;
-		padding-right: 2.5em;
-	}
-
-	input:focus + label,
-	input:not(:placeholder-shown) + label {
-		top: 0.5em;
-		font-size: 0.8em;
-		transform: translateY(0);
-	}
-
-	input:focus {
-		outline: 2px solid var(--primary-color);
 	}
 </style>

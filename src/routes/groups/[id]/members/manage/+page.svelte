@@ -10,7 +10,7 @@
 
 	const removeStudent = async (student: (typeof students)[number]) => {
 		try {
-			const response = await fetch(`/api/student/${student.id}`, {
+			const response = await fetch(`/api/students/${student.id}`, {
 				method: 'DELETE',
 				body: JSON.stringify({
 					groupId: page.params.id
@@ -36,7 +36,9 @@
 </script>
 
 <div class="members-container">
-	<div class="error">{error}</div>
+	{#if error}
+		<div class="error">{error}</div>
+	{/if}
 	<StudentList {students} role="lecturer">
 		{#snippet children(student: (typeof students)[number])}
 			<button

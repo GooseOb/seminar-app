@@ -1,0 +1,48 @@
+.textfield-group {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	position: relative;
+	flex: 1;
+}
+
+.required::after {
+	content: ' *';
+	color: var(--primary-color);
+}
+
+label {
+	position: absolute;
+	left: 0.75em;
+	top: 50%;
+	transform: translateY(-50%);
+	color: var(--fg-color);
+	font-size: 1em;
+	pointer-events: none;
+	transition: all 0.2s ease;
+}
+
+.textfield {
+	font-size: 1em;
+	padding: 0.75em;
+	border-radius: 0.5em;
+	background-color: var(--bg2-color);
+	color: var(--fg-color);
+}
+
+.textfield:focus,
+.textfield:not(:placeholder-shown) {
+	padding-top: 1.25em;
+	padding-bottom: 0.25em;
+}
+
+.textfield:focus + label,
+.textfield:not(:placeholder-shown) + label {
+	top: 0.25em;
+	font-size: 0.8em;
+	transform: translateY(0);
+}
+
+.textfield:focus {
+	outline: 2px solid var(--primary-color);
+}

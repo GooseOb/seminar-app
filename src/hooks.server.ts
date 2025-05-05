@@ -28,7 +28,10 @@ export const handle: Handle = async (input) => {
 	let theme = cookies.get('theme');
 	if (!theme) {
 		theme = 'auto';
-		cookies.set('theme', theme, { path: '/' });
+		cookies.set('theme', theme, {
+			path: '/',
+			httpOnly: false
+		});
 	} else if (theme === 'auto') {
 		theme = cookies.get('last_theme') || 'dark';
 	}

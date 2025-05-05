@@ -1,5 +1,9 @@
 <script lang="ts">
-	const { children } = $props();
+	const {
+		children
+	}: {
+		children?: () => any;
+	} = $props();
 </script>
 
 <header class="header">

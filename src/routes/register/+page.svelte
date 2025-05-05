@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import PasswordInput from '$lib/components/PasswordInput.svelte';
-	import Input from '$lib/form/input.svelte';
+	import Input from '$lib/components/Input.svelte';
 
 	const { form } = $props();
 </script>
@@ -25,5 +25,5 @@
 </div>
 
 <style>
-	@import '$lib/form/styles.css';
+	@import '$lib/styles/form.css';
 </style>
