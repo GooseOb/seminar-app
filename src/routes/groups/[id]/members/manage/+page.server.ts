@@ -1,6 +1,18 @@
-import type { PageServerLoad } from './$types';
-import { getStudentsInGroup } from '$lib/server/queries';
-import { error } from '@sveltejs/kit';
+import type { Actions, PageServerLoad } from './$types';
+import {
+	deleteGroup,
+	getGroupName,
+	getStudentsInGroup,
+	getUserByLogin,
+	insertGroupMembers,
+	insertStudents,
+	updateRoomName,
+	updateUser,
+	type UserUpdateData
+} from '$lib/server/queries';
+import { error, fail } from '@sveltejs/kit';
+import * as m from '$lib/paraglide/messages';
+import { redirect } from '$lib/i18n';
 
 export const load: PageServerLoad = async ({
 	params: { id },
@@ -8,8 +20,10 @@ export const load: PageServerLoad = async ({
 }) => {
 	try {
 		const students = await getStudentsInGroup(+id, user!.id);
+		const groupName = await getGroupName(+id);
 		return {
-			students
+			students,
+			groupName
 		};
 	} catch (err) {
 		console.error('Error loading group members:', err);
@@ -18,3 +32,104 @@ export const load: PageServerLoad = async ({
 		});
 	}
 };
+
+export const actions = {
+	updateName: async ({ request, params: { id } }) => {
+		const formData = await request.formData();
+		const groupName = formData.get('group_name') as string;
+
+		if (!groupName) {
+			return {
+				success: false,
+				error: 'Group name cannot be empty'
+			};
+		}
+
+		try {
+			await updateRoomName(+id, groupName);
+			return {
+				success: true
+			};
+		} catch (err) {
+			console.error('Error updating group name:', err);
+			return {
+				success: false,
+				error: 'Error updating group name'
+			};
+		}
+	},
+	invite: async ({ request, params: { id } }) => {
+		const formData = await request.formData();
+		const number = formData.get('invitee_number') as string;
+
+		const student = await getUserByLogin(number);
+
+		if (!student) {
+			return fail(400, {
+				error: m.studentNotFound({ number })
+			});
+		}
+
+		await insertGroupMembers(+id, [student.id]);
+
+		return {
+			student,
+			success: true
+		};
+	},
+	submitStudent: async ({ request, locals, params: { id: groupId } }) => {
+		const formData = await request.formData();
+		const id = formData.get('id') as string;
+		const number = formData.get('student_number') as string;
+		const firstname = formData.get('student_firstname') as string;
+		const lastname = formData.get('student_lastname') as string;
+		const password = formData.get('student_password') as string;
+		if (id) {
+			const data: UserUpdateData = {
+				firstname,
+				lastname,
+				login: number
+			};
+			if (password) {
+				data.password = password;
+			}
+			await updateUser(+id, data);
+		} else {
+			const student = await getUserByLogin(number);
+			if (student) {
+				return fail(400, {
+					error: m.studentAlreadyExists({ number })
+				});
+			}
+
+			const [{ id }] = await insertStudents(
+				[
+					{
+						firstname,
+						lastname,
+						login: number,
+						password,
+						role: 'student',
+						photo: null
+					}
+				],
+				locals.user!.id
+			);
+			await insertGroupMembers(+groupId, [id]);
+		}
+		return {
+			success: true
+		};
+	},
+	deleteGroup: async ({ params: { id } }) => {
+		try {
+			await deleteGroup(+id);
+		} catch (err) {
+			console.error('Error deleting group:', err);
+			return fail(500, {
+				error: 'Error deleting group'
+			});
+		}
+		redirect(303, '/');
+	}
+} satisfies Actions;

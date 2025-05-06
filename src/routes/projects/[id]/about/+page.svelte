@@ -3,21 +3,11 @@
 	import Input from '$lib/components/Input.svelte';
 	import StudentMemberCard from '$lib/components/StudentMemberCard.svelte';
 	import Textarea from '$lib/components/Textarea.svelte';
-	import { fade } from 'svelte/transition';
 	import type { PageProps } from './$types';
+	import Success from '$lib/components/Success.svelte';
 
 	const { data, form }: PageProps = $props();
 	const { name, namePl, description, thesis } = data.project;
-
-	let isSuccess = $state(false);
-	$effect(() => {
-		if (form?.success) {
-			isSuccess = true;
-			setTimeout(() => {
-				isSuccess = false;
-			}, 2000);
-		}
-	});
 </script>
 
 <form
@@ -41,9 +31,7 @@
 
 	<button class="btn" type="submit"> Update </button>
 
-	{#if isSuccess}
-		<p class="success" transition:fade>Successfully updated</p>
-	{/if}
+	<Success value={form?.success}>Successfully updated</Success>
 
 	{#if form?.error}
 		<div class="error">

@@ -10,9 +10,6 @@
 }
 
 form {
-	display: flex;
-	flex-direction: column;
-	gap: 1em;
 	width: 100%;
 	max-width: 1000px;
 }

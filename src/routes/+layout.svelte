@@ -113,6 +113,11 @@
 			text-decoration: none;
 			color: var(--fg-color);
 		}
+		form {
+			display: flex;
+			flex-direction: column;
+			gap: 1em;
+		}
 		.btn {
 			padding: 0.5rem 1rem;
 			background: var(--primary-color);
@@ -144,15 +149,6 @@
 			border-radius: 0.5rem;
 			text-align: center;
 			color: var(--danger-color);
-		}
-
-		.success {
-			background-color: var(--bg3-color);
-			font-weight: bold;
-			padding: 0.5rem;
-			border-radius: 0.5rem;
-			text-align: center;
-			color: var(--success-color);
 		}
 	}
 	.app {

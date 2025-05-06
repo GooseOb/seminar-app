@@ -21,12 +21,12 @@ const { group, students } = await insertGroupWithStudents(
 	'CS-301 Advanced Programming',
 	lecturer.id,
 	[
-		{ firstname: 'Sophia', lastname: 'Rodriguez', login: 'srodriguez24' },
-		{ firstname: 'Michael', lastname: 'Chang', login: 'mchang25' },
-		{ firstname: 'Olivia', lastname: 'Patel', login: 'opatel23' },
-		{ firstname: 'William', lastname: 'Nguyen', login: 'wnguyen26' },
-		{ firstname: 'Isabella', lastname: 'Martinez', login: 'imartinez24' },
-		{ firstname: 'Ethan', lastname: 'Kim', login: 'ekim25' }
+		{ firstname: 'Sophia', lastname: 'Rodriguez', login: '420524' },
+		{ firstname: 'Michael', lastname: 'Chang', login: '420499' },
+		{ firstname: 'Olivia', lastname: 'Patel', login: '420526' },
+		{ firstname: 'William', lastname: 'Nguyen', login: '420520' },
+		{ firstname: 'Isabella', lastname: 'Martinez', login: '420527' },
+		{ firstname: 'Ethan', lastname: 'Kim', login: '420560' }
 	].map(({ firstname, lastname, login }) => ({
 		firstname,
 		lastname,

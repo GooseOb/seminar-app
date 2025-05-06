@@ -1,4 +1,4 @@
-import { insertGroupWithStudents } from '$lib/server/queries';
+import { getUserByLogin, insertGroupWithStudents } from '$lib/server/queries';
 import type { NoId, User } from '$lib/server/schema';
 import { fail } from '@sveltejs/kit';
 import type { Actions } from './$types';
@@ -7,9 +7,9 @@ import * as m from '$lib/paraglide/messages';
 import { redirect } from '$lib/i18n';
 
 export const actions: Actions = {
-	default: async ({ request, locals }) => {
+	create: async ({ request, locals }) => {
 		const form = await request.formData();
-		const name = form.get('name') as string;
+		const name = form.get('group_name') as string;
 		const students = JSON.parse(form.get('students') as string).map(
 			({ firstname, lastname, login, password }: StudentData): NoId<User> => ({
 				firstname,
@@ -50,5 +50,20 @@ export const actions: Actions = {
 		}
 
 		throw redirect(303, `/groups/${groupId}/members`);
+	},
+	getStudent: async ({ request }) => {
+		const form = await request.formData();
+		const number = form.get('invitee_number') as string;
+
+		const student = await getUserByLogin(number);
+		if (!student) {
+			return fail(400, {
+				error: m.studentNotFound({ number })
+			});
+		}
+		return {
+			student,
+			success: true
+		};
 	}
 };

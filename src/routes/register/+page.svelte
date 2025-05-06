@@ -25,5 +25,5 @@
 </div>
 
 <style>
-	@import '$lib/styles/form.css';
+	@import '$lib/styles/login-form.css';
 </style>

@@ -5,5 +5,6 @@
 	"files": "Files",
 	"members": "Members",
 	"aboutProject": "About",
-	"studentAlreadyExists": "Student with number {number} already exists"
+	"studentAlreadyExists": "Student with number {number} already exists",
+	"studentNotFound": "Student with number {number} not found"
 }

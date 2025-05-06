@@ -1,5 +1,5 @@
 <script lang="ts">
-	// import { languageTag } from '$lib/paraglide/runtime.js';
+	import { languageTag } from '$lib/paraglide/runtime.js';
 	import { isPathnameStart } from '$lib/pathname';
 	import type { Role } from '$lib/server/schema';
 	import { slide } from 'svelte/transition';
@@ -18,13 +18,13 @@
 		searchQueryLowerCase === '' ||
 		value.toLowerCase().includes(searchQueryLowerCase);
 
-	// const lang = languageTag();
+	const lang = languageTag();
 	const projects = $derived(
 		group.projects
-			// .map((project) => ({
-			// 	...project,
-			// 	name: project.name[lang] || project.name.en
-			// }))
+			.map((project) => ({
+				...project,
+				name: project.name[lang] || project.name.en
+			}))
 			.filter((project) => isSearched(project.name))
 	);
 	const isGroupSearched = $derived(

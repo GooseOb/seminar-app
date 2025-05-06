@@ -11,17 +11,9 @@ import {
 	type NoId,
 	type ProjectRoom
 } from './db';
-import { eq, and, sql, exists, getTableColumns } from 'drizzle-orm';
+import { eq, and, sql, exists, getTableColumns, or, isNull } from 'drizzle-orm';
 import { hashPassword } from './auth';
-
-export type GroupWithProjects = {
-	id: number;
-	name: string;
-	projects: {
-		id: number;
-		name: string;
-	}[];
-};
+import { languageTag } from '$lib/paraglide/runtime';
 
 const { password: _, ...userData } = getTableColumns(user);
 
@@ -32,8 +24,8 @@ const userGroupsAndProjectsQuery = db
 		groupName: room.name,
 		isOwner: eq(room.ownerId, sql.placeholder('userId')),
 		projectId: project.id,
-		projectName: projectRoom.name,
-		projectNamePl: project.namePl
+		projectNameEN: projectRoom.name,
+		projectNamePL: project.namePl
 	})
 	.from(groupMembership)
 	.innerJoin(group, eq(groupMembership.groupId, group.id))
@@ -44,13 +36,15 @@ const userGroupsAndProjectsQuery = db
 	.orderBy(group.id)
 	.prepare('userGroupsAndProjectsQuery');
 
-export const getUserGroupsAndProjects = async (
-	userId: number
-): Promise<GroupWithProjects[]> => {
+export const getUserGroupsAndProjects = async (userId: number) => {
 	const results = await userGroupsAndProjectsQuery.execute({ userId });
 	const groups: Record<
 		number,
-		{ id: number; name: string; projects: { id: number; name: string }[] }
+		{
+			id: number;
+			name: string;
+			projects: { id: number; name: { en: string; pl: string } }[];
+		}
 	> = {};
 
 	for (const {
@@ -58,7 +52,8 @@ export const getUserGroupsAndProjects = async (
 		groupName,
 		isOwner,
 		projectId: id,
-		projectName: name
+		projectNameEN,
+		projectNamePL
 	} of results) {
 		const group = (groups[groupId] ||= {
 			id: groupId,
@@ -66,13 +61,21 @@ export const getUserGroupsAndProjects = async (
 			projects: []
 		});
 
-		if (id && name && isOwner) {
-			group.projects.push({ id, name });
+		if (id && isOwner) {
+			group.projects.push({
+				id,
+				name: {
+					en: projectNameEN!,
+					pl: projectNamePL!
+				}
+			});
 		}
 	}
 
 	return Object.values(groups);
 };
+
+export type GroupWithProjects = ReturnType<typeof getUserGroupsAndProjects>;
 
 const getProjectQuery = db
 	.select({
@@ -133,32 +136,61 @@ const groupMembersWithProjectsQuery = db
 		lastname: user.lastname,
 		login: user.login,
 		photo: user.photo,
-		role: user.role,
-		projectId: projectRoom.id,
-		projectName: projectRoom.name
+		projectId: room.id,
+		projectNameEN: room.name,
+		projectNamePl: project.namePl
 	})
 	.from(groupMembership)
-	.where(eq(groupMembership.groupId, sql.placeholder('groupId')))
-	.innerJoin(user, eq(groupMembership.userId, user.id))
-	.leftJoin(
-		projectRoom,
-		and(eq(projectRoom.ownerId, user.id), eq(projectRoom.kind, 'project'))
+	.innerJoin(
+		user,
+		and(eq(groupMembership.userId, user.id), eq(user.role, 'student'))
 	)
+	.leftJoin(
+		room,
+		and(
+			eq(room.ownerId, user.id),
+			eq(room.kind, 'project'),
+			exists(
+				db
+					.select()
+					.from(project)
+					.where(
+						and(
+							eq(project.id, room.id),
+							eq(project.groupId, sql.placeholder('groupId'))
+						)
+					)
+			)
+		)
+	)
+	.leftJoin(project, eq(project.id, room.id))
+	.where(eq(groupMembership.groupId, sql.placeholder('groupId')))
 	.prepare('groupMembersWithProjectsQuery');
+
+const getGroupOwnerQuery = db
+	.select({
+		id: user.id,
+		firstname: user.firstname,
+		lastname: user.lastname,
+		photo: user.photo
+	})
+	.from(user)
+	.innerJoin(
+		room,
+		and(eq(user.id, room.ownerId), eq(sql.placeholder('groupId'), room.id))
+	)
+	.limit(1)
+	.prepare('getGroupOwnerQuery');
 
 export const getGroupMembersWithProjects = async (groupId: number) => {
 	try {
-		const members = await groupMembersWithProjectsQuery.execute({ groupId });
+		const students = await groupMembersWithProjectsQuery.execute({ groupId });
 
-		const lecturer: Omit<(typeof members)[number], 'login'> = members.find(
-			(member) => member.role === 'lecturer'
-		)!;
-		// @ts-expect-error Hide teacher login
-		delete lecturer.login;
+		const [lecturer] = await getGroupOwnerQuery.execute({ groupId });
 
 		return {
 			lecturer,
-			students: members.filter((member) => member.role === 'student')
+			students
 		};
 	} catch (error) {
 		console.error('Error querying group members with projects:', error);
@@ -203,6 +235,36 @@ export const getStudentsInGroup = async (
 	return await studentsInGroupQuery.execute({
 		groupId,
 		lecturerId
+	});
+};
+
+const getGroupNameQuery = db
+	.select({
+		name: room.name
+	})
+	.from(room)
+	.where(and(eq(room.id, sql.placeholder('groupId'))))
+	.limit(1)
+	.prepare('getGroupNameQuery');
+
+export const getGroupName = async (groupId: number) => {
+	const [result] = await getGroupNameQuery.execute({ groupId });
+	return result?.name;
+};
+
+const updateRoomNameQuery = db
+	.update(room)
+	.set({
+		// @ts-expect-error Drizzle doesn't handle placeholders in updates
+		name: sql.placeholder('name')
+	})
+	.where(eq(room.id, sql.placeholder('id')))
+	.prepare('updateRoomNameQuery');
+
+export const updateRoomName = async (id: number, name: string) => {
+	await updateRoomNameQuery.execute({
+		id,
+		name
 	});
 };
 
@@ -325,8 +387,8 @@ export const insertGroup = async (name: string, lecturerId: number) => {
 };
 
 export const insertGroupMembers = async (
-	studentIds: number[],
-	groupId: number
+	groupId: number,
+	studentIds: number[]
 ) => {
 	await db.insert(groupMembership).values(
 		studentIds.map((studentId) => ({
@@ -347,10 +409,11 @@ export const insertGroupWithStudents = async (
 		: [];
 	const group = await insertGroup(name, lecturerId);
 
-	await insertGroupMembers(
-		[...studentsWithIds.map(({ id }) => id), ...inviteeIds, lecturerId],
-		group.id
-	);
+	await insertGroupMembers(group.id, [
+		...studentsWithIds.map(({ id }) => id),
+		...inviteeIds,
+		lecturerId
+	]);
 
 	return {
 		group: group,
@@ -374,6 +437,25 @@ export const removeStudentFromGroup = async (
 ) => {
 	await removeStudentFromGroupQuery.execute({
 		studentId,
+		groupId
+	});
+};
+
+const deleteGroupMembershipsQuery = db
+	.delete(groupMembership)
+	.where(eq(groupMembership.groupId, sql.placeholder('groupId')))
+	.prepare('deleteGroupMembershipQuery');
+
+const deleteGroupQuery = db
+	.delete(group)
+	.where(eq(group.id, sql.placeholder('groupId')))
+	.prepare('deleteGroupQuery');
+
+export const deleteGroup = async (groupId: number) => {
+	await deleteGroupMembershipsQuery.execute({
+		groupId
+	});
+	await deleteGroupQuery.execute({
 		groupId
 	});
 };
@@ -427,12 +509,16 @@ export const updateProject = async (
 		.where(eq(project.id, id))
 		.execute();
 
-	if (data.name)
-		await db
-			.update(room)
-			.set({
-				name: data.name
-			})
-			.where(eq(room.id, id))
-			.execute();
+	if (data.name) await updateRoomName(id, data.name);
+};
+
+export type UserUpdateData = {
+	firstname: string;
+	lastname: string;
+	login: string;
+	password?: string;
+};
+
+export const updateUser = async (id: number, data: UserUpdateData) => {
+	await db.update(user).set(data).where(eq(user.id, id)).execute();
 };

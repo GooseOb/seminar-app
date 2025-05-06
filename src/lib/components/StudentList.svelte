@@ -1,5 +1,5 @@
 <script lang="ts">
-	const { students, role, children } = $props();
+	const { students, role, actionButtons } = $props();
 	import StudentMemberCard from './StudentMemberCard.svelte';
 </script>
 
@@ -9,7 +9,7 @@
 	{:else}
 		{#each students as student, i}
 			<StudentMemberCard {student} {role}>
-				{@render children(student, i)}
+				{@render actionButtons(student, i)}
 			</StudentMemberCard>
 		{/each}
 	{/if}

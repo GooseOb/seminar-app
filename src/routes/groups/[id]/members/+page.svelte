@@ -16,7 +16,7 @@
 		<a href="members/manage" class="btn manage"> Manage the group </a>
 	{/if}
 	<StudentList {students} {role}>
-		{#snippet children(student: (typeof students)[number])}
+		{#snippet actionButtons(student: (typeof students)[number])}
 			{#if student.projectId}
 				<a href={`/projects/${student.projectId}`} class="btn"> Project </a>
 			{/if}
