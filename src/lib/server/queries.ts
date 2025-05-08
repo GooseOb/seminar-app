@@ -11,7 +11,7 @@ import {
 	type NoId,
 	type ProjectRoom
 } from './db';
-import { eq, and, sql, exists, getTableColumns } from 'drizzle-orm';
+import { eq, and, sql, exists, getTableColumns, or } from 'drizzle-orm';
 import { hashPassword } from './auth';
 
 const { password: _, ...userData } = getTableColumns(user);
@@ -261,8 +261,7 @@ export const getGroupName = async (groupId: number) => {
 const updateRoomNameQuery = db
 	.update(room)
 	.set({
-		// @ts-expect-error Drizzle doesn't handle placeholders in updates
-		name: sql.placeholder('name')
+		name: sql.placeholder('name') as any
 	})
 	.where(eq(room.id, sql.placeholder('id')))
 	.prepare('updateRoomNameQuery');
@@ -466,41 +465,44 @@ export const deleteGroup = async (groupId: number) => {
 	});
 };
 
+// <NOT CURRENTLY USED>
 // either user is owner, or user is owner of the group the project belongs to
-// const hasAccessToProjectQuery = db
-// 	.select()
-// 	.from(projectRoom)
-// 	.where(
-// 		and(
-// 			eq(projectRoom.id, sql.placeholder('projectId')),
-// 			or(
-// 				eq(projectRoom.ownerId, sql.placeholder('userId')),
-// 				exists(
-// 					db
-// 						.select()
-// 						.from(room)
-// 						.where(eq(room.ownerId, sql.placeholder('userId')))
-// 				)
-// 			)
-// 		)
-// 	);
-//
-// export const hasAccessToProject = (
-// 	projectId: number,
-// 	userId: number
-// ): Promise<boolean> =>
-// 	hasAccessToProjectQuery
-// 		.execute({
-// 			projectId,
-// 			userId
-// 		})
-// 		.then(({ length }) => length > 0);
+const hasAccessToProjectQuery = db
+	.select()
+	.from(projectRoom)
+	.where(
+		and(
+			eq(projectRoom.id, sql.placeholder('projectId')),
+			or(
+				eq(projectRoom.ownerId, sql.placeholder('userId')),
+				exists(
+					db
+						.select()
+						.from(room)
+						.where(eq(room.ownerId, sql.placeholder('userId')))
+				)
+			)
+		)
+	);
+
+export const hasAccessToProject = (
+	projectId: number,
+	userId: number
+): Promise<boolean> =>
+	hasAccessToProjectQuery
+		.execute({
+			projectId,
+			userId
+		})
+		.then(({ length }) => length > 0);
+// </NOT CURRENTLY USED>
+
 const updateProjectQuery = db
 	.update(project)
 	.set({
-		namePl: sql.placeholder('namePl'),
-		description: sql.placeholder('description'),
-		thesis: sql.placeholder('thesis')
+		namePl: sql.placeholder('namePl') as any,
+		description: sql.placeholder('description') as any,
+		thesis: sql.placeholder('thesis') as any
 	})
 	.where(eq(project.id, sql.placeholder('id')))
 	.prepare('updateProjectQuery');

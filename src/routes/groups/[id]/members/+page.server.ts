@@ -5,8 +5,6 @@ import {
 } from '$lib/server/queries';
 import { error } from '@sveltejs/kit';
 
-// const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
 export const load: PageServerLoad = async ({
 	params: { id },
 	locals: {
