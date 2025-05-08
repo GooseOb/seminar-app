@@ -87,8 +87,8 @@
 		<button type="submit" class="btn">Update</button>
 	</form>
 
-	{#if form?.error}
-		<div class="error">{form?.error}</div>
+	{#if form?.error || error}
+		<div class="error">{form?.error || error}</div>
 	{/if}
 
 	<Success value={form?.success}>Successfully updated</Success>

@@ -12,7 +12,7 @@
 		role
 	}: {
 		isOpen: boolean;
-		groups: GroupWithProjects[];
+		groups: Promise<GroupWithProjects[]>;
 		role: Role;
 	} = $props();
 
@@ -30,11 +30,13 @@
 			>
 		{/if}
 		<ul class="nolist">
-			{#each groups as group}
-				<li>
-					<Accordion {group} {searchQueryLowerCase} {role} />
-				</li>
-			{/each}
+			{#await groups then groups}
+				{#each groups as group}
+					<li>
+						<Accordion {group} {searchQueryLowerCase} {role} />
+					</li>
+				{/each}
+			{/await}
 		</ul>
 	</nav>
 	<div class="footer">

@@ -11,9 +11,8 @@ import {
 	type NoId,
 	type ProjectRoom
 } from './db';
-import { eq, and, sql, exists, getTableColumns, or, isNull } from 'drizzle-orm';
+import { eq, and, sql, exists, getTableColumns } from 'drizzle-orm';
 import { hashPassword } from './auth';
-import { languageTag } from '$lib/paraglide/runtime';
 
 const { password: _, ...userData } = getTableColumns(user);
 
@@ -24,6 +23,9 @@ const userGroupsAndProjectsQuery = db
 		groupName: room.name,
 		isOwner: eq(room.ownerId, sql.placeholder('userId')),
 		projectId: project.id,
+		projectOwnerFirstName: user.firstname,
+		projectOwnerLastName: user.lastname,
+		projectOwnerStudentNumber: user.login,
 		projectNameEN: projectRoom.name,
 		projectNamePL: project.namePl
 	})
@@ -32,20 +34,28 @@ const userGroupsAndProjectsQuery = db
 	.innerJoin(room, eq(group.id, room.id))
 	.leftJoin(project, eq(project.groupId, group.id))
 	.leftJoin(projectRoom, eq(project.id, projectRoom.id))
+	.innerJoin(user, eq(user.id, projectRoom.ownerId))
 	.where(eq(groupMembership.userId, sql.placeholder('userId')))
 	.orderBy(group.id)
 	.prepare('userGroupsAndProjectsQuery');
 
+export type GroupWithProjects = {
+	id: number;
+	name: string;
+	projects: {
+		id: number;
+		name: { en: string; pl: string };
+		owner: {
+			firstname: string;
+			lastname: string;
+			studentNumber: string;
+		};
+	}[];
+};
+
 export const getUserGroupsAndProjects = async (userId: number) => {
 	const results = await userGroupsAndProjectsQuery.execute({ userId });
-	const groups: Record<
-		number,
-		{
-			id: number;
-			name: string;
-			projects: { id: number; name: { en: string; pl: string } }[];
-		}
-	> = {};
+	const groups: Record<number, GroupWithProjects> = {};
 
 	for (const {
 		groupId,
@@ -53,7 +63,10 @@ export const getUserGroupsAndProjects = async (userId: number) => {
 		isOwner,
 		projectId: id,
 		projectNameEN,
-		projectNamePL
+		projectNamePL,
+		projectOwnerFirstName: firstname,
+		projectOwnerLastName: lastname,
+		projectOwnerStudentNumber: studentNumber
 	} of results) {
 		const group = (groups[groupId] ||= {
 			id: groupId,
@@ -67,15 +80,14 @@ export const getUserGroupsAndProjects = async (userId: number) => {
 				name: {
 					en: projectNameEN!,
 					pl: projectNamePL!
-				}
+				},
+				owner: { firstname, lastname, studentNumber }
 			});
 		}
 	}
 
 	return Object.values(groups);
 };
-
-export type GroupWithProjects = ReturnType<typeof getUserGroupsAndProjects>;
 
 const getProjectQuery = db
 	.select({
@@ -182,20 +194,14 @@ const getGroupOwnerQuery = db
 	.limit(1)
 	.prepare('getGroupOwnerQuery');
 
-export const getGroupMembersWithProjects = async (groupId: number) => {
-	try {
-		const students = await groupMembersWithProjectsQuery.execute({ groupId });
+export const getGroupOwner = async (groupId: number) => {
+	return (await getGroupOwnerQuery.execute({ groupId }))[0];
+};
 
-		const [lecturer] = await getGroupOwnerQuery.execute({ groupId });
-
-		return {
-			lecturer,
-			students
-		};
-	} catch (error) {
-		console.error('Error querying group members with projects:', error);
-		throw new Error('Failed to fetch group members with projects');
-	}
+export const getStudentsWithProjectsInGroup = async (groupId: number) => {
+	return await groupMembersWithProjectsQuery.execute({
+		groupId
+	});
 };
 
 const getStudentCreatedByLecturerSubQuery = (userId: any) =>
@@ -489,6 +495,15 @@ export const deleteGroup = async (groupId: number) => {
 // 			userId
 // 		})
 // 		.then(({ length }) => length > 0);
+const updateProjectQuery = db
+	.update(project)
+	.set({
+		namePl: sql.placeholder('namePl'),
+		description: sql.placeholder('description'),
+		thesis: sql.placeholder('thesis')
+	})
+	.where(eq(project.id, sql.placeholder('id')))
+	.prepare('updateProjectQuery');
 
 export const updateProject = async (
 	id: number,
@@ -499,17 +514,15 @@ export const updateProject = async (
 		thesis: string;
 	}
 ) => {
-	await db
-		.update(project)
-		.set({
+	await Promise.all([
+		updateProjectQuery.execute({
+			id,
 			namePl: data.namePl,
 			description: data.description,
 			thesis: data.thesis
-		})
-		.where(eq(project.id, id))
-		.execute();
-
-	if (data.name) await updateRoomName(id, data.name);
+		}),
+		updateRoomName(id, data.name)
+	]);
 };
 
 export type UserUpdateData = {

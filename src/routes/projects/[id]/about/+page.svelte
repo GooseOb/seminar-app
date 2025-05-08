@@ -7,7 +7,6 @@
 	import Success from '$lib/components/Success.svelte';
 
 	const { data, form }: PageProps = $props();
-	const { name, namePl, description, thesis } = data.project;
 </script>
 
 <form
@@ -18,18 +17,23 @@
 		}}
 	method="POST"
 >
-	<StudentMemberCard student={data.student} role={data.role!} />
-	<Input label="Name (English)" name="name_en" value={name} />
-	<Input label="Name (Polish)" name="name_pl" value={namePl} />
-	<Textarea
-		label="Description"
-		name="description"
-		value={description}
-		required={false}
-	/>
-	<Textarea label="Thesis" name="thesis" value={thesis} required={false} />
+	{#await data.student then student}
+		<StudentMemberCard {student} role={data.role!} />
+	{/await}
 
-	<button class="btn" type="submit"> Update </button>
+	{#await data.project then { name, namePl, description, thesis }}
+		<Input label="Name (English)" name="name_en" value={name} />
+		<Input label="Name (Polish)" name="name_pl" value={namePl} />
+		<Textarea
+			label="Description"
+			name="description"
+			value={description}
+			required={false}
+		/>
+		<Textarea label="Thesis" name="thesis" value={thesis} required={false} />
+
+		<button class="btn" type="submit"> Update </button>
+	{/await}
 
 	<Success value={form?.success}>Successfully updated</Success>
 

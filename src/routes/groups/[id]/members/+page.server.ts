@@ -1,6 +1,11 @@
 import type { PageServerLoad } from './$types';
-import { getGroupMembersWithProjects } from '$lib/server/queries';
+import {
+	getGroupOwner,
+	getStudentsWithProjectsInGroup
+} from '$lib/server/queries';
 import { error } from '@sveltejs/kit';
+
+// const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const load: PageServerLoad = async ({
 	params: { id },
@@ -9,9 +14,9 @@ export const load: PageServerLoad = async ({
 	}
 }) => {
 	try {
-		const members = await getGroupMembersWithProjects(+id);
 		return {
-			members,
+			students: getStudentsWithProjectsInGroup(+id),
+			lecturer: getGroupOwner(+id),
 			role
 		};
 	} catch (err) {

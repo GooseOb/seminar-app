@@ -19,8 +19,10 @@ export const load: PageServerLoad = async ({
 	locals: { user }
 }) => {
 	try {
-		const students = await getStudentsInGroup(+id, user!.id);
-		const groupName = await getGroupName(+id);
+		const [students, groupName] = await Promise.all([
+			getStudentsInGroup(+id, user!.id),
+			getGroupName(+id)
+		]);
 		return {
 			students,
 			groupName

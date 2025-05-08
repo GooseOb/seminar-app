@@ -2,8 +2,8 @@ import { getProject, getUserById, updateProject } from '$lib/server/queries';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ params: { id } }) => {
-	const project = await getProject(+id);
-	const student = await getUserById(project.ownerId);
+	const project = getProject(+id);
+	const student = project.then(({ ownerId }) => getUserById(ownerId));
 
 	return {
 		project,

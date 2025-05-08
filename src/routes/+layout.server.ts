@@ -7,7 +7,7 @@ export const load: LayoutServerLoad = async ({ locals: { user }, cookies }) => {
 	if (user) {
 		const { id, role } = user;
 		return {
-			groups: await getUserGroupsAndProjects(id),
+			groups: getUserGroupsAndProjects(id),
 			role,
 			theme
 		};

@@ -4,24 +4,27 @@
 	import type { PageProps } from './$types';
 
 	const { data }: PageProps = $props();
-	const {
-		members: { students, lecturer },
-		role
-	} = data;
+	const { students, lecturer, role } = data;
 </script>
 
 <div class="members-container">
-	<MemberCard member={lecturer} text="Lecturer" />
+	{#await lecturer then member}
+		<MemberCard {member} text="Lecturer" />
+	{/await}
+
 	{#if role === 'lecturer'}
 		<a href="members/manage" class="btn manage"> Manage the group </a>
 	{/if}
-	<StudentList {students} {role}>
-		{#snippet actionButtons(student: (typeof students)[number])}
-			{#if student.projectId}
-				<a href={`/projects/${student.projectId}`} class="btn"> Project </a>
-			{/if}
-		{/snippet}
-	</StudentList>
+
+	{#await students then students}
+		<StudentList {students} {role}>
+			{#snippet actionButtons(student: (typeof students)[number])}
+				{#if student.projectId}
+					<a href={`/projects/${student.projectId}`} class="btn"> Project </a>
+				{/if}
+			{/snippet}
+		</StudentList>
+	{/await}
 </div>
 
 <style>
