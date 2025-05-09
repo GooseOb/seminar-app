@@ -19,31 +19,33 @@
 
 	const lang = languageTag();
 	const projects = $derived(
-		group.projects
-			.map((project) => {
-				const name = project.name[lang] || project.name.en;
-				const searchable = [
-					project.owner.studentNumber,
-					project.owner.firstname,
-					project.owner.lastname,
-					name
-				]
-					.join(' ')
-					.toLowerCase();
-				return {
-					...project,
-					name,
-					searchable
-				};
-			})
-			.filter(({ searchable }) => isSearched(searchable))
+		group.projects.map((project) => {
+			const name = project.name[lang] || project.name.en;
+			const searchable = (
+				project.owner.studentNumber +
+				' ' +
+				project.owner.firstname +
+				' ' +
+				project.owner.lastname +
+				' ' +
+				name
+			).toLowerCase();
+			return {
+				...project,
+				name,
+				searchable
+			};
+		})
+	);
+	const searchedProjects = $derived(
+		projects.filter(({ searchable }) => isSearched(searchable))
 	);
 	const isGroupSearched = $derived(
-		isSearched(group.name) || isSearched('General')
+		isSearched(group.name.toLowerCase()) || isSearched('general')
 	);
 </script>
 
-{#if projects.length > 0 || isGroupSearched}
+{#if searchedProjects.length > 0 || isGroupSearched}
 	<div class="accordion">
 		<label class="title">
 			<span>{group.name}</span>
@@ -57,7 +59,7 @@
 						<li class="item">General</li>
 					</a>
 				{/if}
-				{#each projects as project}
+				{#each searchedProjects as project}
 					{@const href = `/projects/${project.id}`}
 					<a {href} class:active={isPathnameStart(href)}>
 						<li class="item">

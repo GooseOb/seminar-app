@@ -1,42 +1,90 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
+	import type { ReceivedMessage } from '$lib/server/queries';
+	import Avatar from './Avatar.svelte';
+	import { onMount } from 'svelte';
+
 	const {
-		messages: _messages,
+		messages: messagesPromise,
+		roomId,
+		userId,
 		doShowSenderName = true
 	}: {
-		messages: Message[];
+		messages: Promise<ReceivedMessage[]>;
+		roomId: number;
+		userId: number;
 		doShowSenderName?: boolean;
 	} = $props();
 
-	const messages: Message[] = $state(_messages);
+	let messages: ReceivedMessage[] = $state([]);
 	let newMessage = $state('');
 	let chatContainer: HTMLDivElement;
+	let eventSource: EventSource | null = $state(null);
 
-	const user = {
-		id: 'user1',
-		name: 'You'
-	} as User;
+	messagesPromise.then((_messages) => {
+		messages = _messages.concat(messages);
+	});
 
-	const sendMessage = () => {
+	if (browser) {
+		onMount(() => {
+			eventSource = new EventSource(`/api/chat/${roomId}`);
+
+			eventSource.onmessage = (event) => {
+				const data = JSON.parse(event.data);
+				console.log('Received message:', data);
+				if (data.type === 'message') {
+					const { type, createdAt, ...message } = data;
+
+					messages.push({
+						...message,
+						createdAt: new Date(createdAt)
+					});
+					setTimeout(() => {
+						chatContainer.scrollTop = chatContainer.scrollHeight;
+					}, 0);
+				}
+			};
+
+			eventSource.onerror = () => {
+				console.error('SSE connection error');
+				eventSource?.close();
+			};
+
+			return () => {
+				if (eventSource) {
+					eventSource.close();
+					eventSource = null;
+				}
+			};
+		});
+	}
+
+	const sendMessage = async () => {
 		const text = newMessage.trim();
 		if (text === '') return;
-		const message = $state({
-			id: -1,
+
+		const tempId = -Date.now();
+		messages.push({
+			id: tempId,
 			text,
-			user,
-			timestamp: new Date()
-		});
+			sender: { id: userId },
+			roomId,
+			createdAt: new Date()
+		} as ReceivedMessage);
 
-		new Promise<number>((resolve) => {
-			setTimeout(() => {
-				resolve(Date.now());
-			}, 1000);
-		}).then((id) => {
-			message.id = id;
-		});
+		fetch(`/api/chat/${roomId}`, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ roomId, text })
+		})
+			.catch((error) => {
+				console.error('Failed to send message:', error);
+			})
+			.then(() => {
+				messages = messages.filter((m) => m.id !== tempId);
+			});
 
-		messages.push(message);
 		newMessage = '';
-
 		setTimeout(() => {
 			chatContainer.scrollTop = chatContainer.scrollHeight;
 		}, 0);
@@ -55,21 +103,22 @@
 		{#each messages as message}
 			<div
 				class="message"
-				class:self={message.user.id === user.id}
-				class:pending={message.id === -1}
+				class:self={message.sender.id === userId}
+				class:pending={message.id < 0}
 			>
-				{#if doShowSenderName && message.user.id !== user.id}
-					<div class="message-photo">
-						<img src={message.user.photo || ''} alt="" />
-					</div>
+				{#if doShowSenderName && message.sender.id !== userId}
+					<Avatar user={message.sender} />
 				{/if}
 				<div class="message-content">
-					{#if doShowSenderName && message.user.id !== user.id}
-						<span class="user-name">{message.user.name}</span>
+					{#if doShowSenderName && message.sender.id !== userId}
+						<span class="user-name">
+							{message.sender.firstname}
+							{message.sender.lastname}
+						</span>
 					{/if}
 					<p>{message.text}</p>
 					<span class="timestamp">
-						{message.timestamp.toLocaleTimeString()}
+						{message.createdAt.toLocaleTimeString()}
 					</span>
 				</div>
 			</div>
@@ -120,14 +169,6 @@
 
 	.message.pending {
 		opacity: 0.5;
-	}
-
-	.message-photo {
-		padding: 0.5rem;
-		width: 40px;
-		height: 40px;
-		border-radius: 50%;
-		background: var(--bg2-color);
 	}
 
 	.message-content {

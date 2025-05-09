@@ -85,6 +85,23 @@
 			padding: 0;
 			font-family: sans-serif;
 		}
+		::-webkit-scrollbar {
+			width: 10px;
+		}
+
+		::-webkit-scrollbar-track {
+			background: rgba(0, 0, 0, 0.2);
+			border-radius: 1rem;
+		}
+
+		::-webkit-scrollbar-thumb {
+			background: rgba(0, 0, 0, 0.5);
+			border-radius: 1rem;
+		}
+
+		::-webkit-scrollbar-thumb:hover {
+			background: rgba(0, 0, 0, 0.7);
+		}
 		html,
 		body {
 			height: 100%;

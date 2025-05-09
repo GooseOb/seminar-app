@@ -80,7 +80,9 @@ export const messageTable = pgTable('message', {
 	createdAt: timestamp({
 		withTimezone: true,
 		mode: 'date'
-	}).notNull(),
+	})
+		.notNull()
+		.defaultNow(),
 	roomId: integer()
 		.notNull()
 		.references(() => roomTable.id),

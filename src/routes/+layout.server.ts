@@ -13,7 +13,7 @@ export const load: LayoutServerLoad = async ({ locals: { user }, cookies }) => {
 		};
 	}
 	return {
-		groups: [],
+		groups: Promise.resolve([]),
 		role: null,
 		theme
 	};

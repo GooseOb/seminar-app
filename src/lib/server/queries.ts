@@ -7,6 +7,7 @@ import {
 	roomTable as room,
 	userTable as user,
 	studentLecturerTable as studentLecturer,
+	messageTable as message,
 	type User,
 	type NoId,
 	type ProjectRoom
@@ -34,7 +35,7 @@ const userGroupsAndProjectsQuery = db
 	.innerJoin(room, eq(group.id, room.id))
 	.leftJoin(project, eq(project.groupId, group.id))
 	.leftJoin(projectRoom, eq(project.id, projectRoom.id))
-	.innerJoin(user, eq(user.id, projectRoom.ownerId))
+	.leftJoin(user, eq(user.id, projectRoom.ownerId))
 	.where(eq(groupMembership.userId, sql.placeholder('userId')))
 	.orderBy(group.id)
 	.prepare('userGroupsAndProjectsQuery');
@@ -536,4 +537,99 @@ export type UserUpdateData = {
 
 export const updateUser = async (id: number, data: UserUpdateData) => {
 	await db.update(user).set(data).where(eq(user.id, id)).execute();
+};
+
+const insertedMessage = db.$with('inserted_message').as(
+	db
+		.insert(message)
+		.values({
+			senderId: sql.placeholder('senderId'),
+			roomId: sql.placeholder('roomId'),
+			text: sql.placeholder('text')
+		})
+		.returning({
+			id: message.id,
+			roomId: message.roomId,
+			senderId: message.senderId,
+			text: message.text,
+			createdAt: message.createdAt
+		})
+);
+
+const insertMessageQuery = db
+	.with(insertedMessage)
+	.select({
+		id: insertedMessage.id,
+		roomId: insertedMessage.roomId,
+		sender: {
+			id: user.id,
+			firstname: user.firstname,
+			lastname: user.lastname
+		},
+		text: insertedMessage.text,
+		createdAt: insertedMessage.createdAt
+	})
+	.from(insertedMessage)
+	.innerJoin(user, eq(insertedMessage.senderId, user.id))
+	.prepare('sendMessageQuery');
+
+export const insertMessage = async (value: {
+	senderId: number;
+	roomId: number;
+	text: string;
+}) => {
+	return (await insertMessageQuery.execute(value))[0];
+};
+
+const getMessagesQuery = db
+	.select({
+		id: message.id,
+		createdAt: message.createdAt,
+		roomId: message.roomId,
+		senderId: message.senderId,
+		senderFirstname: user.firstname,
+		senderLastname: user.lastname,
+		text: message.text
+	})
+	.from(message)
+	.innerJoin(user, eq(message.senderId, user.id))
+	.where(eq(message.roomId, sql.placeholder('roomId')))
+	.orderBy(message.createdAt)
+	.prepare('getMessagesQuery');
+
+export type ReceivedMessage = {
+	id: number;
+	roomId: number;
+	sender: {
+		id: number;
+		firstname: string;
+		lastname: string;
+	};
+	text: string;
+	createdAt: Date;
+};
+
+export const getMessages = async (roomId: number) => {
+	const messages = await getMessagesQuery.execute({ roomId });
+	return messages.map(
+		({
+			id,
+			createdAt,
+			roomId,
+			senderId,
+			senderFirstname,
+			senderLastname,
+			text
+		}) => ({
+			id,
+			roomId,
+			sender: {
+				id: senderId,
+				firstname: senderFirstname,
+				lastname: senderLastname
+			},
+			text,
+			createdAt
+		})
+	);
 };
