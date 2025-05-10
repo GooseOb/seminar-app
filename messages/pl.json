@@ -1,10 +1,57 @@
 {
 	"$schema": "https://inlang.com/schema/inlang-message-format",
+	"logout": "Wyloguj się",
+	"logIn": "Zaloguj się",
+	"goSignUp": "Utwórz konto prowadzącego",
+	"signUp": "Zarejestruj się",
 	"search": "Szukaj...",
+	"addGroup": "Dodaj grupę",
+	"addProject": "Dodaj projekt",
+
+	"nameEn": "Nazwa (angielski)",
+	"namePl": "Nazwa (polski)",
+	"description": "Opis",
+	"thesis": "Teza badawcza",
+
+	"firstName": "Imię",
+	"lastName": "Nazwisko",
+	"login": "Login",
+	"studentNumber": "Numer albumu",
+	"password": "Hasło",
+
+	"project": "Projekt",
+	"add": "Dodaj",
+	"update": "Aktualizuj",
+	"remove": "Usuń",
+	"edit": "Edytuj",
+	"invite": "Zaproś",
+	"successfullyUpdated": "Pomyślnie zaktualizowano",
+	"noStudents": "Brak studentów",
+
+	"inviteExisting": "Zaproś istniejących studentów",
+	"manageGroup": "Zarządzaj grupą",
+	"createGroup": "Utwórz grupę",
+	"submitStudent": "Zatwierdź studenta",
+	"deleteGroup": "Usuń grupę",
+
+	"send": "Wyślij",
+	"typeMessage": "Napisz wiadomość...",
+
+	"settings": "Ustawienia",
+	"language": "Język",
+	"theme": "Motyw",
+	"theme_dark": "Ciemny",
+	"theme_light": "Jasny",
+	"theme_auto": "Systemowy",
+
 	"chat": "Czat",
 	"files": "Pliki",
 	"members": "Członkowie",
 	"aboutProject": "O projekcie",
+
+	"failedToRemoveStudent": "Nie udało się usunąć studenta",
+	"failedToUpdateGroupName": "Nie udało się zaktualizować nazwy grupy",
+
 	"studentAlreadyExists": "Student z numerem albumu {number} już istnieje",
 	"studentNotFound": "Student z numerem albumu {number} nie został znaleziony"
 }

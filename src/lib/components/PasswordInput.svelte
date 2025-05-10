@@ -1,4 +1,5 @@
 <script lang="ts">
+	import * as m from '$lib/paraglide/messages.js';
 	let { name = 'password', required = true, value = $bindable() } = $props();
 
 	let hidden = $state(true);
@@ -14,7 +15,7 @@
 			{required}
 			placeholder=""
 		/>
-		<label for={name} class:required>Password</label>
+		<label for={name} class:required>{m.password()}</label>
 		<button
 			type="button"
 			class="toggle-button"

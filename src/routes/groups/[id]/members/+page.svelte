@@ -2,6 +2,7 @@
 	import MemberCard from '$lib/components/MemberCard.svelte';
 	import StudentList from '$lib/components/StudentList.svelte';
 	import type { PageProps } from './$types';
+	import * as m from '$lib/paraglide/messages.js';
 
 	const { data }: PageProps = $props();
 	const { students, lecturer, role } = data;
@@ -13,14 +14,16 @@
 	{/await}
 
 	{#if role === 'lecturer'}
-		<a href="members/manage" class="btn manage"> Manage the group </a>
+		<a href="members/manage" class="btn manage"> {m.manageGroup()} </a>
 	{/if}
 
 	{#await students then students}
 		<StudentList {students} {role}>
 			{#snippet actionButtons(student: (typeof students)[number])}
 				{#if student.projectId}
-					<a href={`/projects/${student.projectId}`} class="btn"> Project </a>
+					<a href={`/projects/${student.projectId}`} class="btn">
+						{m.project()}
+					</a>
 				{/if}
 			{/snippet}
 		</StudentList>

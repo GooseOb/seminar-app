@@ -1,10 +1,57 @@
 {
 	"$schema": "https://inlang.com/schema/inlang-message-format",
+	"logout": "Logout",
+	"logIn": "Log in",
+	"goSignUp": "Create a lecturer account",
+	"signUp": "Sign up",
 	"search": "Search...",
+	"addGroup": "Add group",
+	"addProject": "Add project",
+
+	"nameEn": "Name (English)",
+	"namePl": "Name (Polish)",
+	"description": "Description",
+	"thesis": "Thesis",
+
+	"firstName": "First name",
+	"lastName": "Last name",
+	"login": "Login",
+	"studentNumber": "Student number",
+	"password": "Password",
+
+	"project": "Project",
+	"add": "Add",
+	"update": "Update",
+	"remove": "Remove",
+	"edit": "Edit",
+	"invite": "Invite",
+	"successfullyUpdated": "Successfully updated",
+	"noStudents": "No students",
+
+	"inviteExisting": "Invite existing students",
+	"manageGroup": "Manage the group",
+	"createGroup": "Create group",
+	"submitStudent": "Submit student",
+	"deleteGroup": "Delete group",
+
+	"send": "Send",
+	"typeMessage": "Type your message...",
+
+	"settings": "Settings",
+	"language": "Language",
+	"theme": "Theme",
+	"theme_dark": "Dark",
+	"theme_light": "Light",
+	"theme_auto": "System",
+
 	"chat": "Chat",
 	"files": "Files",
 	"members": "Members",
 	"aboutProject": "About",
+
+	"failedToRemoveStudent": "Failed to remove student",
+	"failedToUpdateGroupName": "Failed to update group name",
+
 	"studentAlreadyExists": "Student with number {number} already exists",
 	"studentNotFound": "Student with number {number} not found"
 }

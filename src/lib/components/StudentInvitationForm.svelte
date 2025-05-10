@@ -1,6 +1,7 @@
 <script lang="ts">
 	import StudentInvitationInputForm from './StudentInvitationInputForm.svelte';
 	import StudentList from './StudentList.svelte';
+	import * as m from '$lib/paraglide/messages.js';
 
 	let {
 		currentInviteeNumber = $bindable(),
@@ -14,7 +15,7 @@
 	<h2>Invite existing students</h2>
 
 	<StudentInvitationInputForm bind:value={currentInviteeNumber}>
-		Add
+		{m.add()}
 	</StudentInvitationInputForm>
 
 	<StudentList {actionButtons} {students} role="lecturer"></StudentList>

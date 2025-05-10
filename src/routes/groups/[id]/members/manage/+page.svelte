@@ -6,6 +6,7 @@
 	import StudentSubmissionForm from '$lib/components/StudentSubmissionForm.svelte';
 	import Success from '$lib/components/Success.svelte';
 	import type { PageProps } from './$types';
+	import * as m from '$lib/paraglide/messages.js';
 
 	const { data, form }: PageProps = $props();
 
@@ -38,7 +39,9 @@
 			});
 
 			if (!response.ok) {
-				throw new Error('Failed to remove student: ' + (await response.text()));
+				throw new Error(
+					m.failedToRemoveStudent() + ':' + (await response.text())
+				);
 			}
 
 			students = students.filter(({ id }) => id !== student.id);
@@ -60,7 +63,7 @@
 
 			if (!response.ok) {
 				throw new Error(
-					'Failed to update group name: ' + (await response.text())
+					m.failedToUpdateGroupName() + ':' + (await response.text())
 				);
 			}
 
@@ -84,14 +87,16 @@
 		action="?/updateName"
 	>
 		<Input type="text" name="group_name" label="Name" bind:value={groupName} />
-		<button type="submit" class="btn">Update</button>
+		<button type="submit" class="btn">{m.update()}</button>
 	</form>
 
 	{#if form?.error || error}
 		<div class="error">{form?.error || error}</div>
 	{/if}
 
-	<Success value={form?.success}>Successfully updated</Success>
+	<Success value={form?.success}>
+		{m.successfullyUpdated()}
+	</Success>
 
 	<hr />
 
@@ -109,8 +114,10 @@
 								password: ''
 							};
 						}}
-						class="btn">Edit</button
+						class="btn"
 					>
+						{m.edit()}
+					</button>
 				{/if}
 				<button
 					type="submit"
@@ -119,7 +126,7 @@
 					}}
 					class="btn danger-btn"
 				>
-					Remove
+					{m.remove()}
 				</button>
 			{/snippet}
 		</StudentSubmissionForm>
@@ -127,13 +134,13 @@
 
 	<form action="?/invite" method="POST" use:enhance>
 		<StudentInvitationInputForm bind:value={currentInviteeNumber}>
-			Invite
+			{m.invite()}
 		</StudentInvitationInputForm>
 	</form>
 
 	<form action="?/deleteGroup" method="POST" use:enhance>
 		<button type="submit" class="btn danger-btn delete-group">
-			Delete Group
+			{m.deleteGroup()}
 		</button>
 	</form>
 </div>

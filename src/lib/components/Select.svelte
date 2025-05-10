@@ -10,15 +10,18 @@
 		label: string;
 		onchange: ChangeEventHandler<HTMLSelectElement>;
 		value: string;
-		options: readonly string[];
+		options: {
+			value: string;
+			displayName: string;
+		}[];
 	} = $props();
 </script>
 
 <div class="selector">
 	{label}:
 	<select {value} {onchange}>
-		{#each options as value}
-			<option {value}>{value}</option>
+		{#each options as { value, displayName }}
+			<option {value}>{displayName}</option>
 		{/each}
 	</select>
 </div>

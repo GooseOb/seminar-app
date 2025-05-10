@@ -4,6 +4,7 @@
 	import type { Role } from '$lib/server/schema';
 	import { slide } from 'svelte/transition';
 	import type { GroupWithProjects } from '$lib/server/queries';
+	import * as m from '$lib/paraglide/messages.js';
 
 	const {
 		group,
@@ -63,17 +64,22 @@
 					{@const href = `/projects/${project.id}`}
 					<a {href} class:active={isPathnameStart(href)}>
 						<li class="item">
-							{project.owner.firstname}
-							{project.owner.lastname}
-							<br />
-							{project.name}
+							<div>
+								{project.owner.firstname}
+								{project.owner.lastname}
+							</div>
+							<div class="project-name">
+								{project.name}
+							</div>
 						</li>
 					</a>
 				{/each}
 				{#if role === 'student'}
 					{@const href = `/projects/new?group=${group.id}`}
 					<a {href} class:active={isPathnameStart(href)}>
-						<li class="item">Add project</li>
+						<li class="item">
+							{m.addProject()}
+						</li>
 					</a>
 				{/if}
 			</ul>
@@ -132,5 +138,8 @@
 	}
 	.item {
 		padding: 5px 20px;
+	}
+	.project-name {
+		font-size: 0.8em;
 	}
 </style>

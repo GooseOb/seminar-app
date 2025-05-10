@@ -2,6 +2,7 @@
 	import { enhance } from '$app/forms';
 	import PasswordInput from '$lib/components/PasswordInput.svelte';
 	import Input from '$lib/components/Input.svelte';
+	import * as m from '$lib/paraglide/messages.js';
 
 	const { form } = $props();
 </script>
@@ -10,16 +11,22 @@
 	<form method="POST" use:enhance>
 		<h2 class="header">Login</h2>
 
-		<Input type="text" name="login" label="Login / Student number" />
+		<Input
+			type="text"
+			name="login"
+			label={m.login() + ' / ' + m.studentNumber()}
+		/>
 		<PasswordInput />
 
-		<button type="submit" class="btn">Log in</button>
+		<button type="submit" class="btn">{m.logIn()}</button>
 
 		{#if form?.error}
 			<div class="error">{form.error}</div>
 		{/if}
 	</form>
-	<a href="/register">Create a lecturer account</a>
+	<a href="/register">
+		{m.goSignUp()}
+	</a>
 </div>
 
 <style>

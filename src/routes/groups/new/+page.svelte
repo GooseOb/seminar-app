@@ -6,6 +6,7 @@
 	import type { PageProps } from './$types';
 	import StudentSubmissionForm from '$lib/components/StudentSubmissionForm.svelte';
 	import StudentInvitationForm from '$lib/components/StudentInvitationForm.svelte';
+	import * as m from '$lib/paraglide/messages.js';
 
 	let { form }: PageProps = $props();
 
@@ -59,7 +60,7 @@
 <form onsubmit={onSubmit} method="POST" use:enhance action="?/create">
 	<h1>{groupName || 'New Group'}</h1>
 	<Input type="text" name="group_name" label="Name" bind:value={groupName} />
-	<button type="submit" class="btn main-btn">Create Group</button>
+	<button type="submit" class="btn main-btn">{m.createGroup()}</button>
 
 	<input
 		type="text"
@@ -88,16 +89,20 @@
 				onclick={() => {
 					studentI = i;
 					currentStudent = students[i];
-				}}>Edit</button
+				}}
 			>
+				{m.edit()}
+			</button>
 			<button
 				type="button"
 				class="btn danger-btn"
 				onclick={() => {
 					students.splice(i, 1);
 					if (studentI > i) studentI--;
-				}}>Delete</button
+				}}
 			>
+				{m.remove()}
+			</button>
 		{/snippet}
 	</StudentSubmissionForm>
 </form>
@@ -115,8 +120,10 @@
 			class="btn danger-btn"
 			onclick={() => {
 				existingStudents.splice(i, 1);
-			}}>Remove</button
+			}}
 		>
+			{m.remove()}
+		</button>
 	{/snippet}
 </StudentInvitationForm>
 

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Input from './Input.svelte';
 	import StudentList from './StudentList.svelte';
+	import * as m from '$lib/paraglide/messages.js';
 
 	const { currentStudent = $bindable(), students, actionButtons } = $props();
 </script>
@@ -8,30 +9,30 @@
 <h2>Students</h2>
 <Input
 	type="text"
-	label="First Name"
+	label={m.firstName()}
 	name="student_firstname"
 	bind:value={currentStudent.firstname}
 />
 <Input
 	type="text"
-	label="Last Name"
+	label={m.lastName()}
 	name="student_lastname"
 	bind:value={currentStudent.lastname}
 />
 <Input
 	type="text"
-	label="Student Number"
+	label={m.studentNumber()}
 	name="student_number"
 	bind:value={currentStudent.login}
 />
 <Input
 	type="text"
-	label="Password"
+	label={m.password()}
 	name="student_password"
 	required={false}
 	bind:value={currentStudent.password}
 />
 
-<button type="submit" class="btn"> Submit student </button>
+<button type="submit" class="btn"> {m.submitStudent()} </button>
 
 <StudentList {actionButtons} {students} role="lecturer" />

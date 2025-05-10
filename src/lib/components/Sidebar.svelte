@@ -5,6 +5,7 @@
 	import { isPathnameStart } from '$lib/pathname';
 	import type { Role } from '$lib/server/schema';
 	import type { GroupWithProjects } from '$lib/server/queries';
+	import * as m from '$lib/paraglide/messages.js';
 
 	let {
 		isOpen,
@@ -25,9 +26,9 @@
 	<nav class="groups">
 		{#if role === 'lecturer'}
 			{@const href = '/groups/new'}
-			<a {href} class="add-group-btn" class:active={isPathnameStart(href)}
-				>Add group</a
-			>
+			<a {href} class="add-group-btn" class:active={isPathnameStart(href)}>
+				{m.addGroup()}
+			</a>
 		{/if}
 		<ul class="nolist">
 			{#await groups then groups}
@@ -43,10 +44,10 @@
 		<a
 			href="/settings"
 			class="footer-item"
-			class:active={isPathnameStart('/settings')}>Settings</a
+			class:active={isPathnameStart('/settings')}>{m.settings()}</a
 		>
 		<form method="POST" action="/logout" use:enhance>
-			<button type="submit" class="footer-item logout-btn">Log out</button>
+			<button type="submit" class="footer-item logout-btn">{m.logout()}</button>
 		</form>
 	</div>
 </aside>

@@ -2,6 +2,7 @@
 	import { browser } from '$app/environment';
 	import type { ReceivedMessage } from '$lib/server/queries';
 	import Avatar from './Avatar.svelte';
+	import * as m from '$lib/paraglide/messages.js';
 
 	const {
 		messages: messagesPromise,
@@ -128,10 +129,10 @@
 		<textarea
 			bind:value={newMessage}
 			onkeypress={handleKeyPress}
-			placeholder="Type your message..."
+			placeholder={m.typeMessage()}
 			rows="3"
 		></textarea>
-		<button onclick={sendMessage} class="btn">Send</button>
+		<button onclick={sendMessage} class="btn">{m.send()}</button>
 	</div>
 </div>
 

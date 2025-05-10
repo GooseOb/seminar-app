@@ -1,11 +1,12 @@
 <script lang="ts">
 	const { students, role, actionButtons } = $props();
 	import StudentMemberCard from './StudentMemberCard.svelte';
+	import * as m from '$lib/paraglide/messages.js';
 </script>
 
 <div class="member-list">
 	{#if students.length === 0}
-		<div class="message">No students</div>
+		<div class="message">{m.noStudents()}</div>
 	{:else}
 		{#each students as student, i}
 			<StudentMemberCard {student} {role}>

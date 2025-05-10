@@ -5,6 +5,7 @@
 	import Textarea from '$lib/components/Textarea.svelte';
 	import type { PageProps } from './$types';
 	import Success from '$lib/components/Success.svelte';
+	import * as m from '$lib/paraglide/messages.js';
 
 	const { data, form }: PageProps = $props();
 </script>
@@ -22,20 +23,25 @@
 	{/await}
 
 	{#await data.project then { name, namePl, description, thesis }}
-		<Input label="Name (English)" name="name_en" value={name} />
-		<Input label="Name (Polish)" name="name_pl" value={namePl} />
+		<Input label={m.nameEn()} name="name_en" value={name} />
+		<Input label={m.namePl()} name="name_pl" value={namePl} />
 		<Textarea
-			label="Description"
+			label={m.description()}
 			name="description"
 			value={description}
 			required={false}
 		/>
-		<Textarea label="Thesis" name="thesis" value={thesis} required={false} />
+		<Textarea
+			label={m.thesis()}
+			name="thesis"
+			value={thesis}
+			required={false}
+		/>
 
-		<button class="btn" type="submit"> Update </button>
+		<button class="btn" type="submit"> {m.update()} </button>
 	{/await}
 
-	<Success value={form?.success}>Successfully updated</Success>
+	<Success value={form?.success}>{m.successfullyUpdated()}</Success>
 
 	{#if form?.error}
 		<div class="error">
