@@ -2,7 +2,6 @@
 	import { browser } from '$app/environment';
 	import type { ReceivedMessage } from '$lib/server/queries';
 	import Avatar from './Avatar.svelte';
-	import { onMount } from 'svelte';
 
 	const {
 		messages: messagesPromise,
@@ -19,19 +18,13 @@
 	let messages: ReceivedMessage[] = $state([]);
 	let newMessage = $state('');
 	let chatContainer: HTMLDivElement;
-	let eventSource: EventSource | null = $state(null);
-
-	messagesPromise.then((_messages) => {
-		messages = _messages.concat(messages);
-	});
 
 	if (browser) {
-		onMount(() => {
-			eventSource = new EventSource(`/api/chat/${roomId}`);
+		$effect(() => {
+			const eventSource = new EventSource(`/api/chat/${roomId}`);
 
 			eventSource.onmessage = (event) => {
 				const data = JSON.parse(event.data);
-				console.log('Received message:', data);
 				if (data.type === 'message') {
 					const { type, createdAt, ...message } = data;
 
@@ -51,13 +44,19 @@
 			};
 
 			return () => {
-				if (eventSource) {
-					eventSource.close();
-					eventSource = null;
-				}
+				eventSource.close();
 			};
 		});
 	}
+
+	$effect(() => {
+		messagesPromise.then((initialMessages) => {
+			messages = initialMessages.concat(messages);
+		});
+		return () => {
+			messages = [];
+		};
+	});
 
 	const sendMessage = async () => {
 		const text = newMessage.trim();
@@ -100,7 +99,7 @@
 
 <div class="chat-container">
 	<div class="chat-messages" bind:this={chatContainer}>
-		{#each messages as message}
+		{#each messages as message (message.id)}
 			<div
 				class="message"
 				class:self={message.sender.id === userId}

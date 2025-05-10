@@ -4,6 +4,7 @@
 	import type { PageProps } from './$types';
 
 	const { data }: PageProps = $props();
+	const roomId = $derived(+page.params.id);
 </script>
 
-<Chat roomId={+page.params.id} userId={data.userId} messages={data.messages} />
+<Chat {roomId} userId={data.userId} messages={data.messages} />

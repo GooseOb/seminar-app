@@ -22,7 +22,10 @@ const userGroupsAndProjectsQuery = db
 	.select({
 		groupId: group.id,
 		groupName: room.name,
-		isOwner: eq(room.ownerId, sql.placeholder('userId')),
+		isOwner: or(
+			eq(room.ownerId, sql.placeholder('userId')),
+			eq(projectRoom.ownerId, sql.placeholder('userId'))
+		),
 		projectId: project.id,
 		projectOwnerFirstName: user.firstname,
 		projectOwnerLastName: user.lastname,
