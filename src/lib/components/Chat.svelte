@@ -25,6 +25,7 @@
 			const eventSource = new EventSource(`/api/chat/${roomId}`);
 
 			eventSource.onmessage = (event) => {
+				console.log('Received message:', event.data);
 				const data = JSON.parse(event.data);
 				if (data.type === 'message') {
 					const { type, createdAt, ...message } = data;
@@ -39,9 +40,9 @@
 				}
 			};
 
-			eventSource.onerror = () => {
-				console.error('SSE connection error');
-				eventSource?.close();
+			eventSource.onerror = (e) => {
+				console.error('SSE connection error', e);
+				eventSource.close();
 			};
 
 			return () => {

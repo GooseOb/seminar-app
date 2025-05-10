@@ -3,6 +3,7 @@ import { insertMessage } from '$lib/server/queries';
 import { json, error } from '@sveltejs/kit';
 
 const clients = new Map<number, Set<ReadableStreamDefaultController>>();
+const PING_INTERVAL = 30_000; // 30 seconds
 
 function broadcast(roomId: number, message: any) {
 	const clientControllers = clients.get(roomId);
@@ -34,6 +35,7 @@ export const POST: RequestHandler = async ({
 	if (!id || !text || !userId) {
 		return error(400, 'Missing required fields');
 	}
+
 	const roomId = +id;
 
 	try {
@@ -64,33 +66,45 @@ export const GET: RequestHandler = async ({ params: { id }, setHeaders }) => {
 		Connection: 'keep-alive'
 	});
 
+	let streamController: ReadableStreamDefaultController | null = null;
+	let pingInterval: NodeJS.Timeout | null = null;
+
 	return new Response(
 		new ReadableStream({
 			start(controller) {
+				console.log('Stream started for room:', roomId);
+				streamController = controller;
 				const encoder = new TextEncoder();
 
-				if (clients.has(roomId)) {
-					clients.get(roomId)!.add(controller);
-				} else {
-					clients.set(roomId, new Set([controller]));
+				if (!clients.has(roomId)) {
+					clients.set(roomId, new Set());
 				}
+				const clientControllers = clients.get(roomId)!;
+				clientControllers.add(controller);
 
 				controller.enqueue(encoder.encode('data: {"type":"ping"}\n\n'));
 
-				return () => {
-					clients.get(roomId)?.delete(controller);
+				pingInterval = setInterval(() => {
+					try {
+						controller.enqueue(encoder.encode('data: {"type":"ping"}\n\n'));
+					} catch (err) {
+						console.error('Error sending ping:', err);
+						clientControllers.delete(controller);
+						if (clientControllers.size === 0) {
+							clients.delete(roomId);
+						}
+						clearInterval(pingInterval!);
+					}
+				}, PING_INTERVAL);
+			},
+			cancel() {
+				if (streamController) {
+					clients.get(roomId)?.delete(streamController);
 					if (clients.get(roomId)?.size === 0) {
 						clients.delete(roomId);
 					}
-					controller.close();
-				};
-			},
-			cancel() {
-				const controllers = clients.get(roomId);
-				if (controllers) {
-					clients.delete(roomId);
-					for (const controller of controllers) {
-						controller.close();
+					if (pingInterval) {
+						clearInterval(pingInterval);
 					}
 				}
 			}
