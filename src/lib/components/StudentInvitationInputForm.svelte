@@ -1,11 +1,17 @@
 <script lang="ts">
 	import Input from './Input.svelte';
+	import * as m from '$lib/paraglide/messages.js';
 
 	let { value = $bindable(), children } = $props();
 </script>
 
 <div class="input-group">
-	<Input type="text" bind:value label="Student Number" name="invitee_number" />
+	<Input
+		type="text"
+		bind:value
+		label={m.studentNumber()}
+		name="invitee_number"
+	/>
 
 	<button type="submit" class="btn invite">
 		{@render children()}

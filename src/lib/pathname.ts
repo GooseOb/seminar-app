@@ -12,6 +12,9 @@ export const getIsPathname =
 export const isPathnameStart = getIsPathname(
 	(pathname, value) => value === pathname || pathname.startsWith(value + '/')
 );
+export const isPathnameEnd = getIsPathname((pathname, value) =>
+	pathname.endsWith(value)
+);
 
 export const isLoginPage = () =>
 	isPathnameStart('/login') || isPathnameStart('/register');

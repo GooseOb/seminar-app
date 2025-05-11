@@ -366,8 +366,8 @@ const insertProjectQuery = db
 	.prepare('insertProjectQuery');
 
 export const insertProject = async (
-	roomData: Optional<NoId<ProjectRoom>, 'kind'>,
-	groupId: number
+	groupId: number,
+	roomData: Optional<NoId<ProjectRoom>, 'kind'>
 ) => {
 	roomData.kind = 'project';
 	const [result] = await insertRoomQuery.execute(roomData);

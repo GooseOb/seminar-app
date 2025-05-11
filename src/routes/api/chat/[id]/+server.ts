@@ -72,7 +72,6 @@ export const GET: RequestHandler = async ({ params: { id }, setHeaders }) => {
 	return new Response(
 		new ReadableStream({
 			start(controller) {
-				console.log('Stream started for room:', roomId);
 				streamController = controller;
 				const encoder = new TextEncoder();
 

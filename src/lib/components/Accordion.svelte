@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { languageTag } from '$lib/paraglide/runtime.js';
-	import { isPathnameStart } from '$lib/pathname';
+	import { isPathnameStart, isPathnameEnd } from '$lib/pathname';
 	import type { Role } from '$lib/server/schema';
 	import { slide } from 'svelte/transition';
 	import type { GroupWithProjects } from '$lib/server/queries';
@@ -56,7 +56,11 @@
 			<ul class="nolist list" transition:slide={{ duration: 300 }}>
 				{#if isGroupSearched}
 					{@const href = `/groups/${group.id}`}
-					<a {href} class:active={isPathnameStart(href)}>
+					<a
+						{href}
+						class:active={isPathnameStart(href) &&
+							!isPathnameEnd('new_project')}
+					>
 						<li class="item">General</li>
 					</a>
 				{/if}
@@ -74,8 +78,8 @@
 						</li>
 					</a>
 				{/each}
-				{#if role === 'student'}
-					{@const href = `/projects/new?group=${group.id}`}
+				{#if role === 'student' && group.projects.length === 0}
+					{@const href = `/groups/${group.id}/new_project`}
 					<a {href} class:active={isPathnameStart(href)}>
 						<li class="item">
 							{m.addProject()}

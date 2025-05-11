@@ -57,7 +57,7 @@ await Promise.all(
 				'IoT-based solution for monitoring and optimizing energy consumption in university buildings',
 			thesis: null
 		}
-	].map((project) => insertProject(project as any, group.id))
+	].map((project) => insertProject(group.id, project as any))
 );
 
 process.stdout.write('Database seeded successfully\n');
