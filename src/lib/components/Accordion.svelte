@@ -78,7 +78,7 @@
 						</li>
 					</a>
 				{/each}
-				{#if role === 'student' && group.projects.length === 0}
+				{#if role === 'student' && projects.length === 0}
 					{@const href = `/groups/${group.id}/new_project`}
 					<a {href} class:active={isPathnameStart(href)}>
 						<li class="item">

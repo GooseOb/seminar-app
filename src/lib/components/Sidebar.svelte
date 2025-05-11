@@ -6,6 +6,7 @@
 	import type { Role } from '$lib/server/schema';
 	import type { GroupWithProjects } from '$lib/server/queries';
 	import * as m from '$lib/paraglide/messages.js';
+	import { slide } from 'svelte/transition';
 
 	let {
 		isOpen,
@@ -21,7 +22,18 @@
 	const searchQueryLowerCase = $derived(searchQuery.toLowerCase());
 </script>
 
-<aside class="sidebar" class:open={isOpen}>
+<aside
+	class="sidebar"
+	class:open={isOpen}
+	in:slide={{
+		axis: 'x',
+		duration: 300
+	}}
+	out:slide={{
+		axis: 'x',
+		duration: 300
+	}}
+>
 	<Search bind:value={searchQuery} />
 	<nav class="groups">
 		{#if role === 'lecturer'}

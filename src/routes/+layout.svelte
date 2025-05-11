@@ -3,11 +3,13 @@
 	import Sidebar from '$lib/components/Sidebar.svelte';
 	import BurgerButton from '$lib/components/BurgerButton.svelte';
 	import { i18n } from '$lib/i18n';
-	import { isLoginPage } from '$lib/pathname';
+	import { getPathname, isLoginPage } from '$lib/pathname';
 	import { ParaglideJS } from '@inlang/paraglide-sveltekit';
 	import type { LayoutProps } from './$types';
 	import { browser } from '$app/environment';
 	import { mainResizeObserver } from '$lib/resize';
+	import { fade } from 'svelte/transition';
+	import { page } from '$app/state';
 
 	let mainElement: HTMLElement = $state(null)!;
 	if (browser) {
@@ -34,32 +36,54 @@
 	}
 
 	let isOpen = $state(true);
+	const isLoginPageValue = $derived(isLoginPage());
+	const pathname = $derived(
+		/^\/[^/]*(?:\/[^/]*)?/.exec(i18n.route(page.url.pathname))[0]
+	);
 </script>
 
 <div class="app">
 	<ParaglideJS {i18n}>
-		{#if isLoginPage()}
-			<Header />
-			<div class="workspace">
-				<main class="content">
-					{@render children()}
-				</main>
-			</div>
-		{:else}
-			<Header>
+		<Header>
+			{#if !isLoginPageValue}
 				<BurgerButton bind:isOpen />
-			</Header>
-			<div class="workspace">
+			{/if}
+		</Header>
+		<div class="workspace">
+			{#if !isLoginPageValue}
 				<Sidebar {isOpen} groups={data.groups} role={data.role!} />
-				<main class="content" bind:this={mainElement}>
-					{@render children()}
-				</main>
-			</div>
-		{/if}
+			{/if}
+			<main class="content" bind:this={mainElement}>
+				<div class="page-container">
+					{#key pathname}
+						<div
+							class="page"
+							in:fade={{ duration: 200 }}
+							out:fade={{ duration: 200 }}
+						>
+							{@render children()}
+						</div>
+					{/key}
+				</div>
+			</main>
+		</div>
 	</ParaglideJS>
 </div>
 
 <style>
+	.page-container {
+		display: flex;
+		width: 100%;
+		height: 100%;
+		position: relative;
+	}
+	.page {
+		display: flex;
+		width: 100%;
+		height: 100%;
+		flex-direction: column;
+		position: absolute;
+	}
 	:global {
 		html {
 			--fg-color: #fff;
@@ -179,8 +203,6 @@
 		overflow: auto;
 	}
 	.content {
-		display: flex;
-		flex-direction: column;
 		padding: 20px;
 		width: 100%;
 		max-height: calc(100% - 20px);
