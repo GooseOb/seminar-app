@@ -214,7 +214,7 @@ export const getStudentsWithProjectsInGroup = async (groupId: number) => {
 	});
 };
 
-const getStudentCreatedByLecturerSubQuery = () => (userId: any) =>
+const getStudentCreatedByLecturerSubQuery = (userId: any) =>
 	db()
 		.select()
 		.from(studentLecturer)
@@ -563,27 +563,26 @@ export const updateUser = async (id: number, data: UserUpdateData) => {
 	await db().update(user).set(data).where(eq(user.id, id)).execute();
 };
 
-const insertedMessage = db()
-	.$with('inserted_message')
-	.as(
-		db()
-			.insert(message)
-			.values({
-				senderId: sql.placeholder('senderId'),
-				roomId: sql.placeholder('roomId'),
-				text: sql.placeholder('text')
-			})
-			.returning({
-				id: message.id,
-				roomId: message.roomId,
-				senderId: message.senderId,
-				text: message.text,
-				createdAt: message.createdAt
-			})
-	);
-
-const insertMessageQuery = () =>
-	db()
+const insertMessageQuery = () => {
+	const insertedMessage = db()
+		.$with('inserted_message')
+		.as(
+			db()
+				.insert(message)
+				.values({
+					senderId: sql.placeholder('senderId'),
+					roomId: sql.placeholder('roomId'),
+					text: sql.placeholder('text')
+				})
+				.returning({
+					id: message.id,
+					roomId: message.roomId,
+					senderId: message.senderId,
+					text: message.text,
+					createdAt: message.createdAt
+				})
+		);
+	return db()
 		.with(insertedMessage)
 		.select({
 			id: insertedMessage.id,
@@ -599,6 +598,7 @@ const insertMessageQuery = () =>
 		.from(insertedMessage)
 		.innerJoin(user, eq(insertedMessage.senderId, user.id))
 		.prepare('sendMessageQuery');
+};
 
 export const insertMessage = async (value: {
 	senderId: number;
