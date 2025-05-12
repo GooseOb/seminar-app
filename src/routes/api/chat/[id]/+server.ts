@@ -3,30 +3,25 @@ import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { insertMessage } from '$lib/server/queries';
 
-/** Helper: given env + id return a stub for the correct chat-room object */
-function roomStub(env: Env, roomId: string) {
-	return env.CHATROOM.get(env.CHATROOM.idFromName(roomId));
-}
+const roomStub = (env: Env, roomId: string) =>
+	env.CHATROOM.get(env.CHATROOM.idFromName(roomId));
 
 export const POST: RequestHandler = async ({
 	request,
-	params,
+	params: { id },
 	locals,
 	platform
 }) => {
 	const { text } = await request.json();
-	const userId = locals.user?.id;
-	const roomId = +params.id;
+	const senderId = locals.user?.id;
 
-	if (!text || !userId || !roomId) {
+	if (!text || !senderId || !id) {
 		throw error(400, 'Missing fields');
 	}
 
-	const message = await insertMessage({ senderId: userId, roomId, text });
+	const message = await insertMessage({ senderId, roomId: +id, text });
 
-	const stub = roomStub(platform.env, params.id);
-
-	await stub.fetch('http://dummy/message', {
+	await roomStub(platform.env, id).fetch('http://dummy/message', {
 		method: 'POST',
 		body: JSON.stringify(message),
 		headers: { 'Content-Type': 'application/json' }
@@ -35,17 +30,17 @@ export const POST: RequestHandler = async ({
 	return json(message);
 };
 
-export const GET: RequestHandler = async ({ request, params, platform }) => {
-	const roomId = params.id;
-	if (!roomId) throw error(400, 'Room ID required');
+export const GET: RequestHandler = async ({
+	request,
+	params: { id },
+	platform
+}) => {
+	if (!id) throw error(400, 'Room ID required');
 
-	const stub = roomStub(platform.env, roomId);
-
-	// Forward the WebSocket request to the Durable Object
 	const upgradeHeader = request.headers.get('Upgrade');
 	if (upgradeHeader !== 'websocket') {
 		throw error(400, 'Expected Upgrade: websocket');
 	}
 
-	return stub.fetch(request);
+	return roomStub(platform.env, id).fetch(request);
 };

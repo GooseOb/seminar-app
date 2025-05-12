@@ -45,6 +45,7 @@
 	.horizontal-navigation {
 		width: 100%;
 		font-size: 1.25rem;
+		padding-bottom: 0.5rem;
 	}
 	ul {
 		display: flex;

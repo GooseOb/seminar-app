@@ -16,9 +16,18 @@
 	let messages = $state<ReceivedMessage[]>([]);
 	let newMessage = $state('');
 
+	const scrollDown = () => {
+		if (chatContainer) {
+			queueMicrotask(() => {
+				chatContainer.scrollTop = chatContainer.scrollHeight;
+			});
+		}
+	};
+
 	$effect(() => {
 		messagesPromise.then((initialMessages) => {
 			messages = initialMessages;
+			scrollDown();
 		});
 		return () => {
 			messages.length = 0;
@@ -27,20 +36,21 @@
 
 	if (browser) {
 		$effect(() => {
-			const socket = new WebSocket(`wss://${location.host}/api/chat/${roomId}`);
+			const socket = new WebSocket(
+				`${
+					location.protocol === 'https:' ? 'wss' : 'ws'
+				}://${location.host}/api/chat/${roomId}`
+			);
 
 			socket.addEventListener('message', (event) => {
 				try {
 					const data = JSON.parse(event.data);
 					if (data.type === 'message') {
-						const { createdAt, ...rest } = data;
 						messages.push({
-							...rest,
-							createdAt: new Date(createdAt)
+							...data,
+							createdAt: new Date(data.createdAt)
 						});
-						queueMicrotask(() => {
-							chatContainer.scrollTop = chatContainer.scrollHeight;
-						});
+						scrollDown();
 					}
 				} catch (err) {
 					console.error('Failed to parse WebSocket message:', err);
@@ -82,9 +92,7 @@
 			});
 
 		newMessage = '';
-		queueMicrotask(() => {
-			chatContainer.scrollTop = chatContainer.scrollHeight;
-		});
+		scrollDown();
 	};
 
 	const handleKeyPress = (event: KeyboardEvent) => {

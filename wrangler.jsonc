@@ -18,7 +18,8 @@
 	"hyperdrive": [
 		{
 			"binding": "HYPERDRIVE",
-			"id": "8e660a1845ca42a68cb38fa5e4300095"
+			"id": "8e660a1845ca42a68cb38fa5e4300095",
+			"localConnectionString": "postgresql://postgres:postgres@localhost/seminar"
 		}
 	],
 	"durable_objects": {

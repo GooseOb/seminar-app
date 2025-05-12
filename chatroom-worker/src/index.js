@@ -5,9 +5,7 @@ export default {
 };
 
 export class ChatRoom {
-	constructor(state, env) {
-		this.state = state;
-		this.env = env;
+	constructor() {
 		this.sessions = new Set();
 	}
 
