@@ -35,6 +35,6 @@ export const actions = {
 			};
 		}
 
-		redirect(303, `/projects/${id}`);
+		redirect(303, `/projects/${projectId}`);
 	}
 } satisfies Actions;
