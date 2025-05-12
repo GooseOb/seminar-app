@@ -1,5 +1,5 @@
 export default {
-	async fetch(request, env, ctx) {
+	async fetch() {
 		return new Response('Hello World!');
 	}
 };
@@ -8,16 +8,15 @@ export class ChatRoom {
 	constructor(state, env) {
 		this.state = state;
 		this.env = env;
-		this.sessions = new Map(); // Map of WebSocket → user info
+		this.sessions = new Set();
 	}
 
 	async fetch(request) {
 		const upgradeHeader = request.headers.get('Upgrade');
 		if (upgradeHeader !== 'websocket') {
-			// Handle broadcast messages
 			if (request.method === 'POST') {
 				const message = await request.json();
-				for (const [ws, user] of this.sessions.entries()) {
+				for (const ws of this.sessions) {
 					try {
 						ws.send(
 							JSON.stringify({
@@ -26,6 +25,7 @@ export class ChatRoom {
 							})
 						);
 					} catch (err) {
+						console.error('Error sending message:', err);
 						this.sessions.delete(ws);
 					}
 				}
@@ -38,16 +38,11 @@ export class ChatRoom {
 		const [client, server] = Object.values(new WebSocketPair());
 		server.accept();
 
-		server.addEventListener('message', (evt) => {
-			// Optional: handle incoming messages from client if needed
-		});
-
 		server.addEventListener('close', () => {
 			this.sessions.delete(server);
 		});
 
-		// Track the client
-		this.sessions.set(server, {});
+		this.sessions.add(server);
 
 		return new Response(null, {
 			status: 101,
