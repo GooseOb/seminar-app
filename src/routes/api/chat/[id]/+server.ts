@@ -1,112 +1,51 @@
+// src/routes/api/chat/[id]/+server.ts
+import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { insertMessage } from '$lib/server/queries';
-import { json, error } from '@sveltejs/kit';
 
-const clients = new Map<number, Set<ReadableStreamDefaultController>>();
-const PING_INTERVAL = 30_000; // 30 seconds
-
-function broadcast(roomId: number, message: any) {
-	const clientControllers = clients.get(roomId);
-	if (clientControllers) {
-		for (const controller of clientControllers) {
-			const encoder = new TextEncoder();
-			try {
-				controller.enqueue(
-					encoder.encode(
-						`data: ${JSON.stringify({ type: 'message', ...message })}\n\n`
-					)
-				);
-			} catch (err) {
-				console.error('Error broadcasting message:', err);
-				clients.get(roomId)?.delete(controller);
-			}
-		}
-	}
+/** Helper: given env + id return a stub for the correct chat-room object */
+function roomStub(env: Env, roomId: string) {
+	return env.CHATROOM.get(env.CHATROOM.idFromName(roomId));
 }
 
 export const POST: RequestHandler = async ({
 	request,
-	params: { id },
-	locals
+	params,
+	locals,
+	platform
 }) => {
 	const { text } = await request.json();
 	const userId = locals.user?.id;
+	const roomId = +params.id;
 
-	if (!id || !text || !userId) {
-		return error(400, 'Missing required fields');
+	if (!text || !userId || !roomId) {
+		throw error(400, 'Missing fields');
 	}
 
-	const roomId = +id;
+	const message = await insertMessage({ senderId: userId, roomId, text });
 
-	try {
-		const savedMessage = await insertMessage({
-			senderId: userId,
-			roomId,
-			text
-		});
+	const stub = roomStub(platform.env, params.id);
 
-		broadcast(roomId, savedMessage);
-
-		return json(savedMessage);
-	} catch (err) {
-		console.error('Error saving message:', err);
-		return error(500, 'Failed to save message');
-	}
-};
-
-export const GET: RequestHandler = async ({ params: { id }, setHeaders }) => {
-	if (!id) {
-		return error(400, 'Room ID is required');
-	}
-	const roomId = +id;
-
-	setHeaders({
-		'Content-Type': 'text/event-stream',
-		'Cache-Control': 'no-cache',
-		Connection: 'keep-alive'
+	await stub.fetch('http://dummy/message', {
+		method: 'POST',
+		body: JSON.stringify(message),
+		headers: { 'Content-Type': 'application/json' }
 	});
 
-	let streamController: ReadableStreamDefaultController | null = null;
-	let pingInterval: NodeJS.Timeout | null = null;
+	return json(message);
+};
 
-	return new Response(
-		new ReadableStream({
-			start(controller) {
-				streamController = controller;
-				const encoder = new TextEncoder();
+export const GET: RequestHandler = async ({ request, params, platform }) => {
+	const roomId = params.id;
+	if (!roomId) throw error(400, 'Room ID required');
 
-				if (!clients.has(roomId)) {
-					clients.set(roomId, new Set());
-				}
-				const clientControllers = clients.get(roomId)!;
-				clientControllers.add(controller);
+	const stub = roomStub(platform.env, roomId);
 
-				controller.enqueue(encoder.encode('data: {"type":"ping"}\n\n'));
+	// Forward the WebSocket request to the Durable Object
+	const upgradeHeader = request.headers.get('Upgrade');
+	if (upgradeHeader !== 'websocket') {
+		throw error(400, 'Expected Upgrade: websocket');
+	}
 
-				pingInterval = setInterval(() => {
-					try {
-						controller.enqueue(encoder.encode('data: {"type":"ping"}\n\n'));
-					} catch (err) {
-						console.error('Error sending ping:', err);
-						clientControllers.delete(controller);
-						if (clientControllers.size === 0) {
-							clients.delete(roomId);
-						}
-						clearInterval(pingInterval!);
-					}
-				}, PING_INTERVAL);
-			},
-			cancel() {
-				if (streamController) {
-					clients.get(roomId)?.delete(streamController);
-					if (clients.get(roomId)?.size === 0) {
-						clients.delete(roomId);
-					}
-					if (pingInterval) {
-						clearInterval(pingInterval);
-					}
-				}
-			}
-		})
-	);
+	return stub.fetch(request);
 };

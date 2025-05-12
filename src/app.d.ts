@@ -11,7 +11,11 @@ declare global {
 		}
 		// interface PageData {}
 		// interface PageState {}
-		// interface Platform {}
+		interface Platform {
+			env: Env;
+			cf: CfProperties;
+			ctx: ExecutionContext;
+		}
 	}
 	type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 }

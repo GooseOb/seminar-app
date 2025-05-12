@@ -20,6 +20,9 @@ const getHandleFinal =
 
 export const handle: Handle = async (input) => {
 	const { url, cookies, locals } = input.event;
+	process.env.DATABASE_URL =
+		input.event.platform?.env.HYPERDRIVE.connectionString;
+	// console.log(input.event.platform?.env);
 
 	const canonicalPath = i18n.route(url.pathname);
 	const lang = i18n.getLanguageFromUrl(url);

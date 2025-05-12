@@ -9,60 +9,56 @@
 		roomId,
 		userId,
 		doShowSenderName = true
-	}: {
-		messages: Promise<ReceivedMessage[]>;
-		roomId: number;
-		userId: number;
-		doShowSenderName?: boolean;
 	} = $props();
 
-	let messages: ReceivedMessage[] = $state([]);
-	let newMessage = $state('');
 	let chatContainer: HTMLDivElement;
 
-	if (browser) {
-		$effect(() => {
-			const eventSource = new EventSource(`/api/chat/${roomId}`);
-
-			eventSource.onmessage = (event) => {
-				console.log('Received message:', event.data);
-				const data = JSON.parse(event.data);
-				if (data.type === 'message') {
-					const { type, createdAt, ...message } = data;
-
-					messages.push({
-						...message,
-						createdAt: new Date(createdAt)
-					});
-					setTimeout(() => {
-						chatContainer.scrollTop = chatContainer.scrollHeight;
-					}, 0);
-				}
-			};
-
-			eventSource.onerror = (e) => {
-				console.error('SSE connection error', e);
-				eventSource.close();
-			};
-
-			return () => {
-				eventSource.close();
-			};
-		});
-	}
+	let messages = $state<ReceivedMessage[]>([]);
+	let newMessage = $state('');
 
 	$effect(() => {
 		messagesPromise.then((initialMessages) => {
-			messages = initialMessages.concat(messages);
+			messages = initialMessages;
 		});
 		return () => {
-			messages = [];
+			messages.length = 0;
 		};
 	});
 
+	if (browser) {
+		$effect(() => {
+			const socket = new WebSocket(`wss://${location.host}/api/chat/${roomId}`);
+
+			socket.addEventListener('message', (event) => {
+				try {
+					const data = JSON.parse(event.data);
+					if (data.type === 'message') {
+						const { createdAt, ...rest } = data;
+						messages.push({
+							...rest,
+							createdAt: new Date(createdAt)
+						});
+						queueMicrotask(() => {
+							chatContainer.scrollTop = chatContainer.scrollHeight;
+						});
+					}
+				} catch (err) {
+					console.error('Failed to parse WebSocket message:', err);
+				}
+			});
+
+			socket.addEventListener('error', (e) => {
+				console.error('WebSocket error', e);
+				socket.close();
+			});
+
+			return () => socket.close();
+		});
+	}
+
 	const sendMessage = async () => {
 		const text = newMessage.trim();
-		if (text === '') return;
+		if (!text) return;
 
 		const tempId = -Date.now();
 		messages.push({
@@ -86,9 +82,9 @@
 			});
 
 		newMessage = '';
-		setTimeout(() => {
+		queueMicrotask(() => {
 			chatContainer.scrollTop = chatContainer.scrollHeight;
-		}, 0);
+		});
 	};
 
 	const handleKeyPress = (event: KeyboardEvent) => {
