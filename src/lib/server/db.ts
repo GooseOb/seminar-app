@@ -1,12 +1,14 @@
 import { drizzle } from 'drizzle-orm/node-postgres';
 
-export const { DATABASE_URL } = process.env.DATABASE_URL
-	? process.env
-	: await import('$env/static/private');
+let DATABASE_URL: string;
+
+export const setDatabaseUrl = (url: string) => {
+	DATABASE_URL = url;
+};
 
 export const db = () =>
 	drizzle({
-		connection: DATABASE_URL!,
+		connection: DATABASE_URL,
 		casing: 'snake_case'
 	});
 

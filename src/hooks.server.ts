@@ -2,6 +2,7 @@ import { i18n } from '$lib/i18n';
 import type { Handle } from '@sveltejs/kit';
 import { validateSessionToken } from '$lib/server/sessions';
 import { redirect } from '@sveltejs/kit';
+import { setDatabaseUrl } from '$lib/server/db';
 
 const getHandleFinal =
 	({
@@ -20,8 +21,7 @@ const getHandleFinal =
 
 export const handle: Handle = async (input) => {
 	const { url, cookies, locals } = input.event;
-	process.env.DATABASE_URL =
-		input.event.platform?.env.HYPERDRIVE.connectionString;
+	setDatabaseUrl(input.event.platform?.env.HYPERDRIVE.connectionString);
 
 	const canonicalPath = i18n.route(url.pathname);
 	const lang = i18n.getLanguageFromUrl(url);

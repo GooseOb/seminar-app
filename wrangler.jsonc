@@ -40,6 +40,13 @@
 			"tag": "v2",
 			"deleted_classes": ["ChatRoom"]
 		}
+	],
+	"r2_buckets": [
+		{
+			"binding": "R2_BUCKET",
+			"bucket_name": "seminar",
+			"preview_bucket_name": "seminar"
+		}
 	]
 
 	/**

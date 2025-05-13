@@ -1,20 +1,37 @@
 <script lang="ts">
 	import { blur, slide } from 'svelte/transition';
+	import * as m from '$lib/paraglide/messages.js';
+	import type { FileItem } from '$lib';
 
-	const { files } = $props();
+	const { files: filesPromise, roomId } = $props();
+
+	let fileList: FileItem[] = $state([]);
+
+	$effect(() => {
+		filesPromise.then((initialFiles) => {
+			fileList = initialFiles;
+		});
+		return () => {
+			fileList.length = 0;
+		};
+	});
+
+	let fileInput: HTMLInputElement = $state(null)!;
 
 	let showMenuIndex: number | null = $state(null);
+	let isClosingMenu = $state(false);
+	let isDragging = $state(false);
 
 	const toggleMenu = (index: number | null) => {
-		showMenuIndex = showMenuIndex === index ? null : index;
+		if (showMenuIndex === null) {
+			showMenuIndex = index;
+		} else {
+			isClosingMenu = true;
+		}
 	};
 
 	const handleDownload = (file: { name: string }) => {
 		alert(`Downloading ${file.name}`);
-	};
-
-	const handleRename = (file: { name: string }) => {
-		alert(`Renaming ${file.name}`);
 	};
 
 	const handleDelete = (file: { name: string }) => {
@@ -26,7 +43,60 @@
 	const handleOpen = (file: { name: string }) => {
 		alert(`Opening ${file.name}`);
 	};
-	let notClosingMenu = $state(true);
+
+	const onchange = (e: Event) => {
+		handleFileUpload((e.currentTarget as HTMLInputElement).files);
+	};
+
+	const ondrop = (e: DragEvent) => {
+		e.preventDefault();
+		isDragging = false;
+		handleFileUpload(e.dataTransfer!.files);
+	};
+
+	const handleFileUpload = async (files: FileList | null) => {
+		if (files && files.length > 0) {
+			const arr = Array.from(files);
+
+			const fileItems: FileItem[] = arr.map((file) => ({
+				name: file.name,
+				type: file.type,
+				size: file.size,
+				uploaded: new Date(),
+				uploader: 'me',
+				isUploading: true
+			}));
+			fileList = fileList
+				.filter((item) => !fileItems.some((f) => f.name === item.name))
+				.concat(fileItems);
+
+			const { urls, uploader } = await fetch(`/api/rooms/${roomId}/upload`, {
+				method: 'POST',
+				body: JSON.stringify({
+					fileNames: arr.map(({ name }) => name)
+				}),
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			}).then((res) => res.json());
+
+			arr.forEach((file, i) => {
+				fetch(urls[i].url, {
+					method: 'PUT',
+					headers: {
+						'Content-Type': file.type,
+						'x-amz-meta-uploader': uploader
+					},
+					body: file
+				}).then(() => {
+					const item = fileList.find((item) => item.name === file.name)!;
+					item.isUploading = false;
+					item.uploader = uploader;
+					item.uploaded = new Date();
+				});
+			});
+		}
+	};
 </script>
 
 {#snippet button(onclick: () => void, text: string)}
@@ -34,39 +104,53 @@
 		onclick={(e) => {
 			e.stopPropagation();
 			onclick();
-			showMenuIndex = null;
+			isClosingMenu = true;
 		}}>{text}</button
 	>
 {/snippet}
 
-{#if showMenuIndex !== null && notClosingMenu}
+{#if showMenuIndex !== null && !isClosingMenu}
 	<button
 		aria-hidden="true"
 		transition:blur
 		class="overlay"
 		onclick={() => {
-			notClosingMenu = false;
+			isClosingMenu = true;
 		}}
 		onoutroendcapture={() => {
 			showMenuIndex = null;
-			notClosingMenu = true;
+			isClosingMenu = false;
 		}}
 	></button>
 {/if}
-<div class="file-list">
-	<ul class="nolist">
+<ul
+	class="nolist file-list"
+	{ondrop}
+	ondragover={(e) => {
+		e.preventDefault();
+		isDragging = true;
+	}}
+	ondragleave={() => {
+		isDragging = false;
+	}}
+>
+	<div class="dropzone" class:active={isDragging}>Drop files here</div>
+	{#await fileList then files}
 		{#each files as file, index}
 			<li
 				aria-hidden="true"
 				class="file-item"
 				class:active={showMenuIndex === index}
+				class:uploading={file.isUploading}
 				onclick={() => handleOpen(file)}
 			>
 				<div class="file-row">
 					<div class="file-content">
 						<div class="file-name">{file.name}</div>
 						<div class="file-details">
-							{file.size} KB, modified by {file.modifiedBy}
+							{(file.size / 1e3).toFixed(2)} KB, uploaded {new Date(
+								file.uploaded
+							).toLocaleString()} by {file.uploader}
 						</div>
 					</div>
 					<div class="menu-container">
@@ -79,11 +163,10 @@
 						>
 							⋮
 						</button>
-						{#if showMenuIndex === index && notClosingMenu}
+						{#if showMenuIndex === index && !isClosingMenu}
 							<div class="dropdown-menu" transition:slide>
 								{@render button(() => handleOpen(file), 'Open')}
 								{@render button(() => handleDownload(file), 'Download')}
-								{@render button(() => handleRename(file), 'Rename')}
 								{@render button(() => handleDelete(file), 'Delete')}
 							</div>
 						{/if}
@@ -91,12 +174,40 @@
 				</div>
 			</li>
 		{/each}
-	</ul>
-</div>
+	{/await}
+</ul>
+<button
+	class="btn"
+	onclick={(e) => {
+		e.stopPropagation();
+		fileInput.click();
+	}}
+>
+	<input type="file" hidden bind:this={fileInput} multiple {onchange} />
+	{m.addFile()}
+</button>
 
 <style>
 	.file-list {
 		padding: 1rem 0;
+		position: relative;
+	}
+	.dropzone {
+		background: #222c;
+		border-radius: 0.5rem;
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		z-index: 1;
+		font-weight: bold;
+		font-size: 2rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		display: none;
+	}
+	.dropzone.active {
+		display: flex;
 	}
 	.overlay {
 		position: fixed;
@@ -107,6 +218,9 @@
 		background: rgba(0, 0, 0, 0.5);
 		backdrop-filter: blur(1px);
 		z-index: 5;
+	}
+	.uploading {
+		opacity: 0.5;
 	}
 
 	.file-item {
@@ -196,5 +310,8 @@
 
 	.dropdown-menu button:hover {
 		background: var(--bg3-color);
+	}
+	.btn {
+		width: 100%;
 	}
 </style>

@@ -41,6 +41,8 @@
 		"wrangler": "^4.14.4"
 	},
 	"dependencies": {
+		"@aws-sdk/client-s3": "^3.806.0",
+		"@aws-sdk/s3-request-presigner": "^3.806.0",
 		"@inlang/paraglide-sveltekit": "^0.15.5",
 		"@neondatabase/serverless": "^1.0.0",
 		"@oslojs/crypto": "^1.0.1",

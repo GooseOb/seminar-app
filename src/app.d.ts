@@ -7,7 +7,10 @@ declare global {
 		// interface Error {}
 		interface Locals {
 			session?: Session;
-			user?: User;
+			/*
+			 * Undefined only in /login and /register routes
+			 */
+			user: User;
 		}
 		// interface PageData {}
 		// interface PageState {}

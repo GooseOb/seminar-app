@@ -3,18 +3,17 @@ import {
 	removeStudentFromGroup,
 	getUserByLogin
 } from '$lib/server/queries';
+import { error, json, text } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async ({ params: { id: login } }) => {
 	const student = await getUserByLogin(login);
 
 	if (!student) {
-		return new Response('Student not found', { status: 404 });
+		error(404, 'Student not found');
 	}
 
-	return new Response(JSON.stringify(student), {
-		headers: { 'Content-Type': 'application/json' }
-	});
+	return json(student);
 };
 
 export const DELETE: RequestHandler = async ({
@@ -25,22 +24,16 @@ export const DELETE: RequestHandler = async ({
 	const { groupId } = await request.json();
 
 	if (!groupId) {
-		if (await isStudentCreatedByLecturer(+id, locals.user!.id)) {
-			// TODO: handle account deletion
-			return new Response('Missing group ID', { status: 400 });
-		} else {
-			return new Response(
-				'Only the lecturer who created the student account, can delete it',
-				{ status: 401 }
-			);
-		}
+		error(400, 'Group ID is required');
 	}
 
 	try {
 		await removeStudentFromGroup(+id, +groupId);
-		return new Response('Student removed from group', { status: 200 });
+		return text('Student removed from group', {
+			status: 200
+		});
 	} catch (err) {
 		console.error('Error removing student from group:', err);
-		return new Response('Error removing student from group', { status: 500 });
+		error(500, 'Error removing student from group');
 	}
 };

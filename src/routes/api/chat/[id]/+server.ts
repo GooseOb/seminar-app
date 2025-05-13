@@ -1,6 +1,5 @@
-// src/routes/api/chat/[id]/+server.ts
 import { error, json } from '@sveltejs/kit';
-import type { RequestHandler } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
 import { insertMessage } from '$lib/server/queries';
 
 const roomStub = (env: Env, roomId: string) =>
