@@ -1,4 +1,4 @@
-import type { FileItem } from '$lib';
+import type { FileItem } from '$lib/files';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ platform, params: { id } }) => {

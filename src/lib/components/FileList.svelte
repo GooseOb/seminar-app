@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { blur, slide } from 'svelte/transition';
 	import * as m from '$lib/paraglide/messages.js';
-	import type { FileItem } from '$lib';
+	import type { FileItem } from '$lib/files';
 
 	const { files: filesPromise, roomId } = $props();
 
@@ -34,10 +34,24 @@
 		alert(`Downloading ${file.name}`);
 	};
 
-	const handleDelete = (file: { name: string }) => {
-		if (confirm(`Delete ${file.name}?`)) {
-			alert(`Deleted ${file.name}`);
-		}
+	const handleDelete = (file: { name: string; isPending: boolean }) => {
+		file.isPending = true;
+		fetch(`/api/rooms/${roomId}/delete`, {
+			method: 'POST',
+			body: JSON.stringify({ fileNames: [file.name] }),
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		})
+			.then((res) => res.json())
+			.then(({ urls }) =>
+				fetch(urls[0], {
+					method: 'DELETE'
+				})
+			)
+			.then(() => {
+				fileList = fileList.filter((item) => item.name !== file.name);
+			});
 	};
 
 	const handleOpen = (file: { name: string }) => {
@@ -64,7 +78,7 @@
 				size: file.size,
 				uploaded: new Date(),
 				uploader: 'me',
-				isUploading: true
+				isPending: true
 			}));
 			fileList = fileList
 				.filter((item) => !fileItems.some((f) => f.name === item.name))
@@ -81,7 +95,7 @@
 			}).then((res) => res.json());
 
 			arr.forEach((file, i) => {
-				fetch(urls[i].url, {
+				fetch(urls[i], {
 					method: 'PUT',
 					headers: {
 						'Content-Type': file.type,
@@ -90,7 +104,7 @@
 					body: file
 				}).then(() => {
 					const item = fileList.find((item) => item.name === file.name)!;
-					item.isUploading = false;
+					item.isPending = false;
 					item.uploader = uploader;
 					item.uploaded = new Date();
 				});
@@ -141,7 +155,7 @@
 				aria-hidden="true"
 				class="file-item"
 				class:active={showMenuIndex === index}
-				class:uploading={file.isUploading}
+				class:pending={file.isPending}
 				onclick={() => handleOpen(file)}
 			>
 				<div class="file-row">
@@ -219,7 +233,7 @@
 		backdrop-filter: blur(1px);
 		z-index: 5;
 	}
-	.uploading {
+	.pending {
 		opacity: 0.5;
 	}
 
