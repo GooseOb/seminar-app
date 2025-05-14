@@ -11,7 +11,7 @@ export const roomOwnerGuard =
 			params: { id }
 		} = props;
 		if (await isOwnerOfRoom(user!.id, +id)) {
-			fn(props);
+			return fn(props);
 		}
 		error(403, {
 			message: 'You are not the owner of this room'
