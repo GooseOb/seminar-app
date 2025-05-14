@@ -8,7 +8,7 @@
 	let fileList: FileItem[] = $state([]);
 
 	$effect(() => {
-		filesPromise.then((initialFiles) => {
+		filesPromise.then((initialFiles: FileItem[]) => {
 			fileList = initialFiles;
 		});
 		return () => {
@@ -30,20 +30,45 @@
 		}
 	};
 
+	interface Res {
+		urls: string[];
+	}
+	interface UploadRes extends Res {
+		uploader: string;
+	}
+
 	const handleDownload = (file: { name: string }) => {
-		alert(`Downloading ${file.name}`);
+		fetch(`/api/rooms/${roomId}/files/get`, {
+			method: 'POST',
+			body: JSON.stringify({
+				fileNames: [file.name],
+				isDownload: true
+			}),
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		})
+			.then<Res>((res) => res.json())
+			.then(({ urls }) => {
+				for (const url of urls) {
+					const a = document.createElement('a');
+					a.href = url;
+					a.download = file.name;
+					a.click();
+				}
+			});
 	};
 
 	const handleDelete = (file: { name: string; isPending: boolean }) => {
 		file.isPending = true;
-		fetch(`/api/rooms/${roomId}/delete`, {
+		fetch(`/api/rooms/${roomId}/files/delete`, {
 			method: 'POST',
 			body: JSON.stringify({ fileNames: [file.name] }),
 			headers: {
 				'Content-Type': 'application/json'
 			}
 		})
-			.then((res) => res.json())
+			.then<Res>((res) => res.json())
 			.then(({ urls }) =>
 				fetch(urls[0], {
 					method: 'DELETE'
@@ -55,7 +80,25 @@
 	};
 
 	const handleOpen = (file: { name: string }) => {
-		alert(`Opening ${file.name}`);
+		fetch(`/api/rooms/${roomId}/files/get`, {
+			method: 'POST',
+			body: JSON.stringify({
+				fileNames: [file.name],
+				isDownload: false
+			}),
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		})
+			.then<Res>((res) => res.json())
+			.then(({ urls }) => {
+				for (const url of urls) {
+					const a = document.createElement('a');
+					a.href = url;
+					a.download = file.name;
+					a.click();
+				}
+			});
 	};
 
 	const onchange = (e: Event) => {
@@ -84,15 +127,18 @@
 				.filter((item) => !fileItems.some((f) => f.name === item.name))
 				.concat(fileItems);
 
-			const { urls, uploader } = await fetch(`/api/rooms/${roomId}/upload`, {
-				method: 'POST',
-				body: JSON.stringify({
-					fileNames: arr.map(({ name }) => name)
-				}),
-				headers: {
-					'Content-Type': 'application/json'
+			const { urls, uploader } = await fetch(
+				`/api/rooms/${roomId}/files/upload`,
+				{
+					method: 'POST',
+					body: JSON.stringify({
+						fileNames: arr.map(({ name }) => name)
+					}),
+					headers: {
+						'Content-Type': 'application/json'
+					}
 				}
-			}).then((res) => res.json());
+			).then<UploadRes>((res) => res.json());
 
 			arr.forEach((file, i) => {
 				fetch(urls[i], {
