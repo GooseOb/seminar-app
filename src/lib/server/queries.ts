@@ -512,29 +512,36 @@ export const deleteGroup = async (groupId: number) => {
 	});
 };
 
-// either user is owner, or user is owner of the group the project belongs to
 const hasAccessToProjectQuery = () =>
 	db()
 		.select({})
 		.from(projectRoom)
+		.innerJoin(project, eq(project.id, projectRoom.id))
 		.where(
 			and(
 				eq(projectRoom.id, sql.placeholder('projectId')),
 				or(
+					// user is owner of the project
 					eq(projectRoom.ownerId, sql.placeholder('userId')),
+					// user is owner of the group the project belongs to
 					exists(
 						db()
 							.select()
 							.from(room)
-							.where(eq(room.ownerId, sql.placeholder('userId')))
+							.where(
+								and(
+									eq(room.id, project.groupId),
+									eq(room.ownerId, sql.placeholder('userId'))
+								)
+							)
 					)
 				)
 			)
 		);
 
 export const hasAccessToProject = (
-	projectId: number,
-	userId: number
+	userId: number,
+	projectId: number
 ): Promise<boolean> =>
 	hasAccessToProjectQuery()
 		.execute({

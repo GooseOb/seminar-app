@@ -11,7 +11,7 @@ export const projectAccessGuard =
 			params: { id }
 		} = props;
 		if (await hasAccessToProject(locals.user!.id, +id)) {
-			fn(props);
+			return fn(props);
 		}
 		error(403, {
 			message: 'You do not have access to this project'
