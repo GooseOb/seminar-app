@@ -149,6 +149,30 @@ export const isMemberOfGroup = (
 		})
 		.then(({ length }) => length > 0);
 
+const isOwnerOfRoomQuery = () =>
+	db()
+		.select()
+		.from(room)
+		.where(
+			and(
+				eq(room.id, sql.placeholder('roomId')),
+				eq(room.ownerId, sql.placeholder('userId'))
+			)
+		)
+		.limit(1)
+		.prepare('isOwnerOfRoomQuery');
+
+export const isOwnerOfRoom = (
+	userId: number,
+	roomId: number
+): Promise<boolean> =>
+	isOwnerOfRoomQuery()
+		.execute({
+			userId,
+			roomId
+		})
+		.then(({ length }) => length > 0);
+
 const groupMembersWithProjectsQuery = () =>
 	db()
 		.select({

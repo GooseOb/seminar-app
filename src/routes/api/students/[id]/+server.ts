@@ -1,7 +1,7 @@
 import {
-	isStudentCreatedByLecturer,
 	removeStudentFromGroup,
-	getUserByLogin
+	getUserByLogin,
+	isOwnerOfRoom
 } from '$lib/server/queries';
 import { error, json, text } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
@@ -25,6 +25,10 @@ export const DELETE: RequestHandler = async ({
 
 	if (!groupId) {
 		error(400, 'Group ID is required');
+	}
+
+	if (!(await isOwnerOfRoom(locals.user.id, +groupId))) {
+		error(403, 'You are not the owner of this room');
 	}
 
 	try {
