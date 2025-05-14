@@ -7,7 +7,13 @@ import * as m from '$lib/paraglide/messages';
 import { redirect } from '$lib/i18n';
 
 export const actions: Actions = {
-	create: async ({ request, locals }) => {
+	create: async ({ request, locals: { user } }) => {
+		if (user.role !== 'lecturer') {
+			return fail(403, {
+				error: 'You are not allowed to create a group'
+			});
+		}
+
 		const form = await request.formData();
 		const name = form.get('group_name') as string;
 		const students = JSON.parse(form.get('students') as string).map(
@@ -25,12 +31,7 @@ export const actions: Actions = {
 		let groupId: number;
 		try {
 			groupId = (
-				await insertGroupWithStudents(
-					name,
-					locals.user!.id,
-					students,
-					inviteeIds
-				)
+				await insertGroupWithStudents(name, user.id, students, inviteeIds)
 			).group.id;
 		} catch (error) {
 			const number = /Key \(login\)=\(([^)]*)\) already exists/.exec(
@@ -61,6 +62,7 @@ export const actions: Actions = {
 				error: m.studentNotFound({ number })
 			});
 		}
+
 		return {
 			student,
 			success: true

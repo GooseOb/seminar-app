@@ -8,17 +8,16 @@ const roomStub = (env: Env, roomId: string) =>
 export const POST: RequestHandler = async ({
 	request,
 	params: { id },
-	locals,
+	locals: { user },
 	platform
 }) => {
 	const { text } = await request.json();
-	const senderId = locals.user?.id;
 
-	if (!text || !senderId || !id) {
+	if (!text || !id) {
 		throw error(400, 'Missing fields');
 	}
 
-	const message = await insertMessage({ senderId, roomId: +id, text });
+	const message = await insertMessage({ senderId: user.id, roomId: +id, text });
 
 	await roomStub(platform.env, id).fetch('http://dummy/message', {
 		method: 'POST',

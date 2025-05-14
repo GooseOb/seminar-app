@@ -127,7 +127,7 @@ export const getUserById = async (id: number) => {
 
 const membershipQuery = () =>
 	db()
-		.select()
+		.select({})
 		.from(groupMembership)
 		.where(
 			and(
@@ -151,7 +151,7 @@ export const isMemberOfGroup = (
 
 const isOwnerOfRoomQuery = () =>
 	db()
-		.select()
+		.select({})
 		.from(room)
 		.where(
 			and(
@@ -512,11 +512,10 @@ export const deleteGroup = async (groupId: number) => {
 	});
 };
 
-// <NOT CURRENTLY USED>
 // either user is owner, or user is owner of the group the project belongs to
 const hasAccessToProjectQuery = () =>
 	db()
-		.select()
+		.select({})
 		.from(projectRoom)
 		.where(
 			and(
@@ -543,7 +542,6 @@ export const hasAccessToProject = (
 			userId
 		})
 		.then(({ length }) => length > 0);
-// </NOT CURRENTLY USED>
 
 const updateProjectQuery = () =>
 	db()
