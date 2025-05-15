@@ -23,3 +23,21 @@ export type FileItem = {
 	uploader?: string;
 	isPending?: boolean;
 };
+
+export const getRoomFiles = (r2: R2Bucket, id: string) =>
+	r2
+		.list({
+			prefix: `rooms/${id}/`,
+			include: ['customMetadata']
+		})
+		.then((res) =>
+			res.objects.map(
+				(file): FileItem => ({
+					name: file.key.split('/').at(-1)!,
+					size: file.size,
+					type: file.httpEtag,
+					uploaded: file.uploaded,
+					uploader: file.customMetadata?.uploader
+				})
+			)
+		);

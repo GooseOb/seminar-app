@@ -11,7 +11,10 @@ export const POST: RequestHandler = async ({
 	params: { id },
 	locals: { user }
 }) => {
-	const { fileNames, isDownload } = await request.json();
+	const { fileNames, isDownload } = await request.json<{
+		fileNames: string[];
+		isDownload: boolean;
+	}>();
 
 	if (!fileNames) {
 		error(400, 'File names are required');
@@ -30,7 +33,7 @@ export const POST: RequestHandler = async ({
 				s3,
 				new GetObjectCommand({
 					Bucket: S3_BUCKET,
-					Key: id + '/' + fileName,
+					Key: `rooms/${id}/${fileName}`,
 					ResponseContentDisposition
 				}),
 				{

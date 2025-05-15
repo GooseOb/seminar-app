@@ -1,11 +1,15 @@
 import { error } from '@sveltejs/kit';
 
-type Bool = boolean | Promise<boolean>;
+type CheckFn<TProps extends any[]> = (
+	...props: TProps
+) => boolean | Promise<boolean>;
 
 export const createGuard =
-	<T>(check: (props: T) => Bool, message: () => string) =>
-	(fn: <U>(props: T) => U) =>
-	async (props: T) => {
+	<TProps>(check: CheckFn<[TProps]>, message: () => string) =>
+	<TFnProps extends TProps, TResult, TFn extends (props: TFnProps) => TResult>(
+		fn: TFn
+	) =>
+	async (props: TFnProps) => {
 		if (await check(props)) {
 			return fn(props);
 		}
@@ -15,7 +19,7 @@ export const createGuard =
 	};
 
 export const createUserIdGuard = (
-	check: (userId: number, paramsId: number) => Bool,
+	check: CheckFn<[userId: number, paramsId: number]>,
 	message: () => string
 ) =>
 	createGuard<{ locals: App.Locals; params: { id: string } }>(

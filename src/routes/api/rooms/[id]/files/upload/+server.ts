@@ -11,7 +11,9 @@ export const POST: RequestHandler = async ({
 	params: { id },
 	locals: { user }
 }) => {
-	const { fileNames } = await request.json();
+	const { fileNames } = await request.json<{
+		fileNames: string[];
+	}>();
 
 	if (!fileNames) {
 		error(400, 'File names are required');
@@ -29,7 +31,7 @@ export const POST: RequestHandler = async ({
 				s3,
 				new PutObjectCommand({
 					Bucket: S3_BUCKET,
-					Key: id + '/' + fileName,
+					Key: `rooms/${id}/${fileName}`,
 					Metadata: { uploader }
 				}),
 				{
