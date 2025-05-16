@@ -16,12 +16,25 @@ html {
 		--bg4-color: #e0e0e0;
 		--primary-color: #007bff;
 	}
+
+	@media (prefers-color-scheme: light) {
+		&.auto {
+			--fg-color: #000;
+			--bg-color: #f0f0f0;
+			--bg2-color: #d8d9da;
+			--bg3-color: #c1c3c5;
+			--bg4-color: #e0e0e0;
+			--primary-color: #007bff;
+		}
+	}
 }
+
 * {
 	margin: 0;
 	padding: 0;
 	font-family: sans-serif;
 }
+
 ::-webkit-scrollbar {
 	width: 10px;
 }

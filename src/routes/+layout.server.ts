@@ -1,20 +1,16 @@
 import type { LayoutServerLoad } from './$types';
 import { getUserGroupsAndProjects } from '$lib/server/queries';
-import type { Theme } from '$lib/theme';
 
-export const load: LayoutServerLoad = async ({ locals: { user }, cookies }) => {
-	const theme = cookies.get('theme') as Theme;
+export const load: LayoutServerLoad = async ({ locals: { user } }) => {
 	if (user) {
 		const { id, role } = user;
 		return {
 			groups: getUserGroupsAndProjects(id),
-			role,
-			theme
+			role
 		};
 	}
 	return {
 		groups: Promise.resolve([]),
-		role: null,
-		theme
+		role: null
 	};
 };

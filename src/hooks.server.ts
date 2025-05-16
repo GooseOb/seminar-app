@@ -21,7 +21,7 @@ const getHandleFinal =
 
 export const handle: Handle = async (input) => {
 	const { url, cookies, locals } = input.event;
-	setDatabaseUrl(input.event.platform?.env.HYPERDRIVE.connectionString);
+	setDatabaseUrl(input.event.platform!.env.HYPERDRIVE.connectionString);
 
 	const canonicalPath = i18n.route(url.pathname);
 	const lang = i18n.getLanguageFromUrl(url);
@@ -34,8 +34,6 @@ export const handle: Handle = async (input) => {
 			path: '/',
 			httpOnly: false
 		});
-	} else if (theme === 'auto') {
-		theme = cookies.get('last_theme') || 'dark';
 	}
 
 	const handleFinal = getHandleFinal({

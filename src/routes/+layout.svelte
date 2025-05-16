@@ -12,6 +12,8 @@
 	import { fade } from 'svelte/transition';
 	import { page } from '$app/state';
 
+	const { children, data }: LayoutProps = $props();
+
 	let mainElement: HTMLElement = $state(null)!;
 	if (browser) {
 		$effect(() => {
@@ -24,16 +26,6 @@
 				}
 			};
 		});
-	}
-
-	const { children, data }: LayoutProps = $props();
-
-	if (data.theme === 'auto' && browser) {
-		const theme = window.matchMedia('(prefers-color-scheme: dark)').matches
-			? 'dark'
-			: 'light';
-		document.cookie = `last_theme=${theme}; path=/; max-age=31536000;`;
-		document.documentElement.className = theme;
 	}
 
 	let isOpen = $state(true);
