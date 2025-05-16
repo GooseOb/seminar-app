@@ -54,5 +54,9 @@
 	"failedToUpdateGroupName": "Failed to update group name",
 
 	"studentAlreadyExists": "Student with number {number} already exists",
-	"studentNotFound": "Student with number {number} not found"
+	"studentNotFound": "Student with number {number} not found",
+
+	"notGroupMember": "You are not a member of this group",
+	"noAccessToProject": "You do not have access to this project",
+	"notRoomOwner": "You are not the owner of this room"
 }

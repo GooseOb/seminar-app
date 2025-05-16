@@ -5,7 +5,7 @@ type CheckFn<TProps extends any[]> = (
 ) => boolean | Promise<boolean>;
 
 export const createGuard =
-	<TProps>(check: CheckFn<[TProps]>, message: () => string) =>
+	<TProps>(check: CheckFn<[TProps]>, getMessage: () => string) =>
 	<TFnProps extends TProps, TResult, TFn extends (props: TFnProps) => TResult>(
 		fn: TFn
 	) =>
@@ -14,15 +14,15 @@ export const createGuard =
 			return fn(props);
 		}
 		throw error(403, {
-			message: message()
+			message: getMessage()
 		});
 	};
 
 export const createUserIdGuard = (
 	check: CheckFn<[userId: number, paramsId: number]>,
-	message: () => string
+	getMessage: () => string
 ) =>
 	createGuard<{ locals: App.Locals; params: { id: string } }>(
 		({ locals: { user }, params: { id } }) => check(user!.id, +id),
-		message
+		getMessage
 	);

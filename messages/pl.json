@@ -54,5 +54,9 @@
 	"failedToUpdateGroupName": "Nie udało się zaktualizować nazwy grupy",
 
 	"studentAlreadyExists": "Student z numerem albumu {number} już istnieje",
-	"studentNotFound": "Student z numerem albumu {number} nie został znaleziony"
+	"studentNotFound": "Student z numerem albumu {number} nie został znaleziony",
+
+	"notGroupMember": "Nie jesteś członkiem tej grupy",
+	"noAccessToProject": "Nie masz dostępu do tego projektu",
+	"notRoomOwner": "Nie jesteś właścicielem tego pokoju"
 }
