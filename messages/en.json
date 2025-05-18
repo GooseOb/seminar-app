@@ -50,6 +50,8 @@
 	"members": "Members",
 	"aboutProject": "About",
 
+	"lecturer": "Lecturer",
+
 	"failedToRemoveStudent": "Failed to remove student",
 	"failedToUpdateGroupName": "Failed to update group name",
 

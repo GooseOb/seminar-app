@@ -50,6 +50,8 @@
 	"members": "Członkowie",
 	"aboutProject": "O projekcie",
 
+	"lecturer": "Prowadzący",
+
 	"failedToRemoveStudent": "Nie udało się usunąć studenta",
 	"failedToUpdateGroupName": "Nie udało się zaktualizować nazwy grupy",
 

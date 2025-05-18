@@ -589,6 +589,7 @@ export type UserUpdateData = {
 };
 
 export const updateUser = async (id: number, data: UserUpdateData) => {
+	if (data.password) data.password = hashPassword(data.password);
 	await db().update(user).set(data).where(eq(user.id, id)).execute();
 };
 

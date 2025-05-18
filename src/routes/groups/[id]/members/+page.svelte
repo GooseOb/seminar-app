@@ -10,7 +10,7 @@
 
 <div class="members-container">
 	{#await lecturer then member}
-		<MemberCard {member} text="Lecturer" />
+		<MemberCard {member} text={m.lecturer()} />
 	{/await}
 
 	{#if role === 'lecturer'}

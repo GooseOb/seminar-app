@@ -47,12 +47,12 @@
 		display: flex;
 		align-items: center;
 		font-weight: 600;
-		font-size: 1.1rem;
+		font-size: 1.1em;
 		color: var(--text-color);
 	}
 
 	.member-text {
-		font-size: 0.85rem;
+		font-size: 0.85em;
 		color: #888;
 	}
 </style>

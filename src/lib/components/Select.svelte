@@ -18,7 +18,7 @@
 </script>
 
 <div class="selector">
-	{label}:
+	<span>{label}</span>
 	<select {value} {onchange}>
 		{#each options as { value, displayName }}
 			<option {value}>{displayName}</option>
@@ -32,17 +32,24 @@
 		align-items: center;
 		gap: 8px;
 	}
+	span {
+		flex: 1;
+	}
 	select {
-		width: 100%;
-		padding: 8px 12px;
-		border: 1px solid var(--fg-color);
-		border-radius: 4px;
+		text-align: center;
+		flex: 1;
+		padding: 0.5em;
+		border: 0.2em solid var(--bg3-color);
+		border-radius: 0.5em;
 		background-color: var(--bg3-color);
-		font-size: 16px;
+		font-size: 0.9em;
 		cursor: pointer;
 		appearance: none;
 		background-repeat: no-repeat;
 		background-position: right 8px center;
-		width: fit-content;
+		transition: background-color 0.2s;
+	}
+	select:hover {
+		background-color: var(--bg2-color);
 	}
 </style>
