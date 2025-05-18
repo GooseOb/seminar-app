@@ -13,14 +13,14 @@
 	import PasswordInput from '$lib/components/PasswordInput.svelte';
 	import Success from '$lib/components/Success.svelte';
 	import { enhance } from '$app/forms';
+	import Dropzone from '$lib/components/Dropzone.svelte';
 
 	const { data, form } = $props();
 	const user = $state(data.user);
 	let theme = $state(data.theme);
 	let imageInput: HTMLInputElement = $state(null)!;
 
-	const setImage = async (e: Event) => {
-		const files = (e.target as HTMLInputElement).files;
+	const setImage = async (files: FileList | null) => {
 		if (!files) return;
 
 		const { url, accessUrl } = await fetch('/api/user/image/upload', {
@@ -57,26 +57,37 @@
 	}[];
 </script>
 
-<div>
-	<MemberCard member={user} text={user.role === 'lecturer' ? m.lecturer() : ''}>
-		<button
-			style="width: 100%;"
-			class="btn"
-			onclick={(e) => {
-				e.stopPropagation();
-				imageInput.click();
+<div class="container">
+	<div class="member-card">
+		<Dropzone
+			ondrop={(e) => {
+				setImage(e.dataTransfer!.files);
 			}}
+		/>
+		<MemberCard
+			member={user}
+			text={user.role === 'lecturer' ? m.lecturer() : ''}
 		>
-			<input
-				type="file"
-				hidden
-				bind:this={imageInput}
-				multiple
-				onchange={setImage}
-			/>
-			{m.updatePhoto()}
-		</button>
-	</MemberCard>
+			<button
+				class="btn"
+				onclick={(e) => {
+					e.stopPropagation();
+					imageInput.click();
+				}}
+			>
+				<input
+					type="file"
+					hidden
+					bind:this={imageInput}
+					multiple
+					onchange={(e) => {
+						setImage(e.currentTarget.files);
+					}}
+				/>
+				{m.updatePhoto()}
+			</button>
+		</MemberCard>
+	</div>
 	{#if user.role === 'lecturer'}
 		<form
 			method="POST"
@@ -140,11 +151,14 @@
 </div>
 
 <style>
-	div {
+	.container {
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
 		padding: 1rem;
 		font-size: 1.25rem;
+	}
+	.member-card {
+		position: relative;
 	}
 </style>

@@ -75,7 +75,6 @@
 		background-color: var(--bg3-color);
 		transition: width 0.3s ease;
 		overflow-x: hidden;
-		white-space: nowrap;
 		z-index: 2;
 		max-height: 100%;
 	}

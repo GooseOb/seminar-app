@@ -42,9 +42,10 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		display: none;
+		display: flex;
+		visibility: hidden;
 	}
 	.dropzone.active {
-		display: flex;
+		visibility: visible;
 	}
 </style>
