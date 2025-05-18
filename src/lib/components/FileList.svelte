@@ -1,18 +1,20 @@
 <script lang="ts">
-	import { blur, slide } from 'svelte/transition';
+	import { blur } from 'svelte/transition';
 	import * as m from '$lib/paraglide/messages.js';
 	import type { FileItem } from '$lib/files';
+	import DropdownMenu from './DropdownMenu.svelte';
+	import Dropzone from './Dropzone.svelte';
 
 	const { files: filesPromise, roomId } = $props();
 
-	let fileList: FileItem[] = $state([]);
+	let files: FileItem[] = $state([]);
 
 	$effect(() => {
 		filesPromise.then((initialFiles: FileItem[]) => {
-			fileList = initialFiles;
+			files = initialFiles;
 		});
 		return () => {
-			fileList.length = 0;
+			files.length = 0;
 		};
 	});
 
@@ -20,7 +22,6 @@
 
 	let showMenuIndex: number | null = $state(null);
 	let isClosingMenu = $state(false);
-	let isDragging = $state(false);
 
 	const toggleMenu = (index: number | null) => {
 		if (showMenuIndex === null) {
@@ -37,68 +38,59 @@
 		uploader: string;
 	}
 
-	const handleDownload = (file: { name: string }) => {
-		fetch(`/api/rooms/${roomId}/files/get`, {
+	const requestFileUrls = <TResponse extends Res>(
+		action: string,
+		body: object
+	) =>
+		fetch(`/api/rooms/${roomId}/files/${action}`, {
 			method: 'POST',
-			body: JSON.stringify({
-				fileNames: [file.name],
-				isDownload: true
-			}),
+			body: JSON.stringify(body),
 			headers: {
 				'Content-Type': 'application/json'
 			}
-		})
-			.then<Res>((res) => res.json())
-			.then(({ urls }) => {
-				for (const url of urls) {
-					const a = document.createElement('a');
-					a.href = url;
-					a.download = file.name;
-					a.click();
-				}
-			});
+		}).then((res) => res.json<TResponse>());
+
+	const handleDownload = (file: { name: string }) => {
+		requestFileUrls<Res>('get', {
+			fileNames: [file.name],
+			isDownload: true
+		}).then(({ urls }) => {
+			for (const url of urls) {
+				const a = document.createElement('a');
+				a.href = url;
+				a.download = file.name;
+				a.click();
+			}
+		});
 	};
 
-	const handleDelete = (file: { name: string; isPending: boolean }) => {
+	const handleDelete = (file: { name: string; isPending?: boolean }) => {
 		file.isPending = true;
-		fetch(`/api/rooms/${roomId}/files/delete`, {
-			method: 'POST',
-			body: JSON.stringify({ fileNames: [file.name] }),
-			headers: {
-				'Content-Type': 'application/json'
-			}
+		requestFileUrls<Res>('delete', {
+			fileNames: [file.name]
 		})
-			.then<Res>((res) => res.json())
 			.then(({ urls }) =>
 				fetch(urls[0], {
 					method: 'DELETE'
 				})
 			)
 			.then(() => {
-				fileList = fileList.filter((item) => item.name !== file.name);
+				files = files.filter((item) => item.name !== file.name);
 			});
 	};
 
 	const handleOpen = (file: { name: string }) => {
-		fetch(`/api/rooms/${roomId}/files/get`, {
-			method: 'POST',
-			body: JSON.stringify({
-				fileNames: [file.name],
-				isDownload: false
-			}),
-			headers: {
-				'Content-Type': 'application/json'
-			}
-		})
-			.then<Res>((res) => res.json())
-			.then(({ urls }) => {
-				for (const url of urls) {
-					const a = document.createElement('a');
-					a.href = url;
-					a.download = file.name;
-					a.click();
-				}
-			});
+		requestFileUrls<Res>('get', {
+			fileNames: [file.name],
+			isDownload: false
+		}).then(({ urls }) => {
+			// TODO: Add preview for images and pdfs
+			const url = urls[0];
+			const a = document.createElement('a');
+			a.href = url;
+			a.download = file.name;
+			a.click();
+		});
 	};
 
 	const onchange = (e: Event) => {
@@ -106,14 +98,12 @@
 	};
 
 	const ondrop = (e: DragEvent) => {
-		e.preventDefault();
-		isDragging = false;
 		handleFileUpload(e.dataTransfer!.files);
 	};
 
-	const handleFileUpload = async (files: FileList | null) => {
-		if (files && files.length > 0) {
-			const arr = Array.from(files);
+	const handleFileUpload = async (filesToUpload: FileList | null) => {
+		if (filesToUpload && filesToUpload.length > 0) {
+			const arr = Array.from(filesToUpload);
 
 			const fileItems: FileItem[] = arr.map((file) => ({
 				name: file.name,
@@ -123,22 +113,13 @@
 				uploader: 'me',
 				isPending: true
 			}));
-			fileList = fileList
+			files = files
 				.filter((item) => !fileItems.some((f) => f.name === item.name))
 				.concat(fileItems);
 
-			const { urls, uploader } = await fetch(
-				`/api/rooms/${roomId}/files/upload`,
-				{
-					method: 'POST',
-					body: JSON.stringify({
-						fileNames: arr.map(({ name }) => name)
-					}),
-					headers: {
-						'Content-Type': 'application/json'
-					}
-				}
-			).then<UploadRes>((res) => res.json());
+			const { urls, uploader } = await requestFileUrls<UploadRes>('upload', {
+				fileNames: arr.map(({ name }) => name)
+			});
 
 			arr.forEach((file, i) => {
 				fetch(urls[i], {
@@ -149,7 +130,7 @@
 					},
 					body: file
 				}).then(() => {
-					const item = fileList.find((item) => item.name === file.name)!;
+					const item = files.find((item) => item.name === file.name)!;
 					item.isPending = false;
 					item.uploader = uploader;
 					item.uploaded = new Date();
@@ -158,16 +139,6 @@
 		}
 	};
 </script>
-
-{#snippet button(onclick: () => void, text: string)}
-	<button
-		onclick={(e) => {
-			e.stopPropagation();
-			onclick();
-			isClosingMenu = true;
-		}}>{text}</button
-	>
-{/snippet}
 
 {#if showMenuIndex !== null && !isClosingMenu}
 	<button
@@ -183,59 +154,62 @@
 		}}
 	></button>
 {/if}
-<ul
-	class="nolist file-list"
-	{ondrop}
-	ondragover={(e) => {
-		e.preventDefault();
-		isDragging = true;
-	}}
-	ondragleave={() => {
-		isDragging = false;
-	}}
->
-	<div class="dropzone" class:active={isDragging}>Drop files here</div>
-	{#await fileList then files}
-		{#each files as file, index}
-			<li
-				aria-hidden="true"
-				class="file-item"
-				class:active={showMenuIndex === index}
-				class:pending={file.isPending}
-				onclick={() => handleOpen(file)}
-			>
-				<div class="file-row">
-					<div class="file-content">
-						<div class="file-name">{file.name}</div>
-						<div class="file-details">
-							{(file.size / 1e3).toFixed(2)} KB, uploaded {new Date(
-								file.uploaded
-							).toLocaleString()} by {file.uploader}
-						</div>
-					</div>
-					<div class="menu-container">
-						<button
-							class="menu-btn"
-							onclick={(e) => {
-								e.stopPropagation();
-								toggleMenu(index);
-							}}
-						>
-							⋮
-						</button>
-						{#if showMenuIndex === index && !isClosingMenu}
-							<div class="dropdown-menu" transition:slide>
-								{@render button(() => handleOpen(file), 'Open')}
-								{@render button(() => handleDownload(file), 'Download')}
-								{@render button(() => handleDelete(file), 'Delete')}
-							</div>
-						{/if}
+<ul class="nolist file-list">
+	<Dropzone {ondrop} />
+	{#each files as file, index}
+		<li
+			aria-hidden="true"
+			class="file-item"
+			class:active={showMenuIndex === index}
+			class:pending={file.isPending}
+			onclick={() => handleOpen(file)}
+		>
+			<div class="file-row">
+				<div class="file-content">
+					<div class="file-name">{file.name}</div>
+					<div class="file-details">
+						{(file.size / 1e3).toFixed(2)} KB, uploaded {new Date(
+							file.uploaded
+						).toLocaleString()} by {file.uploader}
 					</div>
 				</div>
-			</li>
-		{/each}
-	{/await}
+				<div class="menu-container">
+					<button
+						class="menu-btn"
+						onclick={(e) => {
+							e.stopPropagation();
+							toggleMenu(index);
+						}}
+					>
+						⋮
+					</button>
+					{#if showMenuIndex === index && !isClosingMenu}
+						<DropdownMenu
+							onEachClick={() => {
+								isClosingMenu = true;
+							}}
+							buttons={[
+								{
+									text: 'Open',
+									onclick: () => handleOpen(file)
+								},
+								{
+									text: 'Download',
+									onclick: () => handleDownload(file)
+								},
+								{
+									text: 'Delete',
+									onclick: () => handleDelete(file)
+								}
+							]}
+						/>
+					{/if}
+				</div>
+			</div>
+		</li>
+	{/each}
 </ul>
+
 <button
 	class="btn"
 	onclick={(e) => {
@@ -251,23 +225,6 @@
 	.file-list {
 		padding: 1rem 0;
 		position: relative;
-	}
-	.dropzone {
-		background: #222c;
-		border-radius: 0.5rem;
-		position: absolute;
-		width: 100%;
-		height: 100%;
-		z-index: 1;
-		font-weight: bold;
-		font-size: 2rem;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		display: none;
-	}
-	.dropzone.active {
-		display: flex;
 	}
 	.overlay {
 		position: fixed;
@@ -344,33 +301,6 @@
 		opacity: 1;
 	}
 
-	.dropdown-menu {
-		position: absolute;
-		right: 0;
-		top: 100%;
-		background: var(--bg2-color);
-		border-radius: 0.5rem;
-		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-		z-index: 10;
-		overflow: hidden;
-	}
-
-	.dropdown-menu button {
-		display: block;
-		width: 100%;
-		padding: 0.8rem 1.5rem;
-		text-align: left;
-		background: transparent;
-		border: none;
-		cursor: pointer;
-		transition: background 0.2s;
-		font-size: 1.1rem;
-		font-weight: 500;
-	}
-
-	.dropdown-menu button:hover {
-		background: var(--bg3-color);
-	}
 	.btn {
 		width: 100%;
 	}

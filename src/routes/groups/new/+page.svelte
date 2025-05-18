@@ -5,8 +5,9 @@
 	import type { User } from '$lib/server/db';
 	import type { PageProps } from './$types';
 	import StudentSubmissionForm from '$lib/components/StudentSubmissionForm.svelte';
-	import StudentInvitationForm from '$lib/components/StudentInvitationForm.svelte';
 	import * as m from '$lib/paraglide/messages.js';
+	import StudentList from '$lib/components/StudentList.svelte';
+	import StudentInvitationInputForm from '$lib/components/StudentInvitationInputForm.svelte';
 
 	let { form }: PageProps = $props();
 
@@ -44,7 +45,7 @@
 	const onInviteSubmit = async (e: SubmitEvent) => {
 		e.preventDefault();
 		const student = await fetch(`/api/students/${currentInviteeNumber}`).then(
-			(res) => res.json()
+			(res) => res.json<User>()
 		);
 		if (student) {
 			currentInviteeNumber = '';
@@ -109,23 +110,27 @@
 
 <hr />
 
-<StudentInvitationForm
-	bind:currentInviteeNumber
-	onsubmit={onInviteSubmit}
-	students={existingStudents}
->
-	{#snippet actionButtons(_: (typeof existingStudents)[number], i: number)}
-		<button
-			type="button"
-			class="btn danger-btn"
-			onclick={() => {
-				existingStudents.splice(i, 1);
-			}}
-		>
-			{m.remove()}
-		</button>
-	{/snippet}
-</StudentInvitationForm>
+<form onsubmit={onInviteSubmit}>
+	<h2>{m.inviteExisting()}</h2>
+
+	<StudentInvitationInputForm bind:value={currentInviteeNumber}>
+		{m.add()}
+	</StudentInvitationInputForm>
+
+	<StudentList students={existingStudents} role="lecturer">
+		{#snippet actionButtons(_: (typeof existingStudents)[number], i: number)}
+			<button
+				type="button"
+				class="btn danger-btn"
+				onclick={() => {
+					existingStudents.splice(i, 1);
+				}}
+			>
+				{m.remove()}
+			</button>
+		{/snippet}
+	</StudentList>
+</form>
 
 <style>
 	.main-btn {
