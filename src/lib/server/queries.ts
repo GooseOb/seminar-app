@@ -593,6 +593,22 @@ export const updateUser = async (id: number, data: UserUpdateData) => {
 	await db().update(user).set(data).where(eq(user.id, id)).execute();
 };
 
+const updateUserPhotoQuery = () =>
+	db()
+		.update(user)
+		.set({
+			photo: sql.placeholder('photo') as any
+		})
+		.where(eq(user.id, sql.placeholder('id')))
+		.prepare('updateUserPhotoQuery');
+
+export const updateUserPhoto = async (id: number, photo: string) => {
+	await updateUserPhotoQuery().execute({
+		id,
+		photo
+	});
+};
+
 const insertMessageQuery = () => {
 	const insertedMessage = db()
 		.$with('inserted_message')

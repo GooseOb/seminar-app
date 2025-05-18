@@ -21,7 +21,9 @@
 			{text}
 		</span>
 	</div>
-	{@render children?.()}
+	<div class="member-actions">
+		{@render children?.()}
+	</div>
 </div>
 
 <style>
@@ -33,7 +35,7 @@
 		padding: 1rem;
 		margin-bottom: 0.5rem;
 		background: var(--bg2-color);
-		border-radius: 8px;
+		border-radius: 0.5rem;
 		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 		transition: transform 0.2s;
 	}
@@ -54,5 +56,18 @@
 	.member-text {
 		font-size: 0.85em;
 		color: #888;
+	}
+	.member-actions {
+		display: flex;
+		gap: 0.5rem;
+		margin-left: auto;
+
+		@media (max-width: 600px) {
+			flex: 1 1 100%;
+		}
+
+		:global(> *) {
+			width: 100%;
+		}
 	}
 </style>

@@ -15,7 +15,33 @@
 	import { enhance } from '$app/forms';
 
 	const { data, form } = $props();
+	const user = $state(data.user);
 	let theme = $state(data.theme);
+	let imageInput: HTMLInputElement = $state(null)!;
+
+	const setImage = async (e: Event) => {
+		const files = (e.target as HTMLInputElement).files;
+		if (!files) return;
+
+		const { url, accessUrl } = await fetch('/api/user/image/upload', {
+			method: 'POST'
+		}).then((res) => res.json<{ url: string; accessUrl: string }>());
+
+		const file = files[0];
+
+		fetch(url, {
+			method: 'PUT',
+			body: file,
+			headers: {
+				'Content-Type': file.type,
+				'Content-Length': file.size.toString()
+			}
+		}).then(() => {
+			imageInput.value = '';
+			user.photo = accessUrl;
+		});
+	};
+
 	const languageOptions = [
 		{
 			value: 'en',
@@ -29,37 +55,28 @@
 		value: AvailableLanguageTag;
 		displayName: string;
 	}[];
-	const user = $state(data.user);
 </script>
 
 <div>
-	<MemberCard
-		member={user}
-		text={user.role === 'lecturer' ? m.lecturer() : ''}
-	/>
-	<Select
-		label={m.language()}
-		value={languageTag()}
-		onchange={({ currentTarget }) => {
-			switchToLanguage(
-				currentTarget.value as (typeof availableLanguageTags)[number]
-			);
-		}}
-		options={languageOptions}
-	/>
-	<Select
-		label={m.theme()}
-		value={theme}
-		onchange={({ currentTarget }) => {
-			theme = currentTarget.value as Theme;
-			document.cookie = `theme=${theme}; path=/; max-age=31536000;`;
-			document.documentElement.className = theme;
-		}}
-		options={themes.map((value) => ({
-			value,
-			displayName: m[`theme_${value}`]()
-		}))}
-	/>
+	<MemberCard member={user} text={user.role === 'lecturer' ? m.lecturer() : ''}>
+		<button
+			style="width: 100%;"
+			class="btn"
+			onclick={(e) => {
+				e.stopPropagation();
+				imageInput.click();
+			}}
+		>
+			<input
+				type="file"
+				hidden
+				bind:this={imageInput}
+				multiple
+				onchange={setImage}
+			/>
+			{m.updatePhoto()}
+		</button>
+	</MemberCard>
 	{#if user.role === 'lecturer'}
 		<form
 			method="POST"
@@ -97,6 +114,29 @@
 			</Success>
 		</form>
 	{/if}
+	<Select
+		label={m.language()}
+		value={languageTag()}
+		onchange={({ currentTarget }) => {
+			switchToLanguage(
+				currentTarget.value as (typeof availableLanguageTags)[number]
+			);
+		}}
+		options={languageOptions}
+	/>
+	<Select
+		label={m.theme()}
+		value={theme}
+		onchange={({ currentTarget }) => {
+			theme = currentTarget.value as Theme;
+			document.cookie = `theme=${theme}; path=/; max-age=31536000;`;
+			document.documentElement.className = theme;
+		}}
+		options={themes.map((value) => ({
+			value,
+			displayName: m[`theme_${value}`]()
+		}))}
+	/>
 </div>
 
 <style>

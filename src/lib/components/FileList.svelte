@@ -94,14 +94,14 @@
 	};
 
 	const onchange = (e: Event) => {
-		handleFileUpload((e.currentTarget as HTMLInputElement).files);
+		handleUpload((e.currentTarget as HTMLInputElement).files);
 	};
 
 	const ondrop = (e: DragEvent) => {
-		handleFileUpload(e.dataTransfer!.files);
+		handleUpload(e.dataTransfer!.files);
 	};
 
-	const handleFileUpload = async (filesToUpload: FileList | null) => {
+	const handleUpload = async (filesToUpload: FileList | null) => {
 		if (filesToUpload && filesToUpload.length > 0) {
 			const arr = Array.from(filesToUpload);
 

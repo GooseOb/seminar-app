@@ -25,9 +25,7 @@
 	{/snippet}
 
 	{#if role === 'lecturer' && children}
-		<div class="member-actions">
-			{@render children(student)}
-		</div>
+		{@render children(student)}
 	{/if}
 </MemberCard>
 
@@ -39,11 +37,5 @@
 		padding: 0 0.25rem;
 		font-size: 0.8rem;
 		margin-left: 0.5rem;
-	}
-
-	.member-actions {
-		display: flex;
-		gap: 0.5rem;
-		margin-left: auto;
 	}
 </style>
