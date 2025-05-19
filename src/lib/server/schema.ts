@@ -1,4 +1,5 @@
 import {
+	boolean,
 	integer,
 	pgEnum,
 	pgTable,
@@ -19,7 +20,7 @@ export const userTable = pgTable('user', {
 	lastname: varchar({ length: 255 }).notNull(),
 	login: varchar({ length: 255 }).notNull().unique(),
 	password: varchar({ length: 255 }).notNull(),
-	photo: varchar({ length: 2048 }),
+	hasPhoto: boolean().notNull().default(false),
 	role: roleEnum().notNull()
 });
 

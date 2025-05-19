@@ -13,7 +13,7 @@ const [lecturer] = await insertUsers([
 		login: 'lecturer',
 		password,
 		role: 'lecturer',
-		photo: null
+		hasPhoto: false
 	}
 ]);
 
@@ -33,7 +33,7 @@ const { group, students } = await insertGroupWithStudents(
 		login,
 		password,
 		role: 'student',
-		photo: null
+		hasPhoto: false
 	})),
 	[]
 );

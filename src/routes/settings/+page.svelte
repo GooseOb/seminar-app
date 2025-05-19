@@ -23,9 +23,9 @@
 	const setImage = async (files: FileList | null) => {
 		if (!files) return;
 
-		const { url, accessUrl } = await fetch('/api/user/image/upload', {
+		const { url } = await fetch('/api/user/image/upload', {
 			method: 'POST'
-		}).then((res) => res.json<{ url: string; accessUrl: string }>());
+		}).then((res) => res.json<{ url: string }>());
 
 		const file = files[0];
 
@@ -38,7 +38,7 @@
 			}
 		}).then(() => {
 			imageInput.value = '';
-			user.photo = accessUrl;
+			user.hasPhoto = true;
 		});
 	};
 

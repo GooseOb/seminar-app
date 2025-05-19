@@ -28,7 +28,7 @@ export const actions: Actions = {
 					login,
 					password,
 					role: 'lecturer',
-					photo: null
+					hasPhoto: false
 				}
 			]);
 

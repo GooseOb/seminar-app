@@ -1,16 +1,19 @@
 <script lang="ts">
+	import { PUBLIC_S3_URL } from '$env/static/public';
+
 	const {
 		user
 	}: {
 		user: {
-			photo?: string;
+			id: number;
+			hasPhoto?: string;
 			firstname: string;
 		};
 	} = $props();
 </script>
 
-{#if user.photo}
-	<img src={user.photo} alt="" class="photo" />
+{#if user.hasPhoto}
+	<img src={`${PUBLIC_S3_URL}/users/${user.id}/image`} alt="" class="photo" />
 {:else}
 	<div class="photo placeholder">{user.firstname[0]}</div>
 {/if}

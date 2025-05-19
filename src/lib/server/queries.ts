@@ -180,7 +180,7 @@ const groupMembersWithProjectsQuery = () =>
 			firstname: user.firstname,
 			lastname: user.lastname,
 			login: user.login,
-			photo: user.photo,
+			hasPhoto: user.hasPhoto,
 			projectId: room.id,
 			projectNameEN: room.name,
 			projectNamePl: project.namePl
@@ -218,7 +218,7 @@ const getGroupOwnerQuery = () =>
 			id: user.id,
 			firstname: user.firstname,
 			lastname: user.lastname,
-			photo: user.photo
+			hasPhoto: user.hasPhoto
 		})
 		.from(user)
 		.innerJoin(
@@ -256,7 +256,7 @@ export const studentsInGroupQuery = () =>
 			firstname: user.firstname,
 			lastname: user.lastname,
 			login: user.login,
-			photo: user.photo,
+			hasPhoto: user.hasPhoto,
 			canEdit: exists(getStudentCreatedByLecturerSubQuery(user.id))
 		})
 		.from(groupMembership)
@@ -597,15 +597,15 @@ const updateUserPhotoQuery = () =>
 	db()
 		.update(user)
 		.set({
-			photo: sql.placeholder('photo') as any
+			hasPhoto: sql.placeholder('hasPhoto') as any
 		})
 		.where(eq(user.id, sql.placeholder('id')))
 		.prepare('updateUserPhotoQuery');
 
-export const updateUserPhoto = async (id: number, photo: string) => {
+export const setUserHasPhoto = async (id: number, hasPhoto: boolean = true) => {
 	await updateUserPhotoQuery().execute({
 		id,
-		photo
+		hasPhoto
 	});
 };
 

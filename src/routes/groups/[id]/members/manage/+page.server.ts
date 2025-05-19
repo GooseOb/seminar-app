@@ -113,7 +113,7 @@ export const actions = {
 							login: number,
 							password,
 							role: 'student',
-							photo: null
+							hasPhoto: false
 						}
 					],
 					locals.user!.id
