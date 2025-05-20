@@ -24,12 +24,11 @@
 
 	let elem: HTMLElement | null = $state(null);
 
-	if (browser && window.innerWidth < 768) {
-		console.log(window.innerWidth);
+	if (browser) {
 		$effect(() => {
 			if (elem) {
 				elem.addEventListener('click', ({ target }) => {
-					if ((target as HTMLElement).closest('a')) {
+					if (window.innerWidth < 768 && (target as HTMLElement).closest('a')) {
 						isOpen = false;
 					}
 				});
