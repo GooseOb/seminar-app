@@ -1,6 +1,6 @@
 <script lang="ts">
 	import * as m from '$lib/paraglide/messages.js';
-	import type { FileItem } from '$lib/files';
+	import type { FileItem } from '$lib/server/files';
 	import DropdownMenu from './DropdownMenu.svelte';
 	import Dropzone from './Dropzone.svelte';
 	import Overlay from './Overlay.svelte';

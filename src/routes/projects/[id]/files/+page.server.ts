@@ -1,4 +1,4 @@
-import { getRoomFiles } from '$lib/files';
+import { getRoomFiles } from '$lib/server/files';
 import { projectAccessGuard } from '$lib/guards/projectAccess';
 import type { PageServerLoad } from './$types';
 

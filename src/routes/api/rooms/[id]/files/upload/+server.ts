@@ -4,7 +4,7 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { S3_BUCKET } from '$env/static/private';
 import { isMemberOfGroup } from '$lib/server/queries';
 import type { RequestHandler } from './$types';
-import { getS3Client } from '$lib/files';
+import { getS3Client } from '$lib/server/files';
 
 export const POST: RequestHandler = async ({
 	request,

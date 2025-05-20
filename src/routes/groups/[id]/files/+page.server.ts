@@ -1,4 +1,4 @@
-import { getRoomFiles } from '$lib/files';
+import { getRoomFiles } from '$lib/server/files';
 import { groupMembershipGuard } from '$lib/guards/groupMembership';
 import type { PageServerLoad } from './$types';
 
