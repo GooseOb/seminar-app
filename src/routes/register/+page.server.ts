@@ -1,8 +1,12 @@
 import { fail } from '@sveltejs/kit';
 import { redirect } from '$lib/i18n';
-import { createSession, generateSessionToken } from '$lib/server/sessions';
 import type { Actions } from './$types';
-import { getUserByLogin, insertUsers } from '$lib/server/queries';
+import { getUserByLogin } from '$lib/server/db/queries/user/getByLogin';
+import { insertUsers } from '$lib/server/db/queries/user/insert';
+import {
+	createSession,
+	generateSessionToken
+} from '$lib/server/db/queries/sessions';
 
 export const actions: Actions = {
 	default: async ({ request, cookies }) => {

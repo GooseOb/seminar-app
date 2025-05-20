@@ -1,5 +1,7 @@
 import { projectAccessGuard } from '$lib/guards/projectAccess';
-import { getProject, getUserById, updateProject } from '$lib/server/queries';
+import { getProject } from '$lib/server/db/queries/project/get';
+import { updateProject } from '$lib/server/db/queries/project/update';
+import { getUserById } from '$lib/server/db/queries/user/getById';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = projectAccessGuard(

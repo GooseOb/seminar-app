@@ -1,7 +1,8 @@
 import { redirect } from '$lib/i18n';
-import { insertProject, isMemberOfGroup } from '$lib/server/queries';
 import { fail } from '@sveltejs/kit';
 import type { Actions } from './$types';
+import { isMemberOfGroup } from '$lib/server/db/queries/group/isMember';
+import { insertProject } from '$lib/server/db/queries/project/insert';
 
 export const actions = {
 	default: async ({ request, params: { id }, locals: { user } }) => {

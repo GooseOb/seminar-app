@@ -1,19 +1,19 @@
 import type { Actions, PageServerLoad } from './$types';
-import {
-	deleteGroup,
-	getGroupName,
-	getStudentsInGroup,
-	getUserByLogin,
-	insertGroupMembers,
-	insertStudents,
-	updateRoomName,
-	updateUser,
-	type UserUpdateData
-} from '$lib/server/queries';
 import { error, fail } from '@sveltejs/kit';
 import * as m from '$lib/paraglide/messages';
 import { redirect } from '$lib/i18n';
 import { roomOwnerGuard } from '$lib/guards/roomOwner';
+import { getStudentsInGroup } from '$lib/server/db/queries/group/getStudents';
+import { getGroupName } from '$lib/server/db/queries/group/getName';
+import { updateRoomName } from '$lib/server/db/queries/room/updateName';
+import { getUserByLogin } from '$lib/server/db/queries/user/getByLogin';
+import { insertGroupMembers } from '$lib/server/db/queries/group/insertMembers';
+import {
+	updateUser,
+	type UserUpdateData
+} from '$lib/server/db/queries/user/update';
+import { insertStudents } from '$lib/server/db/queries/student/insert';
+import { deleteGroup } from '$lib/server/db/queries/group/delete';
 
 export const load: PageServerLoad = roomOwnerGuard(
 	async ({ params: { id }, locals: { user } }) => {

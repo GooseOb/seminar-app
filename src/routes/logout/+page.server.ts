@@ -1,5 +1,8 @@
-import { invalidateSession, validateSessionToken } from '$lib/server/sessions';
 import { redirect } from '$lib/i18n';
+import {
+	invalidateSession,
+	validateSessionToken
+} from '$lib/server/db/queries/sessions';
 import type { Actions } from './$types';
 
 export const actions: Actions = {

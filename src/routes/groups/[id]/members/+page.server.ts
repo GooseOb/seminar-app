@@ -1,10 +1,8 @@
 import type { PageServerLoad } from './$types';
-import {
-	getGroupOwner,
-	getStudentsWithProjectsInGroup
-} from '$lib/server/queries';
 import { error } from '@sveltejs/kit';
 import { groupMembershipGuard } from '$lib/guards/groupMembership';
+import { getStudentsWithProjectsInGroup } from '$lib/server/db/queries/group/getStudentsWithProjects';
+import { getGroupOwner } from '$lib/server/db/queries/group/getOwner';
 
 export const load: PageServerLoad = groupMembershipGuard(
 	async ({

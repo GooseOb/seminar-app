@@ -14,7 +14,7 @@ import type { InferEnum, InferSelectModel } from 'drizzle-orm';
 
 export const roleEnum = pgEnum('role', ['student', 'lecturer']);
 
-export const userTable = pgTable('user', {
+export const user = pgTable('user', {
 	id: serial().primaryKey(),
 	firstname: varchar({ length: 255 }).notNull(),
 	lastname: varchar({ length: 255 }).notNull(),
@@ -24,59 +24,59 @@ export const userTable = pgTable('user', {
 	role: roleEnum().notNull()
 });
 
-export const studentLecturerTable = pgTable('student_lecturer', {
+export const studentLecturer = pgTable('student_lecturer', {
 	studentId: integer()
 		.notNull()
-		.references(() => userTable.id),
+		.references(() => user.id),
 	// added by
 	lecturerId: integer()
 		.notNull()
-		.references(() => userTable.id)
+		.references(() => user.id)
 });
 
 export const roomKindEnum = pgEnum('room_kind', ['group', 'project']);
 
-export const roomTable = pgTable('room', {
+export const room = pgTable('room', {
 	id: serial().primaryKey(),
 	name: varchar({ length: 255 }).notNull(),
 	ownerId: integer()
 		.notNull()
-		.references(() => userTable.id),
+		.references(() => user.id),
 	kind: roomKindEnum().notNull()
 });
 
-export const groupTable = pgTable('group', {
+export const group = pgTable('group', {
 	id: serial()
 		.primaryKey()
-		.references(() => roomTable.id)
+		.references(() => room.id)
 });
 
-export const groupMembershipTable = pgTable(
+export const groupMembership = pgTable(
 	'group_membership',
 	{
 		userId: integer()
 			.notNull()
-			.references(() => userTable.id),
+			.references(() => user.id),
 		groupId: integer()
 			.notNull()
-			.references(() => groupTable.id)
+			.references(() => group.id)
 	},
 	(table) => [primaryKey({ columns: [table.userId, table.groupId] })]
 );
 
-export const projectTable = pgTable('project', {
+export const project = pgTable('project', {
 	id: serial()
 		.primaryKey()
-		.references(() => roomTable.id),
+		.references(() => room.id),
 	groupId: integer()
 		.notNull()
-		.references(() => groupTable.id),
+		.references(() => group.id),
 	namePl: varchar({ length: 255 }).notNull(),
 	description: text(),
 	thesis: text()
 });
 
-export const messageTable = pgTable('message', {
+export const message = pgTable('message', {
 	id: serial().primaryKey(),
 	createdAt: timestamp({
 		withTimezone: true,
@@ -86,18 +86,18 @@ export const messageTable = pgTable('message', {
 		.defaultNow(),
 	roomId: integer()
 		.notNull()
-		.references(() => roomTable.id),
+		.references(() => room.id),
 	senderId: integer()
 		.notNull()
-		.references(() => userTable.id),
+		.references(() => user.id),
 	text: text().notNull()
 });
 
-export const sessionTable = pgTable('session', {
+export const session = pgTable('session', {
 	id: text().primaryKey(),
 	userId: integer()
 		.notNull()
-		.references(() => userTable.id),
+		.references(() => user.id),
 	expiresAt: timestamp({
 		withTimezone: true,
 		mode: 'date'
@@ -105,14 +105,14 @@ export const sessionTable = pgTable('session', {
 });
 
 export type NoId<T> = Omit<T, 'id'>;
-export type User = InferSelectModel<typeof userTable>;
-export type Session = InferSelectModel<typeof sessionTable>;
-export type Group = InferSelectModel<typeof groupTable>;
-export type Project = InferSelectModel<typeof projectTable>;
+export type User = InferSelectModel<typeof user>;
+export type Session = InferSelectModel<typeof session>;
+export type Group = InferSelectModel<typeof group>;
+export type Project = InferSelectModel<typeof project>;
 export type ProjectRoom = Room & Omit<Project, 'groupId'>;
-export type Message = InferSelectModel<typeof messageTable>;
+export type Message = InferSelectModel<typeof message>;
 export type Role = InferEnum<typeof roleEnum>;
 export type RoomKind = InferEnum<typeof roomKindEnum>;
-export type GroupMembership = InferSelectModel<typeof groupMembershipTable>;
-export type StudentLecturer = InferSelectModel<typeof studentLecturerTable>;
-export type Room = InferSelectModel<typeof roomTable>;
+export type GroupMembership = InferSelectModel<typeof groupMembership>;
+export type StudentLecturer = InferSelectModel<typeof studentLecturer>;
+export type Room = InferSelectModel<typeof room>;

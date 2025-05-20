@@ -1,8 +1,6 @@
-import {
-	insertUsers,
-	insertProject,
-	insertGroupWithStudents
-} from '../src/lib/server/queries';
+import { insertUsers } from '../src/lib/server/db/queries/user/insert.ts';
+import { insertGroupWithStudents } from '../src/lib/server/db/queries/group/insertWithStudents.ts';
+import { insertProject } from '../src/lib/server/db/queries/project/insert.ts';
 
 const password = '123';
 

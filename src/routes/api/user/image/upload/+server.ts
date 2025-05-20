@@ -4,7 +4,7 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { S3_PUB_BUCKET } from '$env/static/private';
 import type { RequestHandler } from './$types';
 import { getS3Client } from '$lib/server/files';
-import { setUserHasPhoto } from '$lib/server/queries';
+import { setUserHasPhoto } from '$lib/server/db/queries/user/updateHasPhoto';
 
 export const POST: RequestHandler = async ({
 	locals: {

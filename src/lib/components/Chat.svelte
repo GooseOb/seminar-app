@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
-	import type { ReceivedMessage } from '$lib/server/queries';
 	import Avatar from './Avatar.svelte';
 	import * as m from '$lib/paraglide/messages.js';
+	import type { ReceivedMessage } from '$lib/server/queries';
 
 	const {
 		messages: messagesPromise,

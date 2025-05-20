@@ -1,8 +1,8 @@
 import { i18n, redirect } from '$lib/i18n';
 import type { Handle } from '@sveltejs/kit';
-import { validateSessionToken } from '$lib/server/sessions';
 import { setDatabaseUrl } from '$lib/server/db';
 import { sequence } from '@sveltejs/kit/hooks';
+import { validateSessionToken } from '$lib/server/db/queries/sessions';
 
 const handleAuth: Handle = async ({ event, resolve }) => {
 	const { url, cookies, locals } = event;

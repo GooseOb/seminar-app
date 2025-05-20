@@ -1,5 +1,5 @@
 import { projectAccessGuard } from '$lib/guards/projectAccess';
-import { getMessages } from '$lib/server/queries';
+import { getMessages } from '$lib/server/db/queries/message/get';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = projectAccessGuard(

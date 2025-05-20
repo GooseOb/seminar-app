@@ -1,7 +1,10 @@
-import { updateUser, type UserUpdateData } from '$lib/server/queries';
 import type { Theme } from '$lib/theme';
 import { fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
+import {
+	updateUser,
+	type UserUpdateData
+} from '$lib/server/db/queries/user/update';
 
 export const load: PageServerLoad = async ({ cookies, locals }) => {
 	const theme = cookies.get('theme') as Theme;

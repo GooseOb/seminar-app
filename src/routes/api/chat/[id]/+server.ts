@@ -1,6 +1,6 @@
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { insertMessage } from '$lib/server/queries';
+import { insertMessage } from '$lib/server/db/queries/message/insert';
 
 const roomStub = (env: Env, roomId: string) =>
 	env.CHATROOM.get(env.CHATROOM.idFromName(roomId));

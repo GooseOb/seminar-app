@@ -1,10 +1,8 @@
-import {
-	removeStudentFromGroup,
-	getUserByLogin,
-	isOwnerOfRoom
-} from '$lib/server/queries';
 import { error, json, text } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { getUserByLogin } from '$lib/server/db/queries/user/getByLogin';
+import { isOwnerOfRoom } from '$lib/server/db/queries/group/isOwner';
+import { removeStudentFromGroup } from '$lib/server/db/queries/group/removeStudent';
 
 export const GET: RequestHandler = async ({ params: { id: login } }) => {
 	const student = await getUserByLogin(login);

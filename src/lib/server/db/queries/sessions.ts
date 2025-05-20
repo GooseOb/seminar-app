@@ -4,7 +4,7 @@ import {
 	encodeHexLowerCase
 } from '@oslojs/encoding';
 import { eq } from 'drizzle-orm';
-import { type Session, type User, db, sessionTable, userTable } from './db';
+import { db, type Session, type User, session, user } from '$lib/server/db';
 
 export const generateSessionToken = (): string => {
 	const bytes = new Uint8Array(20);
@@ -18,13 +18,13 @@ export const createSession = async (
 	userId: number
 ): Promise<Session> => {
 	const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
-	const session: Session = {
+	const sessionData: Session = {
 		id: sessionId,
 		userId,
 		expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30)
 	};
-	await db().insert(sessionTable).values(session);
-	return session;
+	await db().insert(session).values(sessionData);
+	return sessionData;
 };
 
 export const validateSessionToken = async (
@@ -32,36 +32,39 @@ export const validateSessionToken = async (
 ): Promise<SessionValidationResult> => {
 	const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
 	const result = await db()
-		.select({ user: userTable, session: sessionTable })
-		.from(sessionTable)
-		.innerJoin(userTable, eq(sessionTable.userId, userTable.id))
-		.where(eq(sessionTable.id, sessionId));
+		.select({ user, session })
+		.from(session)
+		.innerJoin(user, eq(session.userId, user.id))
+		.where(eq(session.id, sessionId));
 	if (result.length < 1) {
 		return { session: null, user: null };
 	}
-	const { user, session } = result[0];
-	if (Date.now() >= session.expiresAt.getTime()) {
-		await db().delete(sessionTable).where(eq(sessionTable.id, session.id));
+	const res = result[0];
+	if (Date.now() >= res.session.expiresAt.getTime()) {
+		await db().delete(session).where(eq(session.id, session.id));
 		return { session: null, user: null };
 	}
-	if (Date.now() >= session.expiresAt.getTime() - 1000 * 60 * 60 * 24 * 15) {
-		session.expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * 30);
+	if (
+		Date.now() >=
+		res.session.expiresAt.getTime() - 1000 * 60 * 60 * 24 * 15
+	) {
+		res.session.expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * 30);
 		await db()
-			.update(sessionTable)
+			.update(session)
 			.set({
 				expiresAt: session.expiresAt
 			})
-			.where(eq(sessionTable.id, session.id));
+			.where(eq(session.id, session.id));
 	}
-	return { session, user };
+	return res;
 };
 
 export const invalidateSession = async (sessionId: string): Promise<void> => {
-	await db().delete(sessionTable).where(eq(sessionTable.id, sessionId));
+	await db().delete(session).where(eq(session.id, sessionId));
 };
 
 export const invalidateAllSessions = async (userId: number): Promise<void> => {
-	await db().delete(sessionTable).where(eq(sessionTable.userId, userId));
+	await db().delete(session).where(eq(session.userId, userId));
 };
 
 export type SessionValidationResult =

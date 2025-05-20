@@ -1,10 +1,11 @@
-import { getUserByLogin, insertGroupWithStudents } from '$lib/server/queries';
-import type { NoId, User } from '$lib/server/schema';
 import { fail } from '@sveltejs/kit';
 import type { Actions } from './$types';
 import type { StudentData } from './dto';
 import * as m from '$lib/paraglide/messages';
 import { redirect } from '$lib/i18n';
+import type { NoId, User } from '$lib/server/db';
+import { insertGroupWithStudents } from '$lib/server/db/queries/group/insertWithStudents';
+import { getUserByLogin } from '$lib/server/db/queries/user/getByLogin';
 
 export const actions: Actions = {
 	create: async ({ request, locals: { user } }) => {

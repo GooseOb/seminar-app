@@ -1,5 +1,5 @@
+import { getUserGroupsAndProjects } from '$lib/server/db/queries/getGroupsWithProjects';
 import type { LayoutServerLoad } from './$types';
-import { getUserGroupsAndProjects } from '$lib/server/queries';
 
 export const load: LayoutServerLoad = async ({ locals: { user } }) => {
 	if (user) {
