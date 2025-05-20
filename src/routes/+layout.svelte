@@ -44,7 +44,7 @@
 		</Header>
 		<div class="workspace">
 			{#if !isLoginPageValue}
-				<Sidebar {isOpen} groups={data.groups} role={data.role!} />
+				<Sidebar bind:isOpen groups={data.groups} role={data.role!} />
 			{/if}
 			<main class="content" bind:this={mainElement}>
 				<div class="page-container">

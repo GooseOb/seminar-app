@@ -7,9 +7,10 @@
 	import type { GroupWithProjects } from '$lib/server/queries';
 	import * as m from '$lib/paraglide/messages.js';
 	import { slide } from 'svelte/transition';
+	import { browser } from '$app/environment';
 
 	let {
-		isOpen,
+		isOpen = $bindable(),
 		groups,
 		role
 	}: {
@@ -20,10 +21,26 @@
 
 	let searchQuery = $state('');
 	const searchQueryLowerCase = $derived(searchQuery.toLowerCase());
+
+	let elem: HTMLElement | null = $state(null);
+
+	if (browser && window.innerWidth < 768) {
+		console.log(window.innerWidth);
+		$effect(() => {
+			if (elem) {
+				elem.addEventListener('click', ({ target }) => {
+					if ((target as HTMLElement).closest('a')) {
+						isOpen = false;
+					}
+				});
+			}
+		});
+	}
 </script>
 
 <aside
 	class="sidebar"
+	bind:this={elem}
 	class:open={isOpen}
 	in:slide={{
 		axis: 'x',
