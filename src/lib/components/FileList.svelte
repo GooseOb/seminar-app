@@ -3,6 +3,7 @@
 	import type { FileItem } from '$lib/server/files';
 	import DropdownMenu from './DropdownMenu.svelte';
 	import Dropzone from './Dropzone.svelte';
+	import ImageView from './ImageView.svelte';
 	import Overlay from './Overlay.svelte';
 
 	const { files: filesPromise, roomId } = $props();
@@ -22,6 +23,9 @@
 
 	let showMenuIndex: number | null = $state(null);
 	let isClosingMenu = $state(false);
+
+	let isImageView = $state(false);
+	let imageSrc = $state('');
 
 	const toggleMenu = (index: number | null) => {
 		if (showMenuIndex === null) {
@@ -79,17 +83,21 @@
 			});
 	};
 
-	const handleOpen = (file: { name: string }) => {
+	const handleOpen = (file: { name: string; type: string }) => {
 		requestFileUrls<Res>('get', {
 			fileNames: [file.name],
 			isDownload: false
 		}).then(({ urls }) => {
-			// TODO: Add preview for images and pdfs
 			const url = urls[0];
-			const a = document.createElement('a');
-			a.href = url;
-			a.download = file.name;
-			a.click();
+			if (file.type.startsWith('image/')) {
+				isImageView = true;
+				imageSrc = url;
+			} else if (file.type.startsWith('application/pdf')) {
+				// TODO: Add in-app view
+				window.open(url, '_blank');
+			} else {
+				window.open(url, '_blank');
+			}
 		});
 	};
 
@@ -217,6 +225,8 @@
 	<input type="file" hidden bind:this={fileInput} multiple {onchange} />
 	{m.addFile()}
 </button>
+
+<ImageView bind:isOpen={isImageView} src={imageSrc} />
 
 <style>
 	.file-list {
