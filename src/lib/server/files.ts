@@ -18,7 +18,6 @@ export const getS3Client = () =>
 export type FileItem = {
 	name: string;
 	size: number;
-	type: string;
 	uploaded: Date;
 	uploader?: string;
 	isPending?: boolean;
@@ -35,7 +34,6 @@ export const getRoomFiles = (r2: R2Bucket, id: string) =>
 				(file): FileItem => ({
 					name: file.key.split('/').at(-1)!,
 					size: file.size,
-					type: file.httpEtag,
 					uploaded: file.uploaded,
 					uploader: file.customMetadata?.uploader
 				})

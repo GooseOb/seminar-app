@@ -7,6 +7,7 @@
 
 {#if isOpen}
 	<Overlay
+		style="z-index: 11"
 		onclick={() => {
 			isOpen = false;
 		}}

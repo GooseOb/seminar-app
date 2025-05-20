@@ -1,6 +1,7 @@
 <script lang="ts">
 	import * as m from '$lib/paraglide/messages.js';
 	import type { FileItem } from '$lib/server/files';
+	import { onDestroy } from 'svelte';
 	import DropdownMenu from './DropdownMenu.svelte';
 	import Dropzone from './Dropzone.svelte';
 	import ImageView from './ImageView.svelte';
@@ -8,7 +9,9 @@
 
 	const { files: filesPromise, roomId } = $props();
 
-	let files: FileItem[] = $state([]);
+	type FileItemWithBlob = FileItem & { blobUrl?: string; blobType?: string };
+
+	let files: FileItemWithBlob[] = $state([]);
 
 	$effect(() => {
 		filesPromise.then((initialFiles: FileItem[]) => {
@@ -83,23 +86,44 @@
 			});
 	};
 
-	const handleOpen = (file: { name: string; type: string }) => {
-		requestFileUrls<Res>('get', {
-			fileNames: [file.name],
-			isDownload: false
-		}).then(({ urls }) => {
-			const url = urls[0];
-			if (file.type.startsWith('image/')) {
-				isImageView = true;
-				imageSrc = url;
-			} else if (file.type.startsWith('application/pdf')) {
-				// TODO: Add in-app view
-				window.open(url, '_blank');
-			} else {
-				window.open(url, '_blank');
-			}
-		});
+	const openBlob = (blobUrl: string, blobType: string) => {
+		if (blobType.startsWith('image/')) {
+			isImageView = true;
+			imageSrc = blobUrl;
+		} else if (blobType.startsWith('application/pdf')) {
+			// TODO: Add in-app view
+			window.open(blobUrl, '_blank');
+		} else {
+			window.open(blobUrl, '_blank');
+		}
 	};
+
+	const handleOpen = (file: FileItemWithBlob) => {
+		if (file.blobUrl) {
+			openBlob(file.blobUrl, file.blobType!);
+		} else {
+			requestFileUrls<Res>('get', {
+				fileNames: [file.name],
+				isDownload: false
+			})
+				.then(({ urls }) => fetch(urls[0]))
+				.then((res) => res.blob())
+				.then((blob) => {
+					const url = URL.createObjectURL(blob);
+					file.blobUrl = url;
+					file.blobType = blob.type;
+					openBlob(url, blob.type);
+				});
+		}
+		showMenuIndex = null;
+	};
+	onDestroy(() => {
+		for (const { blobUrl } of files) {
+			if (blobUrl) {
+				URL.revokeObjectURL(blobUrl);
+			}
+		}
+	});
 
 	const onchange = (e: Event) => {
 		handleUpload((e.currentTarget as HTMLInputElement).files);
@@ -115,7 +139,6 @@
 
 			const fileItems: FileItem[] = arr.map((file) => ({
 				name: file.name,
-				type: file.type,
 				size: file.size,
 				uploaded: new Date(),
 				uploader: 'me',
