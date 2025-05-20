@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { blur } from 'svelte/transition';
 	import * as m from '$lib/paraglide/messages.js';
 	import type { FileItem } from '$lib/files';
 	import DropdownMenu from './DropdownMenu.svelte';
 	import Dropzone from './Dropzone.svelte';
+	import Overlay from './Overlay.svelte';
 
 	const { files: filesPromise, roomId } = $props();
 
@@ -141,10 +141,7 @@
 </script>
 
 {#if showMenuIndex !== null && !isClosingMenu}
-	<button
-		aria-hidden="true"
-		transition:blur
-		class="overlay"
+	<Overlay
 		onclick={() => {
 			isClosingMenu = true;
 		}}
@@ -152,7 +149,7 @@
 			showMenuIndex = null;
 			isClosingMenu = false;
 		}}
-	></button>
+	/>
 {/if}
 <ul class="nolist file-list">
 	<Dropzone {ondrop} />
@@ -225,16 +222,6 @@
 	.file-list {
 		padding: 1rem 0;
 		position: relative;
-	}
-	.overlay {
-		position: fixed;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		background: rgba(0, 0, 0, 0.5);
-		backdrop-filter: blur(1px);
-		z-index: 5;
 	}
 	.pending {
 		opacity: 0.5;

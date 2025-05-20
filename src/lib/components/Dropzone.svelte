@@ -1,9 +1,11 @@
 <script lang="ts">
 	import type { DragEventHandler } from 'svelte/elements';
+	import { debounce } from '$lib/debounce';
 
 	const { ondrop }: { ondrop: DragEventHandler<HTMLDivElement> | null } =
 		$props();
-	let isDragging = $state(false);
+	let active = $state(false);
+	let discoverable = $state(false);
 </script>
 
 <div
@@ -11,27 +13,38 @@
 	tabindex="-1"
 	ondrop={(e) => {
 		e.preventDefault();
-		isDragging = false;
+		active = false;
 		if (ondrop) {
 			ondrop(e);
 		}
 	}}
 	ondragover={(e) => {
 		e.preventDefault();
-		isDragging = true;
+		active = true;
 	}}
 	ondragleave={() => {
-		isDragging = false;
+		active = false;
 	}}
 	class="dropzone"
-	class:active={isDragging}
+	class:active
+	class:discoverable
 >
-	Drop files here
+	<span> Drop files here </span>
 </div>
+
+<svelte:body
+	ondragover={() => {
+		discoverable = true;
+	}}
+	ondragleave={debounce(() => {
+		discoverable = false;
+	}, 1000)}
+/>
 
 <style>
 	.dropzone {
-		background: #222c;
+		background: #222;
+		color: #fff;
 		border-radius: 0.5rem;
 		position: absolute;
 		width: 100%;
@@ -43,9 +56,14 @@
 		align-items: center;
 		justify-content: center;
 		display: flex;
+		opacity: 0;
+		transition: opacity 0.2s;
 		visibility: hidden;
 	}
-	.dropzone.active {
+	.discoverable {
 		visibility: visible;
+	}
+	.active {
+		opacity: 0.8;
 	}
 </style>
