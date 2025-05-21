@@ -1,5 +1,6 @@
 import { db, user } from '$lib/server/db';
 import { sql, eq } from 'drizzle-orm';
+import { first } from '$lib/server/db/queries/common';
 
 const userWithPasswordByLoginQuery = () =>
 	db()
@@ -9,6 +10,5 @@ const userWithPasswordByLoginQuery = () =>
 		.limit(1)
 		.prepare('userByLoginQuery');
 
-export const getUserWithPasswordByLogin = async (login: string) => {
-	return (await userWithPasswordByLoginQuery().execute({ login }))[0];
-};
+export const getUserWithPasswordByLogin = (login: string) =>
+	first(userWithPasswordByLoginQuery().execute({ login }));

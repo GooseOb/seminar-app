@@ -1,5 +1,6 @@
 import { db, room, user } from '$lib/server/db';
 import { sql, eq, and } from 'drizzle-orm';
+import { first } from '$lib/server/db/queries/common';
 
 const getGroupOwnerQuery = () =>
 	db()
@@ -17,6 +18,5 @@ const getGroupOwnerQuery = () =>
 		.limit(1)
 		.prepare('getGroupOwnerQuery');
 
-export const getGroupOwner = async (groupId: number) => {
-	return (await getGroupOwnerQuery().execute({ groupId }))[0];
-};
+export const getGroupOwner = (groupId: number) =>
+	first(getGroupOwnerQuery().execute({ groupId }));

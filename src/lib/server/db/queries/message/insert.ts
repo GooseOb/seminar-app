@@ -1,5 +1,6 @@
 import { db, message, user } from '$lib/server/db';
 import { sql, eq } from 'drizzle-orm';
+import { first } from '$lib/server/db/queries/common';
 
 const insertMessageQuery = () => {
 	const insertedMessage = db()
@@ -38,10 +39,8 @@ const insertMessageQuery = () => {
 		.prepare('sendMessageQuery');
 };
 
-export const insertMessage = async (value: {
+export const insertMessage = (value: {
 	senderId: number;
 	roomId: number;
 	text: string;
-}) => {
-	return (await insertMessageQuery().execute(value))[0];
-};
+}) => first(insertMessageQuery().execute(value));

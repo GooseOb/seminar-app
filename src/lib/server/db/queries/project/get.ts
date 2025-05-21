@@ -1,5 +1,6 @@
 import { db, project, room } from '$lib/server/db';
 import { sql, and, eq } from 'drizzle-orm';
+import { first } from '$lib/server/db/queries/common';
 
 const getProjectQuery = () =>
 	db()
@@ -16,6 +17,5 @@ const getProjectQuery = () =>
 		.limit(1)
 		.prepare('getProjectQuery');
 
-export const getProject = async (id: number) => {
-	return (await getProjectQuery().execute({ id }))[0];
-};
+export const getProject = (id: number) =>
+	first(getProjectQuery().execute({ id }));

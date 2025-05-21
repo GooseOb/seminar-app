@@ -1,6 +1,6 @@
 import { db, user } from '$lib/server/db';
 import { sql, eq } from 'drizzle-orm';
-import { userData } from '$lib/server/db/queries/common';
+import { first, userData } from '$lib/server/db/queries/common';
 
 const getUserByIdQuery = () =>
 	db()
@@ -10,6 +10,5 @@ const getUserByIdQuery = () =>
 		.limit(1)
 		.prepare('getUserByIdQuery');
 
-export const getUserById = async (id: number) => {
-	return (await getUserByIdQuery().execute({ id }))[0];
-};
+export const getUserById = (id: number) =>
+	first(getUserByIdQuery().execute({ id }));

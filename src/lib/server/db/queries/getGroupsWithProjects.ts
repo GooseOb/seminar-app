@@ -1,6 +1,6 @@
 import { db, roomMembership, project, room, user } from '$lib/server/db';
 import { and, eq, or, sql } from 'drizzle-orm';
-import { projectRoom } from './common';
+import { projectRoom } from '$lib/server/db/queries/common';
 
 const userGroupsAndProjectsQuery = () =>
 	db()

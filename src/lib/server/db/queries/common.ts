@@ -8,3 +8,6 @@ export const userData = (() => {
 })();
 
 export const projectRoom = alias(room, 'project_room');
+
+export const first = <T extends any[]>(arr: Promise<T>) =>
+	arr.then((a) => a[0]);

@@ -1,11 +1,11 @@
+import { first } from '$lib/server/db/queries/common';
 import { insertRoomQuery } from '../room/insert';
 
-export const insertGroup = async (name: string, lecturerId: number) => {
-	return (
-		await insertRoomQuery().execute({
+export const insertGroup = (name: string, lecturerId: number) =>
+	first(
+		insertRoomQuery().execute({
 			name,
 			ownerId: lecturerId,
 			kind: 'group'
 		})
-	)[0];
-};
+	);
