@@ -1,4 +1,4 @@
-import { db, groupMembership, user } from '$lib/server/db';
+import { db, roomMembership, user } from '$lib/server/db';
 import { sql, eq, and, exists } from 'drizzle-orm';
 import { getStudentCreatedBySubQuery } from '../student/isCreatedBy';
 
@@ -12,14 +12,14 @@ export const studentsInGroupQuery = () =>
 			hasPhoto: user.hasPhoto,
 			canEdit: exists(getStudentCreatedBySubQuery(user.id))
 		})
-		.from(groupMembership)
+		.from(roomMembership)
 		.where(
 			and(
-				eq(groupMembership.groupId, sql.placeholder('groupId')),
+				eq(roomMembership.roomId, sql.placeholder('groupId')),
 				eq(user.role, 'student')
 			)
 		)
-		.innerJoin(user, eq(groupMembership.userId, user.id))
+		.innerJoin(user, eq(roomMembership.userId, user.id))
 		.prepare('studentsInGroupQuery');
 
 export const getStudentsInGroup = async (

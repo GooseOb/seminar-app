@@ -1,26 +1,26 @@
-import { db, groupMembership } from '$lib/server/db';
+import { db, roomMembership } from '$lib/server/db';
 import { sql, eq, and } from 'drizzle-orm';
 
 const membershipQuery = () =>
 	db()
 		.select({})
-		.from(groupMembership)
+		.from(roomMembership)
 		.where(
 			and(
-				eq(groupMembership.userId, sql.placeholder('userId')),
-				eq(groupMembership.groupId, sql.placeholder('groupId'))
+				eq(roomMembership.userId, sql.placeholder('userId')),
+				eq(roomMembership.roomId, sql.placeholder('roomId'))
 			)
 		)
 		.limit(1)
 		.prepare('membershipQuery');
 
-export const isMemberOfGroup = (
+export const isRoomMember = (
 	userId: number,
-	groupId: number
+	roomId: number
 ): Promise<boolean> =>
 	membershipQuery()
 		.execute({
 			userId,
-			groupId
+			roomId
 		})
 		.then(({ length }) => length > 0);

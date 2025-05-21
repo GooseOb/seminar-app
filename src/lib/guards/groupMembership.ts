@@ -1,8 +1,8 @@
 import { createUserIdGuard } from './common';
 import * as m from '$lib/paraglide/messages';
-import { isMemberOfGroup } from '$lib/server/db/queries/group/isMember';
+import { isRoomMember } from '$lib/server/db/queries/room/isMember';
 
 export const groupMembershipGuard = createUserIdGuard(
-	isMemberOfGroup,
+	isRoomMember,
 	m.notGroupMember
 );

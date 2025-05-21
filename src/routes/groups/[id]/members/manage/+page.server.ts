@@ -7,7 +7,7 @@ import { getStudentsInGroup } from '$lib/server/db/queries/group/getStudents';
 import { getGroupName } from '$lib/server/db/queries/group/getName';
 import { updateRoomName } from '$lib/server/db/queries/room/updateName';
 import { getUserByLogin } from '$lib/server/db/queries/user/getByLogin';
-import { insertGroupMembers } from '$lib/server/db/queries/group/insertMembers';
+import { insertRoomMembers } from '$lib/server/db/queries/room/insertMembers';
 import {
 	updateUser,
 	type UserUpdateData
@@ -72,7 +72,7 @@ export const actions = {
 			});
 		}
 
-		await insertGroupMembers(+id, [student.id]);
+		await insertRoomMembers(+id, [student.id]);
 
 		return {
 			student,
@@ -118,7 +118,7 @@ export const actions = {
 					],
 					locals.user!.id
 				);
-				await insertGroupMembers(+groupId, [id]);
+				await insertRoomMembers(+groupId, [id]);
 			}
 			return {
 				success: true

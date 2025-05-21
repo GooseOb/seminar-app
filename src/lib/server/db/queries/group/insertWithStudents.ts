@@ -1,7 +1,7 @@
 import { type NoId, type User } from '$lib/server/db';
 import { insertStudents } from '../student/insert';
+import { insertRoomMembers } from '../room/insertMembers';
 import { insertGroup } from './insert';
-import { insertGroupMembers } from './insertMembers';
 
 export const insertGroupWithStudents = async (
 	name: string,
@@ -14,7 +14,7 @@ export const insertGroupWithStudents = async (
 		: [];
 	const group = await insertGroup(name, lecturerId);
 
-	await insertGroupMembers(group.id, [
+	await insertRoomMembers(group.id, [
 		...studentsWithIds.map(({ id }) => id),
 		...inviteeIds,
 		lecturerId

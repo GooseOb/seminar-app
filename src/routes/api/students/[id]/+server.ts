@@ -1,8 +1,8 @@
 import { error, json, text } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getUserByLogin } from '$lib/server/db/queries/user/getByLogin';
-import { isOwnerOfRoom } from '$lib/server/db/queries/group/isOwner';
-import { removeStudentFromGroup } from '$lib/server/db/queries/group/removeStudent';
+import { isRoomOwner } from '$lib/server/db/queries/group/isOwner';
+import { removeMemberFromRoom } from '$lib/server/db/queries/room/removeMember';
 
 export const GET: RequestHandler = async ({ params: { id: login } }) => {
 	const student = await getUserByLogin(login);
@@ -25,12 +25,12 @@ export const DELETE: RequestHandler = async ({
 		error(400, 'Group ID is required');
 	}
 
-	if (!(await isOwnerOfRoom(locals.user.id, +groupId))) {
+	if (!(await isRoomOwner(locals.user.id, +groupId))) {
 		error(403, 'You are not the owner of this room');
 	}
 
 	try {
-		await removeStudentFromGroup(+id, +groupId);
+		await removeMemberFromRoom(+id, +groupId);
 		return text('Student removed from group', {
 			status: 200
 		});

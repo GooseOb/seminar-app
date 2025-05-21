@@ -4,7 +4,7 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { S3_BUCKET } from '$env/static/private';
 import type { RequestHandler } from './$types';
 import { getS3Client } from '$lib/server/files';
-import { isMemberOfGroup } from '$lib/server/db/queries/group/isMember';
+import { isRoomMember } from '$lib/server/db/queries/room/isMember';
 
 export const POST: RequestHandler = async ({
 	request,
@@ -18,8 +18,8 @@ export const POST: RequestHandler = async ({
 	if (!fileNames) {
 		error(400, 'File names are required');
 	}
-	if (!(await isMemberOfGroup(user.id, +id))) {
-		error(403, 'You are not a member of this group');
+	if (!(await isRoomMember(user.id, +id))) {
+		error(403, 'You are not a member of this room');
 	}
 
 	const s3 = getS3Client();

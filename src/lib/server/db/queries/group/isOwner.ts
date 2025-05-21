@@ -14,10 +14,7 @@ const isOwnerOfRoomQuery = () =>
 		.limit(1)
 		.prepare('isOwnerOfRoomQuery');
 
-export const isOwnerOfRoom = (
-	userId: number,
-	roomId: number
-): Promise<boolean> =>
+export const isRoomOwner = (userId: number, roomId: number): Promise<boolean> =>
 	isOwnerOfRoomQuery()
 		.execute({
 			userId,

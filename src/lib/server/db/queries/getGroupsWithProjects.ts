@@ -1,18 +1,11 @@
-import {
-	db,
-	group,
-	groupMembership,
-	project,
-	room,
-	user
-} from '$lib/server/db';
-import { eq, or, sql } from 'drizzle-orm';
+import { db, roomMembership, project, room, user } from '$lib/server/db';
+import { and, eq, or, sql } from 'drizzle-orm';
 import { projectRoom } from './common';
 
 const userGroupsAndProjectsQuery = () =>
 	db()
 		.select({
-			groupId: group.id,
+			groupId: room.id,
 			groupName: room.name,
 			isOwner: or(
 				eq(room.ownerId, sql.placeholder('userId')),
@@ -25,14 +18,16 @@ const userGroupsAndProjectsQuery = () =>
 			projectNameEN: projectRoom.name,
 			projectNamePL: project.namePl
 		})
-		.from(groupMembership)
-		.innerJoin(group, eq(groupMembership.groupId, group.id))
-		.innerJoin(room, eq(group.id, room.id))
-		.leftJoin(project, eq(project.groupId, group.id))
+		.from(roomMembership)
+		.innerJoin(
+			room,
+			and(eq(roomMembership.roomId, room.id), eq(room.kind, 'group'))
+		)
+		.leftJoin(project, eq(project.groupId, room.id))
 		.leftJoin(projectRoom, eq(project.id, projectRoom.id))
 		.leftJoin(user, eq(user.id, projectRoom.ownerId))
-		.where(eq(groupMembership.userId, sql.placeholder('userId')))
-		.orderBy(group.id)
+		.where(eq(roomMembership.userId, sql.placeholder('userId')))
+		.orderBy(room.id)
 		.prepare('userGroupsAndProjectsQuery');
 
 export type GroupWithProjects = {

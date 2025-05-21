@@ -45,23 +45,17 @@ export const room = pgTable('room', {
 	kind: roomKindEnum().notNull()
 });
 
-export const group = pgTable('group', {
-	id: serial()
-		.primaryKey()
-		.references(() => room.id)
-});
-
-export const groupMembership = pgTable(
-	'group_membership',
+export const roomMembership = pgTable(
+	'room_membership',
 	{
 		userId: integer()
 			.notNull()
 			.references(() => user.id),
-		groupId: integer()
+		roomId: integer()
 			.notNull()
-			.references(() => group.id)
+			.references(() => room.id)
 	},
-	(table) => [primaryKey({ columns: [table.userId, table.groupId] })]
+	(table) => [primaryKey({ columns: [table.userId, table.roomId] })]
 );
 
 export const project = pgTable('project', {
@@ -70,7 +64,7 @@ export const project = pgTable('project', {
 		.references(() => room.id),
 	groupId: integer()
 		.notNull()
-		.references(() => group.id),
+		.references(() => room.id),
 	namePl: varchar({ length: 255 }).notNull(),
 	description: text(),
 	thesis: text()
@@ -107,12 +101,11 @@ export const session = pgTable('session', {
 export type NoId<T> = Omit<T, 'id'>;
 export type User = InferSelectModel<typeof user>;
 export type Session = InferSelectModel<typeof session>;
-export type Group = InferSelectModel<typeof group>;
 export type Project = InferSelectModel<typeof project>;
 export type ProjectRoom = Room & Omit<Project, 'groupId'>;
 export type Message = InferSelectModel<typeof message>;
 export type Role = InferEnum<typeof roleEnum>;
 export type RoomKind = InferEnum<typeof roomKindEnum>;
-export type GroupMembership = InferSelectModel<typeof groupMembership>;
+export type RoomMembership = InferSelectModel<typeof roomMembership>;
 export type StudentLecturer = InferSelectModel<typeof studentLecturer>;
 export type Room = InferSelectModel<typeof room>;

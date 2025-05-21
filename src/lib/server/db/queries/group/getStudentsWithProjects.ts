@@ -1,4 +1,4 @@
-import { db, groupMembership, project, room, user } from '$lib/server/db';
+import { db, roomMembership, project, room, user } from '$lib/server/db';
 import { eq, and, sql, exists } from 'drizzle-orm';
 
 const groupMembersWithProjectsQuery = () =>
@@ -13,10 +13,10 @@ const groupMembersWithProjectsQuery = () =>
 			projectNameEN: room.name,
 			projectNamePl: project.namePl
 		})
-		.from(groupMembership)
+		.from(roomMembership)
 		.innerJoin(
 			user,
-			and(eq(groupMembership.userId, user.id), eq(user.role, 'student'))
+			and(eq(roomMembership.userId, user.id), eq(user.role, 'student'))
 		)
 		.leftJoin(
 			room,
@@ -37,7 +37,7 @@ const groupMembersWithProjectsQuery = () =>
 			)
 		)
 		.leftJoin(project, eq(project.id, room.id))
-		.where(eq(groupMembership.groupId, sql.placeholder('groupId')))
+		.where(eq(roomMembership.roomId, sql.placeholder('groupId')))
 		.prepare('groupMembersWithProjectsQuery');
 
 export const getStudentsWithProjectsInGroup = async (groupId: number) => {

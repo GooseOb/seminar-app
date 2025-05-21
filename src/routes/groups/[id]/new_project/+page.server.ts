@@ -1,7 +1,7 @@
 import { redirect } from '$lib/i18n';
 import { fail } from '@sveltejs/kit';
 import type { Actions } from './$types';
-import { isMemberOfGroup } from '$lib/server/db/queries/group/isMember';
+import { isRoomMember } from '$lib/server/db/queries/room/isMember';
 import { insertProject } from '$lib/server/db/queries/project/insert';
 
 export const actions = {
@@ -11,7 +11,7 @@ export const actions = {
 				error: 'You are not allowed to create a project'
 			});
 		}
-		if (!(await isMemberOfGroup(user!.id, +id))) {
+		if (!(await isRoomMember(user!.id, +id))) {
 			return fail(403, {
 				error: 'You are not a member of this group'
 			});
