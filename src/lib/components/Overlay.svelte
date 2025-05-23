@@ -1,13 +1,16 @@
 <script lang="ts">
-	import type { HTMLButtonAttributes } from 'svelte/elements';
+	import type { HTMLAttributes } from 'svelte/elements';
 	import { blur } from 'svelte/transition';
-	const { children, ...props }: HTMLButtonAttributes & { children?: any } =
-		$props();
+
+	const {
+		children,
+		...props
+	}: HTMLAttributes<HTMLDivElement> & { children?: any } = $props();
 </script>
 
-<button aria-hidden="true" transition:blur class="overlay" {...props}>
+<div aria-hidden="true" transition:blur class="overlay" {...props}>
 	{@render children?.()}
-</button>
+</div>
 
 <style>
 	.overlay {

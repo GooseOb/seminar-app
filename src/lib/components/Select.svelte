@@ -3,12 +3,12 @@
 
 	const {
 		label,
-		onchange,
-		value,
+		onchange = null,
+		value = $bindable(),
 		options
 	}: {
 		label: string;
-		onchange: ChangeEventHandler<HTMLSelectElement>;
+		onchange?: ChangeEventHandler<HTMLSelectElement> | null;
 		value: string;
 		options: {
 			value: string;
@@ -31,6 +31,7 @@
 		display: flex;
 		align-items: center;
 		gap: 8px;
+		width: 100%;
 	}
 	span {
 		flex: 1;

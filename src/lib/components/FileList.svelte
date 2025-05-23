@@ -6,6 +6,7 @@
 	import Dropzone from './Dropzone.svelte';
 	import ImageView from './ImageView.svelte';
 	import Overlay from './Overlay.svelte';
+	import PDFView from './PDFView.svelte';
 
 	const { files: filesPromise, roomId } = $props();
 
@@ -29,6 +30,9 @@
 
 	let isImageView = $state(false);
 	let imageSrc = $state('');
+
+	let isPdfView = $state(false);
+	let pdfSrc = $state('');
 
 	const toggleMenu = (index: number | null) => {
 		if (showMenuIndex === null) {
@@ -88,11 +92,11 @@
 
 	const openBlob = (blobUrl: string, blobType: string) => {
 		if (blobType.startsWith('image/')) {
-			isImageView = true;
 			imageSrc = blobUrl;
+			isImageView = true;
 		} else if (blobType.startsWith('application/pdf')) {
-			// TODO: Add in-app view
-			window.open(blobUrl, '_blank');
+			pdfSrc = blobUrl;
+			isPdfView = true;
 		} else {
 			window.open(blobUrl, '_blank');
 		}
@@ -250,6 +254,7 @@
 </button>
 
 <ImageView bind:isOpen={isImageView} src={imageSrc} />
+<PDFView bind:isOpen={isPdfView} src={pdfSrc} />
 
 <style>
 	.file-list {

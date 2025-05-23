@@ -13,11 +13,10 @@
 			firstname: string;
 		};
 	} = $props();
-
-	const src = $derived(`${PUBLIC_S3_URL}/users/${user.id}/image`);
 </script>
 
 {#if user.hasPhoto}
+	{@const src = `${PUBLIC_S3_URL}/users/${user.id}/image`}
 	<button
 		onclick={() => {
 			isOpen = true;
@@ -25,10 +24,10 @@
 	>
 		<img {src} alt="" class="photo" />
 	</button>
+	<ImageView bind:isOpen {src} />
 {:else}
 	<div class="photo placeholder">{user.firstname[0]}</div>
 {/if}
-<ImageView bind:isOpen {src} />
 
 <style>
 	button {

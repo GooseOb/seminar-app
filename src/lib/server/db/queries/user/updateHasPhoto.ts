@@ -10,7 +10,7 @@ const updateUserPhotoQuery = () =>
 		.where(eq(user.id, sql.placeholder('id')))
 		.prepare('updateUserPhotoQuery');
 
-export const setUserHasPhoto = async (id: number, hasPhoto: boolean = true) => {
+export const setUserHasPhoto = async (id: number, hasPhoto: boolean) => {
 	await updateUserPhotoQuery().execute({
 		id,
 		hasPhoto

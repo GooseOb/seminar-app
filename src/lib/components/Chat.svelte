@@ -2,7 +2,7 @@
 	import { browser } from '$app/environment';
 	import Avatar from './Avatar.svelte';
 	import * as m from '$lib/paraglide/messages.js';
-	import type { ReceivedMessage } from '$lib/server/queries';
+	import type { ReceivedMessage } from '$lib/server/db/queries/message/get';
 
 	const {
 		messages: messagesPromise,
@@ -36,11 +36,7 @@
 
 	if (browser) {
 		$effect(() => {
-			const socket = new WebSocket(
-				`${
-					location.protocol === 'https:' ? 'wss' : 'ws'
-				}://${location.host}/api/chat/${roomId}`
-			);
+			const socket = new WebSocket(`/api/rooms/${roomId}/chat`);
 
 			socket.addEventListener('message', (event) => {
 				try {
@@ -79,7 +75,7 @@
 			createdAt: new Date()
 		} as ReceivedMessage);
 
-		fetch(`/api/chat/${roomId}`, {
+		fetch(`/api/rooms/${roomId}/chat`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ roomId, text })

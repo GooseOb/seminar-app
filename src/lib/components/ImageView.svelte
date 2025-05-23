@@ -12,12 +12,12 @@
 			isOpen = false;
 		}}
 	>
-		<img {src} alt="" class="image" />
+		<img {src} alt="" />
 	</Overlay>
 {/if}
 
 <style>
-	.image {
+	img {
 		max-width: 100%;
 		max-height: 100%;
 		object-fit: contain;

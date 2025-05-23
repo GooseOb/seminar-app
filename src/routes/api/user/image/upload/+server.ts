@@ -20,7 +20,7 @@ export const POST: RequestHandler = async ({
 		{ expiresIn: 3600 }
 	);
 
-	setUserHasPhoto(id, true);
+	await setUserHasPhoto(id, true);
 
 	return json({ url });
 };
