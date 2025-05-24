@@ -1,11 +1,10 @@
 import { getRoomFiles } from '$lib/server/files';
-import { projectAccessGuard } from '$lib/guards/projectAccess';
+import { checkProjectAccess } from '$lib/guards/projectAccess';
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = projectAccessGuard(
-	async ({ platform, params: { id } }) => {
-		const files = getRoomFiles(platform!.env.R2_BUCKET, id);
+export const load: PageServerLoad = async ({ platform, params: { id } }) => {
+	await checkProjectAccess(+id);
+	const files = getRoomFiles(platform!.env.R2_BUCKET, id);
 
-		return { files };
-	}
-);
+	return { files };
+};

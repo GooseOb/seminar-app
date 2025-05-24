@@ -1,23 +1,25 @@
-import { projectAccessGuard } from '$lib/guards/projectAccess';
+import { checkProjectAccess } from '$lib/guards/projectAccess';
 import { getProject } from '$lib/server/db/queries/project/get';
 import { updateProject } from '$lib/server/db/queries/project/update';
 import { getUserById } from '$lib/server/db/queries/user/getById';
 import type { Actions, PageServerLoad } from './$types';
 
-export const load: PageServerLoad = projectAccessGuard(
-	async ({ params: { id } }) => {
-		const project = getProject(+id);
-		const student = project.then(({ ownerId }) => getUserById(ownerId));
+export const load: PageServerLoad = async ({ params: { id } }) => {
+	await checkProjectAccess(+id);
 
-		return {
-			project,
-			student
-		};
-	}
-);
+	const project = getProject(+id);
+	const student = project.then(({ ownerId }) => getUserById(ownerId));
+
+	return {
+		project,
+		student
+	};
+};
 
 export const actions = {
-	default: projectAccessGuard(async ({ request, params: { id } }) => {
+	default: async ({ request, params: { id } }) => {
+		await checkProjectAccess(+id);
+
 		const form = await request.formData();
 		const name = form.get('name_en') as string;
 		const namePl = form.get('name_pl') as string;
@@ -42,5 +44,5 @@ export const actions = {
 		return {
 			success: true
 		};
-	})
+	}
 } satisfies Actions;
