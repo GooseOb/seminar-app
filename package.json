@@ -41,12 +41,14 @@
 		"wrangler": "^4.16.1"
 	},
 	"dependencies": {
-		"@aws-sdk/client-s3": "^3.816.0",
-		"@aws-sdk/s3-request-presigner": "^3.816.0",
+		"@aws-sdk/client-s3": "^3.817.0",
+		"@aws-sdk/s3-request-presigner": "^3.817.0",
 		"@inlang/paraglide-sveltekit": "^0.15.5",
 		"@neondatabase/serverless": "^1.0.0",
 		"@oslojs/crypto": "^1.0.1",
 		"@oslojs/encoding": "^1.1.0",
+		"@trpc/client": "^11.1.2",
+		"@trpc/server": "^11.1.2",
 		"drizzle-orm": "^0.42.0",
 		"pdfjs-dist": "^5.2.133",
 		"pg": "^8.16.0",

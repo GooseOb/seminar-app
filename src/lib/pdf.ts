@@ -1,5 +1,5 @@
-export const loadPDF = (container: HTMLDivElement, url: string) => {
-	return import('pdfjs-dist').then(async (PDFJS) => {
+export const loadPDF = (container: HTMLDivElement, url: string) =>
+	import('pdfjs-dist').then(async (PDFJS) => {
 		PDFJS.GlobalWorkerOptions.workerSrc ||= (
 			await import('pdfjs-dist/build/pdf.worker.min.mjs?url')
 		).default;
@@ -20,4 +20,3 @@ export const loadPDF = (container: HTMLDivElement, url: string) => {
 				.promise;
 		}
 	});
-};

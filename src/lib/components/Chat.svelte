@@ -3,6 +3,7 @@
 	import Avatar from './Avatar.svelte';
 	import * as m from '$lib/paraglide/messages.js';
 	import type { ReceivedMessage } from '$lib/server/db/queries/message/get';
+	import { trpc } from '$lib/trpc/client.svelte';
 
 	const {
 		messages: messagesPromise,
@@ -75,16 +76,16 @@
 			createdAt: new Date()
 		} as ReceivedMessage);
 
-		fetch(`/api/rooms/${roomId}/chat`, {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ roomId, text })
-		})
-			.catch((error) => {
-				console.error('Failed to send message:', error);
+		trpc.room.chat.sendMessage
+			.mutate({
+				roomId,
+				text
 			})
 			.then(() => {
 				messages = messages.filter((m) => m.id !== tempId);
+			})
+			.catch((error) => {
+				console.error('Failed to send message:', error);
 			});
 
 		newMessage = '';

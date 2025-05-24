@@ -8,6 +8,7 @@
 	import * as m from '$lib/paraglide/messages.js';
 	import StudentList from '$lib/components/StudentList.svelte';
 	import StudentInvitationInputForm from '$lib/components/StudentInvitationInputForm.svelte';
+	import { trpc } from '$lib/trpc/client.svelte';
 
 	let { form }: PageProps = $props();
 
@@ -22,7 +23,7 @@
 	let currentInviteeNumber = $state('');
 	const students: StudentData[] = $state([]);
 	let studentsString = $state('');
-	const existingStudents: User[] = $state([]);
+	const existingStudents: Omit<User, 'password'>[] = $state([]);
 	let existingStudentsString = $state('');
 
 	let groupName = $state('');
@@ -44,9 +45,8 @@
 
 	const onInviteSubmit = async (e: SubmitEvent) => {
 		e.preventDefault();
-		const student = await fetch(`/api/students/${currentInviteeNumber}`).then(
-			(res) => res.json<User>()
-		);
+		const student = await trpc.student.get.query(+currentInviteeNumber);
+
 		if (student) {
 			currentInviteeNumber = '';
 			existingStudents.push(student);

@@ -7,6 +7,7 @@
 	import ImageView from './ImageView.svelte';
 	import Overlay from './Overlay.svelte';
 	import PDFView from './PDFView.svelte';
+	import { trpc } from '$lib/trpc/client.svelte';
 
 	const { files: filesPromise, roomId } = $props();
 
@@ -42,44 +43,30 @@
 		}
 	};
 
-	interface Res {
-		urls: string[];
-	}
-	interface UploadRes extends Res {
-		uploader: string;
-	}
-
-	const requestFileUrls = <TResponse extends Res>(
-		action: string,
-		body: object
-	) =>
-		fetch(`/api/rooms/${roomId}/files/${action}`, {
-			method: 'POST',
-			body: JSON.stringify(body),
-			headers: {
-				'Content-Type': 'application/json'
-			}
-		}).then((res) => res.json<TResponse>());
-
 	const handleDownload = (file: { name: string }) => {
-		requestFileUrls<Res>('get', {
-			fileNames: [file.name],
-			isDownload: true
-		}).then(({ urls }) => {
-			for (const url of urls) {
-				const a = document.createElement('a');
-				a.href = url;
-				a.download = file.name;
-				a.click();
-			}
-		});
+		trpc.room.files.get
+			.query({
+				roomId,
+				fileNames: [file.name],
+				isDownload: true
+			})
+			.then(({ urls }) => {
+				for (const url of urls) {
+					const a = document.createElement('a');
+					a.href = url;
+					a.download = file.name;
+					a.click();
+				}
+			});
 	};
 
 	const handleDelete = (file: { name: string; isPending?: boolean }) => {
 		file.isPending = true;
-		requestFileUrls<Res>('delete', {
-			fileNames: [file.name]
-		})
+		trpc.room.files.delete
+			.query({
+				roomId,
+				fileNames: [file.name]
+			})
 			.then(({ urls }) =>
 				fetch(urls[0], {
 					method: 'DELETE'
@@ -106,10 +93,12 @@
 		if (file.blobUrl) {
 			openBlob(file.blobUrl, file.blobType!);
 		} else {
-			requestFileUrls<Res>('get', {
-				fileNames: [file.name],
-				isDownload: false
-			})
+			trpc.room.files.get
+				.query({
+					roomId,
+					fileNames: [file.name],
+					isDownload: false
+				})
 				.then(({ urls }) => fetch(urls[0]))
 				.then((res) => res.blob())
 				.then((blob) => {
@@ -152,7 +141,8 @@
 				.filter((item) => !fileItems.some((f) => f.name === item.name))
 				.concat(fileItems);
 
-			const { urls, uploader } = await requestFileUrls<UploadRes>('upload', {
+			const { urls, uploader } = await trpc.room.files.upload.query({
+				roomId,
 				fileNames: arr.map(({ name }) => name)
 			});
 

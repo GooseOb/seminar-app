@@ -7,6 +7,7 @@
 	import Success from '$lib/components/Success.svelte';
 	import type { PageProps } from './$types';
 	import * as m from '$lib/paraglide/messages.js';
+	import { trpc } from '$lib/trpc/client.svelte';
 
 	const { data, form }: PageProps = $props();
 
@@ -31,45 +32,14 @@
 
 	const removeStudent = async (student: (typeof students)[number]) => {
 		try {
-			const response = await fetch(`/api/students/${student.id}`, {
-				method: 'DELETE',
-				body: JSON.stringify({
-					groupId: page.params.id
-				})
+			await trpc.group.removeStudent.mutate({
+				groupId: +page.params.id,
+				id: student.id
 			});
-
-			if (!response.ok) {
-				throw new Error(
-					m.failedToRemoveStudent() + ':' + (await response.text())
-				);
-			}
 
 			students = students.filter(({ id }) => id !== student.id);
 		} catch (err) {
-			error = err.message;
-		}
-	};
-
-	const onNameSubmit = async (e: SubmitEvent) => {
-		e.preventDefault();
-		const formData = new FormData(e.target as HTMLFormElement);
-		const name = formData.get('name') as string;
-
-		try {
-			const response = await fetch(`/api/groups/${page.params.id}`, {
-				method: 'PATCH',
-				body: JSON.stringify({ name })
-			});
-
-			if (!response.ok) {
-				throw new Error(
-					m.failedToUpdateGroupName() + ':' + (await response.text())
-				);
-			}
-
-			groupName = name;
-		} catch (err) {
-			error = err.message;
+			error = m.failedToRemoveStudent() + ':' + err.message;
 		}
 	};
 
@@ -78,7 +48,6 @@
 
 <div class="container">
 	<form
-		onsubmit={onNameSubmit}
 		method="POST"
 		use:enhance={() =>
 			({ update }) => {

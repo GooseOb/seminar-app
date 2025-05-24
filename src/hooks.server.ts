@@ -3,6 +3,7 @@ import type { Handle } from '@sveltejs/kit';
 import { setDatabaseUrl } from '$lib/server/db';
 import { sequence } from '@sveltejs/kit/hooks';
 import { validateSessionToken } from '$lib/server/db/queries/sessions';
+import { handleTrpc } from '$lib/trpc/handle';
 
 const handleAuth: Handle = async ({ event, resolve }) => {
 	const { url, cookies, locals } = event;
@@ -52,4 +53,9 @@ const handleTheme: Handle = ({ event, resolve }) => {
 	});
 };
 
-export const handle: Handle = sequence(i18n.handle(), handleAuth, handleTheme);
+export const handle: Handle = sequence(
+	i18n.handle(),
+	handleAuth,
+	handleTheme,
+	handleTrpc
+);

@@ -14,6 +14,7 @@
 	import Success from '$lib/components/Success.svelte';
 	import { enhance } from '$app/forms';
 	import Dropzone from '$lib/components/Dropzone.svelte';
+	import { trpc } from '$lib/trpc/client.svelte';
 
 	const { data, form } = $props();
 	const user = $state(data.user);
@@ -23,9 +24,7 @@
 	const setImage = async (files: FileList | null) => {
 		if (!files) return;
 
-		const { url } = await fetch('/api/user/image/upload', {
-			method: 'POST'
-		}).then((res) => res.json<{ url: string }>());
+		const { url } = await trpc.user.photoUpload.query();
 
 		const file = files[0];
 
@@ -37,6 +36,7 @@
 				'Content-Length': file.size.toString()
 			}
 		}).then(() => {
+			trpc.user.confirmPhotoUpload.mutate();
 			imageInput.value = '';
 			user.hasPhoto = true;
 		});
