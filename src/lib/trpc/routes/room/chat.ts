@@ -2,7 +2,7 @@ import { insertMessage } from '$lib/server/db/queries/message/insert';
 import { error } from '@sveltejs/kit';
 import { t } from '$lib/trpc/t';
 import { z } from 'zod';
-import { roomProcedure } from '../procedure';
+import { roomProcedure } from './middleware';
 
 const roomStub = (env: Env, roomId: string) =>
 	env.CHATROOM.get(env.CHATROOM.idFromName(roomId));

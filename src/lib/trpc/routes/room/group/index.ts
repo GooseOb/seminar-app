@@ -1,28 +1,8 @@
-import { isRoomOwner } from '$lib/server/db/queries/group/isOwner';
 import { removeMemberFromRoom } from '$lib/server/db/queries/room/removeMember';
 import { error } from '@sveltejs/kit';
-import { t } from '../t';
+import { t } from '$lib/trpc/t';
 import { z } from 'zod';
-import * as m from '$lib/paraglide/messages';
-
-const groupOwnerProcedure = t.procedure
-	.input(z.object({ groupId: z.number() }))
-	.use(
-		async ({
-			ctx: {
-				locals: {
-					user: { id }
-				}
-			},
-			input: { groupId },
-			next
-		}) => {
-			if (!(await isRoomOwner(id, +groupId))) {
-				error(403, m.notRoomOwner());
-			}
-			return next();
-		}
-	);
+import { groupOwnerProcedure } from './middleware';
 
 export const groupRouter = t.router({
 	removeStudent: groupOwnerProcedure

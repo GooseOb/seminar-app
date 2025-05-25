@@ -1,6 +1,6 @@
 import { isRoomMember } from '$lib/server/db/queries/room/isMember';
+import { t } from '$lib/trpc/t';
 import { error } from '@sveltejs/kit';
-import { t } from '../t';
 import { z } from 'zod';
 
 export const roomProcedure = t.procedure

@@ -8,7 +8,7 @@ import {
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { z } from 'zod';
-import { roomProcedure } from '../procedure';
+import { roomProcedure } from './middleware';
 
 const map = <T, U>(arr: T[], fn: (item: T) => Promise<U>) =>
 	Promise.all(arr.map(fn));
