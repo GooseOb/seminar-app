@@ -1,5 +1,4 @@
 import { db, project, type NoId, type ProjectRoom } from '$lib/server/db';
-import {} from '$lib/server/db/schema';
 import { sql } from 'drizzle-orm';
 import { insertRoomQuery } from '../room/insert';
 import { insertRoomMembers } from '../room/insertMembers';
@@ -19,10 +18,10 @@ export const insertProjectQuery = () =>
 
 export const insertProject = async (
 	groupId: number,
-	roomData: Optional<NoId<ProjectRoom>, 'kind'>
+	roomData: Omit<NoId<ProjectRoom>, 'kind'> & { kind?: 'project' }
 ) => {
 	roomData.kind = 'project';
-	const [{ 0: result }, { id: lecturerId }] = await Promise.all([
+	const [{ 0: result }, lecturer] = await Promise.all([
 		insertRoomQuery().execute(roomData),
 		getGroupOwner(groupId)
 	]);
@@ -35,7 +34,7 @@ export const insertProject = async (
 			description: roomData.description,
 			thesis: roomData.thesis
 		}),
-		insertRoomMembers(result.id, [roomData.ownerId, lecturerId])
+		insertRoomMembers(result.id, [roomData.ownerId, lecturer!.id])
 	]);
 
 	return result;
