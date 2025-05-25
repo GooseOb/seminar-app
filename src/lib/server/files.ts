@@ -15,7 +15,7 @@ export const getS3Client = () =>
 		}
 	});
 
-export type FileItem = {
+export type FileData = {
 	name: string;
 	size: number;
 	uploaded: Date;
@@ -31,7 +31,7 @@ export const getRoomFiles = (r2: R2Bucket, id: string) =>
 		})
 		.then((res) =>
 			res.objects.map(
-				(file): FileItem => ({
+				(file): FileData => ({
 					name: file.key.split('/').at(-1)!,
 					size: file.size,
 					uploaded: file.uploaded,

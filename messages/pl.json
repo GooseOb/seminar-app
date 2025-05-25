@@ -30,6 +30,10 @@
 	"successfullyUpdated": "Pomyślnie zaktualizowano",
 	"noStudents": "Brak studentów",
 
+	"openFile": "Otwórz",
+	"deleteFile": "Usuń",
+	"downloadFile": "Pobierz",
+
 	"inviteExisting": "Zaproś istniejących studentów",
 	"manageGroup": "Zarządzaj grupą",
 	"createGroup": "Utwórz grupę",

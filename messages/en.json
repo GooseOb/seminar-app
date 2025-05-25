@@ -30,6 +30,10 @@
 	"successfullyUpdated": "Successfully updated",
 	"noStudents": "No students",
 
+	"openFile": "Open",
+	"deleteFile": "Delete",
+	"downloadFile": "Download",
+
 	"inviteExisting": "Invite existing students",
 	"manageGroup": "Manage the group",
 	"createGroup": "Create group",

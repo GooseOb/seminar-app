@@ -15,11 +15,11 @@
 	import { enhance } from '$app/forms';
 	import Dropzone from '$lib/components/Dropzone.svelte';
 	import { trpc } from '$lib/trpc/client.svelte';
+	import FileButton from '$lib/components/FileButton.svelte';
 
 	const { data, form } = $props();
 	const user = $state(data.user);
 	let theme = $state(data.theme);
-	let imageInput: HTMLInputElement = $state(null)!;
 
 	const setImage = async (files: FileList | null) => {
 		if (!files) return;
@@ -37,7 +37,6 @@
 			}
 		}).then(() => {
 			trpc.user.confirmPhotoUpload.mutate();
-			imageInput.value = '';
 			user.hasPhoto = true;
 		});
 	};
@@ -68,24 +67,17 @@
 			member={user}
 			text={user.role === 'lecturer' ? m.lecturer() : ''}
 		>
-			<button
+			<FileButton
 				class="btn"
-				onclick={(e) => {
-					e.stopPropagation();
-					imageInput.click();
+				input={{
+					hidden: true,
+					onchange: (e) => {
+						setImage(e.currentTarget.files);
+					}
 				}}
 			>
-				<input
-					type="file"
-					hidden
-					bind:this={imageInput}
-					multiple
-					onchange={(e) => {
-						setImage(e.currentTarget.files);
-					}}
-				/>
 				{m.updatePhoto()}
-			</button>
+			</FileButton>
 		</MemberCard>
 	</div>
 	{#if user.role === 'lecturer'}

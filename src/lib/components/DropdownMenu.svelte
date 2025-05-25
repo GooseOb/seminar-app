@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { slide } from 'svelte/transition';
 
-	const {
+	let {
 		buttons,
-		onEachClick
+		isOpen = $bindable()
 	}: {
 		buttons: { text: string; onclick: () => void }[];
-		onEachClick: () => void;
+		isOpen?: boolean;
 	} = $props();
 </script>
 
@@ -16,7 +16,7 @@
 			onclick={(e) => {
 				e.stopPropagation();
 				onclick();
-				onEachClick();
+				isOpen = false;
 			}}
 		>
 			{text}

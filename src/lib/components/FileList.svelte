@@ -1,22 +1,33 @@
 <script lang="ts">
 	import * as m from '$lib/paraglide/messages.js';
-	import type { FileItem } from '$lib/server/files';
+	import type { FileData } from '$lib/server/files';
 	import { onDestroy } from 'svelte';
-	import DropdownMenu from './DropdownMenu.svelte';
 	import Dropzone from './Dropzone.svelte';
 	import ImageView from './ImageView.svelte';
 	import Overlay from './Overlay.svelte';
 	import PDFView from './PDFView.svelte';
 	import { trpc } from '$lib/trpc/client.svelte';
+	import FileCard from './FileCard.svelte';
+	import FileButton from './FileButton.svelte';
 
 	const { files: filesPromise, roomId } = $props();
 
-	type FileItemWithBlob = FileItem & { blobUrl?: string; blobType?: string };
+	type BlobData = {
+		url: string;
+		type: string;
+	};
+	const file2blob = new Map<FileData, BlobData>();
+	onDestroy(() => {
+		file2blob.forEach(({ url }) => {
+			URL.revokeObjectURL(url);
+		});
+		file2blob.clear();
+	});
 
-	let files: FileItemWithBlob[] = $state([]);
+	let files: FileData[] = $state([]);
 
 	$effect(() => {
-		filesPromise.then((initialFiles: FileItem[]) => {
+		filesPromise.then((initialFiles: FileData[]) => {
 			files = initialFiles;
 		});
 		return () => {
@@ -24,10 +35,8 @@
 		};
 	});
 
-	let fileInput: HTMLInputElement = $state(null)!;
-
 	let showMenuIndex: number | null = $state(null);
-	let isClosingMenu = $state(false);
+	let isMenuOpen = $state(false);
 
 	let isImageView = $state(false);
 	let imageSrc = $state('');
@@ -38,8 +47,9 @@
 	const toggleMenu = (index: number | null) => {
 		if (showMenuIndex === null) {
 			showMenuIndex = index;
+			isMenuOpen = true;
 		} else {
-			isClosingMenu = true;
+			isMenuOpen = false;
 		}
 	};
 
@@ -77,21 +87,22 @@
 			});
 	};
 
-	const openBlob = (blobUrl: string, blobType: string) => {
-		if (blobType.startsWith('image/')) {
-			imageSrc = blobUrl;
+	const openBlob = ({ url, type }: BlobData) => {
+		if (type.startsWith('image/')) {
+			imageSrc = url;
 			isImageView = true;
-		} else if (blobType.startsWith('application/pdf')) {
-			pdfSrc = blobUrl;
+		} else if (type.startsWith('application/pdf')) {
+			pdfSrc = url;
 			isPdfView = true;
 		} else {
-			window.open(blobUrl, '_blank');
+			window.open(url, '_blank');
 		}
 	};
 
-	const handleOpen = (file: FileItemWithBlob) => {
-		if (file.blobUrl) {
-			openBlob(file.blobUrl, file.blobType!);
+	const handleOpen = (file: FileData) => {
+		const blob = file2blob.get(file);
+		if (blob) {
+			openBlob(blob);
 		} else {
 			trpc.room.files.get
 				.query({
@@ -102,21 +113,15 @@
 				.then(({ urls }) => fetch(urls[0]))
 				.then((res) => res.blob())
 				.then((blob) => {
-					const url = URL.createObjectURL(blob);
-					file.blobUrl = url;
-					file.blobType = blob.type;
-					openBlob(url, blob.type);
+					const blobData = {
+						url: URL.createObjectURL(blob),
+						type: blob.type
+					};
+					file2blob.set(file, blobData);
+					openBlob(blobData);
 				});
 		}
-		showMenuIndex = null;
 	};
-	onDestroy(() => {
-		for (const { blobUrl } of files) {
-			if (blobUrl) {
-				URL.revokeObjectURL(blobUrl);
-			}
-		}
-	});
 
 	const onchange = (e: Event) => {
 		handleUpload((e.currentTarget as HTMLInputElement).files);
@@ -130,7 +135,7 @@
 		if (filesToUpload && filesToUpload.length > 0) {
 			const arr = Array.from(filesToUpload);
 
-			const fileItems: FileItem[] = arr.map((file) => ({
+			const fileItems: FileData[] = arr.map((file) => ({
 				name: file.name,
 				size: file.size,
 				uploaded: new Date(),
@@ -165,158 +170,62 @@
 	};
 </script>
 
-{#if showMenuIndex !== null && !isClosingMenu}
+{#if showMenuIndex !== null && isMenuOpen}
 	<Overlay
 		onclick={() => {
-			isClosingMenu = true;
+			isMenuOpen = false;
 		}}
-		onoutroendcapture={() => {
+		onoutroend={() => {
 			showMenuIndex = null;
-			isClosingMenu = false;
 		}}
 	/>
 {/if}
-<ul class="nolist file-list">
+<ul class="nolist list">
 	<Dropzone {ondrop} />
 	{#each files as file, index}
-		<li
-			aria-hidden="true"
-			class="file-item"
-			class:active={showMenuIndex === index}
-			class:pending={file.isPending}
-			onclick={() => handleOpen(file)}
-		>
-			<div class="file-row">
-				<div class="file-content">
-					<div class="file-name">{file.name}</div>
-					<div class="file-details">
-						{(file.size / 1e3).toFixed(2)} KB, uploaded {new Date(
-							file.uploaded
-						).toLocaleString()} by {file.uploader}
-					</div>
-				</div>
-				<div class="menu-container">
-					<button
-						class="menu-btn"
-						onclick={(e) => {
-							e.stopPropagation();
-							toggleMenu(index);
-						}}
-					>
-						⋮
-					</button>
-					{#if showMenuIndex === index && !isClosingMenu}
-						<DropdownMenu
-							onEachClick={() => {
-								isClosingMenu = true;
-							}}
-							buttons={[
-								{
-									text: 'Open',
-									onclick: () => handleOpen(file)
-								},
-								{
-									text: 'Download',
-									onclick: () => handleDownload(file)
-								},
-								{
-									text: 'Delete',
-									onclick: () => handleDelete(file)
-								}
-							]}
-						/>
-					{/if}
-				</div>
-			</div>
+		{@const onclick = () => handleOpen(file)}
+		<li>
+			<FileCard
+				{file}
+				{isMenuOpen}
+				toggleMenu={() => {
+					toggleMenu(index);
+				}}
+				active={showMenuIndex === index}
+				{onclick}
+				buttons={[
+					{
+						text: m.openFile(),
+						onclick
+					},
+					{
+						text: m.downloadFile(),
+						onclick: () => handleDownload(file)
+					},
+					{
+						text: m.deleteFile(),
+						onclick: () => handleDelete(file)
+					}
+				]}
+			/>
 		</li>
 	{/each}
 </ul>
 
-<button
-	class="btn"
-	onclick={(e) => {
-		e.stopPropagation();
-		fileInput.click();
-	}}
->
-	<input type="file" hidden bind:this={fileInput} multiple {onchange} />
+<FileButton class="btn" input={{ multiple: true, onchange }}>
 	{m.addFile()}
-</button>
+</FileButton>
 
 <ImageView bind:isOpen={isImageView} src={imageSrc} />
 <PDFView bind:isOpen={isPdfView} src={pdfSrc} />
 
 <style>
-	.file-list {
+	.list {
 		padding: 1rem 0;
 		position: relative;
 	}
-	.pending {
-		opacity: 0.5;
-	}
 
-	.file-item {
-		position: relative;
-		background: var(--bg2-color);
-		margin-bottom: 0.5rem;
-		border-radius: 0.5rem;
-		cursor: pointer;
-		transition: background 0.2s;
-	}
-	.file-item:hover {
-		background: var(--bg4-color);
-	}
-	.file-item.active {
-		z-index: 9;
-	}
-
-	.file-row {
-		display: flex;
-		align-items: stretch;
-	}
-
-	.file-content {
-		flex-grow: 1;
-		padding: 1rem;
-	}
-
-	.file-name {
-		font-weight: bold;
-		margin-bottom: 0.3rem;
-	}
-
-	.file-details {
-		font-size: 0.9rem;
-		opacity: 0.8;
-	}
-
-	.menu-container {
-		position: relative;
-		flex: 0 0 10%;
-		min-width: 60px;
-		display: flex;
-		align-items: stretch;
-	}
-
-	.menu-btn {
-		background: var(--bg3-color);
-		font-size: 2rem;
-		font-weight: bold;
-		cursor: pointer;
-		width: 100%;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		border-radius: 0 0.5rem 0.5rem 0;
-		border: none;
-		opacity: 0.8;
-		transition: opacity 0.2s;
-	}
-	.menu-btn:hover {
-		opacity: 1;
-	}
-
-	.btn {
+	.list :global(.btn) {
 		width: 100%;
 	}
 </style>
