@@ -30,6 +30,9 @@
 	"successfullyUpdated": "Successfully updated",
 	"noStudents": "No students",
 
+	"uploaded": "Uploaded {date}",
+	"uploadedBy": "Uploaded {date} by {name}",
+
 	"openFile": "Open",
 	"deleteFile": "Delete",
 	"downloadFile": "Download",

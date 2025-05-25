@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { FileData } from '$lib/server/files';
 	import DropdownMenu from './DropdownMenu.svelte';
+	import * as m from '$lib/paraglide/messages';
 
 	let {
 		file,
@@ -20,6 +21,8 @@
 		}[];
 		active: boolean;
 	} = $props();
+
+	const date = new Date(file.uploaded).toLocaleString();
 </script>
 
 <div
@@ -38,9 +41,9 @@
 	<div class="content">
 		<div class="name">{file.name}</div>
 		<div class="details">
-			{(file.size / 1e3).toFixed(2)} KB, uploaded {new Date(
-				file.uploaded
-			).toLocaleString()} by {file.uploader}
+			{(file.size / 1e3).toFixed(2)} KB, {file.uploader
+				? m.uploadedBy({ date, name: file.uploader })
+				: m.uploaded({ date })}
 		</div>
 	</div>
 	<div class="menu-container">

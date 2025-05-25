@@ -30,6 +30,9 @@
 	"successfullyUpdated": "Pomyślnie zaktualizowano",
 	"noStudents": "Brak studentów",
 
+	"uploaded": "Dodano {date}",
+	"uploadedBy": "Dodał {name} o {date}",
+
 	"openFile": "Otwórz",
 	"deleteFile": "Usuń",
 	"downloadFile": "Pobierz",

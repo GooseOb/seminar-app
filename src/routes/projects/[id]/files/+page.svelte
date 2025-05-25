@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import FileCard from '$lib/components/FileCard.svelte';
 	import FileList from '$lib/components/FileList.svelte';
 	import type { FileData } from '$lib/server/files';
 	import type { PageProps } from './$types';
@@ -18,4 +19,16 @@
 	);
 </script>
 
-<FileList {files} roomId={page.params.id} />
+<div>
+	<FileCard
+		file={thesis[0]}
+		toggleMenu={() => {}}
+		isMenuOpen={false}
+		onclick={() => {}}
+		buttons={[]}
+		active={false}
+	/>
+</div>
+<div>
+	<FileList {files} roomId={page.params.id} />
+</div>
