@@ -1,6 +1,14 @@
 <script lang="ts">
-	let { name = '', required = true, label, value = $bindable() } = $props();
-	const oninput = (e: InputEvent) => {
+	import type { HTMLTextareaAttributes } from 'svelte/elements';
+
+	let {
+		name = '',
+		required = true,
+		label,
+		value = $bindable(),
+		...props
+	}: HTMLTextareaAttributes & { label: string } = $props();
+	const oninput = (e: Event) => {
 		const node = e.currentTarget as HTMLTextAreaElement;
 		node.style.height = 'auto';
 		node.style.height = `${node.scrollHeight - 16}px`;
@@ -15,6 +23,7 @@
 		{name}
 		{required}
 		placeholder=""
+		{...props}
 	>
 	</textarea>
 	<label for={name} class:required>{label}</label>

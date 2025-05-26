@@ -1,3 +1,4 @@
+import { updateProjectEditable } from '$lib/server/db/queries/project/updateEditable';
 import { t } from '$lib/trpc/t';
 import { lecturerProcedure } from './middleware';
 import { thesisRouter } from './thesis';
@@ -5,11 +6,9 @@ import { z } from 'zod';
 
 export const projectRouter = t.router({
 	thesis: thesisRouter,
-	changeAcceptance: lecturerProcedure
-		.input(z.object({ accepted: z.boolean() }))
-		.mutation(async ({ input: { roomId, accepted } }) => {
-			// TODO: Implement the logic to change the acceptance status of a project.
-
-			return { roomId, accepted };
+	setEditable: lecturerProcedure
+		.input(z.object({ editable: z.boolean() }))
+		.mutation(async ({ input: { roomId, editable } }) => {
+			await updateProjectEditable(+roomId, editable);
 		})
 });

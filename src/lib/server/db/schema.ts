@@ -67,7 +67,8 @@ export const project = pgTable('project', {
 		.references(() => room.id),
 	namePl: varchar({ length: 255 }).notNull(),
 	description: text(),
-	thesis: text()
+	thesis: text(),
+	editable: boolean().notNull().default(true)
 });
 
 export const message = pgTable('message', {

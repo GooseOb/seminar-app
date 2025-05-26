@@ -16,6 +16,9 @@
 	"thesisStatement": "Teza badawcza",
 	"thesis": "Praca",
 
+	"lockEditing": "Zablokuj edytowanie",
+	"unlockEditing": "Odblokuj edytowanie",
+
 	"firstName": "Imię",
 	"lastName": "Nazwisko",
 	"login": "Login",

@@ -9,7 +9,8 @@ const getProjectQuery = () =>
 			ownerId: room.ownerId,
 			namePl: project.namePl,
 			description: project.description,
-			thesis: project.thesis
+			thesis: project.thesis,
+			editable: project.editable
 		})
 		.from(room)
 		.where(and(eq(room.id, sql.placeholder('id'))))

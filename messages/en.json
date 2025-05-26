@@ -16,6 +16,9 @@
 	"thesisStatement": "Thesis statement",
 	"thesis": "Thesis",
 
+	"lockEditing": "Lock editing",
+	"unlockEditing": "Unlock editing",
+
 	"firstName": "First name",
 	"lastName": "Last name",
 	"login": "Login",
