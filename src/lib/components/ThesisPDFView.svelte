@@ -1,6 +1,7 @@
 <script lang="ts">
 	import PdfView from './PDFView.svelte';
 	import Select from './Select.svelte';
+	import * as m from '$lib/paraglide/messages.js';
 
 	let { src, isOpen = $bindable() }: { src: string; isOpen: boolean } =
 		$props();
@@ -24,6 +25,21 @@
 </script>
 
 <PdfView {src} bind:isOpen>
-	<Select label="Compare" bind:value={selectedVersion} options={versions} />
-	<Select label="to" bind:value={prevVersion} options={prevVersions} />
+	<div>
+		<Select
+			label={m.compare()}
+			bind:value={selectedVersion}
+			options={versions}
+		/>
+		<Select label={m.to()} bind:value={prevVersion} options={prevVersions} />
+	</div>
 </PdfView>
+
+<style>
+	div {
+		display: flex;
+		text-align: center;
+		width: 100%;
+		padding: 0 0.5rem;
+	}
+</style>

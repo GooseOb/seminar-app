@@ -15,6 +15,7 @@
 	type BlobData = {
 		url: string;
 		type: string;
+		name: string;
 	};
 	const file2blob = new Map<FileData, BlobData>();
 	onDestroy(() => {
@@ -29,11 +30,18 @@
 	let showMenuIndex: number | null = $state(null);
 	let isMenuOpen = $state(false);
 
-	let isImageView = $state(false);
-	let imageSrc = $state('');
+	// let isImageView = $state(false);
+	// let imageSrc = $state('');
 
-	let isPdfView = $state(false);
-	let pdfSrc = $state('');
+	const emptyView = () => ({
+		src: '',
+		name: '',
+		isOpen: false
+	});
+	let pdf = $state(emptyView());
+	let image = $state(emptyView());
+	// let isPdfView = $state(false);
+	// let pdfSrc = $state('');
 
 	const toggleMenu = (index: number | null) => {
 		if (showMenuIndex === null) {
@@ -78,15 +86,18 @@
 			});
 	};
 
-	const openBlob = ({ url, type }: BlobData) => {
-		if (type.startsWith('image/')) {
-			imageSrc = url;
-			isImageView = true;
-		} else if (type.startsWith('application/pdf')) {
-			pdfSrc = url;
-			isPdfView = true;
+	const openBlob = (data: BlobData) => {
+		const fileData = {
+			src: data.url,
+			name: data.name,
+			isOpen: true
+		};
+		if (data.type.startsWith('image/')) {
+			image = fileData;
+		} else if (data.type.startsWith('application/pdf')) {
+			pdf = fileData;
 		} else {
-			window.open(url, '_blank');
+			window.open(data.url, '_blank');
 		}
 	};
 
@@ -106,7 +117,8 @@
 				.then((blob) => {
 					const blobData = {
 						url: URL.createObjectURL(blob),
-						type: blob.type
+						type: blob.type,
+						name: file.name
 					};
 					file2blob.set(file, blobData);
 					openBlob(blobData);
@@ -211,8 +223,8 @@
 	{m.addFiles()}
 </FileButton>
 
-<ImageView bind:isOpen={isImageView} src={imageSrc} />
-<PDFView bind:isOpen={isPdfView} src={pdfSrc} />
+<ImageView bind:isOpen={image.isOpen} src={image.src} />
+<PDFView bind:isOpen={pdf.isOpen} src={pdf.src}>{pdf.name}</PDFView>
 
 <style>
 	.list {
