@@ -30,19 +30,15 @@ export const thesisRouter = t.router({
 	}),
 	delete: studentProcedure
 		.input(z.object({ fileName: z.string() }))
-		.query(async ({ input: { roomId, fileName } }) => {
+		.mutation(async ({ input: { roomId, fileName } }) => {
 			const s3 = getS3Client();
 
-			const url = await getSignedUrl(
-				s3,
+			await s3.send(
 				new DeleteObjectCommand({
 					Bucket: S3_BUCKET,
 					Key: `rooms/${roomId}/thesis/${fileName}`
-				}),
-				{ expiresIn: 3600 }
+				})
 			);
-
-			return { url };
 		}),
 	get: roomProcedure
 		.input(z.object({ fileName: z.string(), isDownload: z.boolean() }))

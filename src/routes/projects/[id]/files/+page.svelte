@@ -6,7 +6,7 @@
 	import type { PageProps } from './$types';
 
 	const { data }: PageProps = $props();
-	const versions: FileData[] = $state([]);
+	let versions: FileData[] = $state([]);
 	const files = $derived(
 		data.files.then((files) =>
 			files.filter((file) => {
@@ -24,7 +24,7 @@
 	{#await files}
 		<p>Loading...</p>
 	{:then}
-		<Thesis roomId={page.params.id} role={data.role!} {versions} />
+		<Thesis roomId={page.params.id} role={data.role!} bind:versions />
 	{/await}
 
 	{#await files}

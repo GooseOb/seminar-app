@@ -74,22 +74,16 @@ export const filesRouter = t.router({
 		}),
 	delete: roomProcedure
 		.input(z.object({ fileNames: z.array(z.string()) }))
-		.query(async ({ input: { roomId, fileNames } }) => {
+		.mutation(async ({ input: { roomId, fileNames } }) => {
 			const s3 = getS3Client();
 
-			const urls = await map(fileNames, (fileName) =>
-				getSignedUrl(
-					s3,
+			await map(fileNames, (fileName) =>
+				s3.send(
 					new DeleteObjectCommand({
 						Bucket: S3_BUCKET,
 						Key: `rooms/${roomId}/${fileName}`
-					}),
-					{
-						expiresIn: 3600
-					}
+					})
 				)
 			);
-
-			return { urls };
 		})
 });

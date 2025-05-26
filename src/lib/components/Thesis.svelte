@@ -9,8 +9,8 @@
 	import ThesisPDFView from './ThesisPDFView.svelte';
 	import Overlay from './Overlay.svelte';
 
-	const {
-		versions: _versions,
+	let {
+		versions = $bindable(),
 		role,
 		roomId
 	}: {
@@ -19,8 +19,6 @@
 		roomId: string;
 	} = $props();
 
-	const versions = $state(_versions);
-	let src = $state('');
 	let isOpen = $state(false);
 	let isMenuOpen = $state(false);
 	let active = $state(false);
@@ -120,7 +118,7 @@
 	</FileButton>
 {/if}
 
-<ThesisPDFView {versions} {roomId} bind:isOpen />
+<ThesisPDFView bind:versions {roomId} bind:isOpen />
 
 <style>
 	div {

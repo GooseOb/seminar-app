@@ -72,15 +72,10 @@
 	const handleDelete = (file: { name: string; isPending?: boolean }) => {
 		file.isPending = true;
 		trpc.room.files.delete
-			.query({
+			.mutate({
 				roomId,
 				fileNames: [file.name]
 			})
-			.then(({ urls }) =>
-				fetch(urls[0], {
-					method: 'DELETE'
-				})
-			)
 			.then(() => {
 				files = files.filter((item) => item.name !== file.name);
 			});
@@ -193,7 +188,7 @@
 			<li>
 				<FileCard
 					{file}
-					{isMenuOpen}
+					bind:isMenuOpen
 					toggleMenu={() => {
 						toggleMenu(index);
 					}}

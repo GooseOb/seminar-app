@@ -6,7 +6,7 @@
 	import { trpc } from '$lib/trpc/client.svelte';
 
 	let {
-		versions,
+		versions = $bindable(),
 		isOpen = $bindable(),
 		roomId
 	}: { versions: FileData[]; isOpen: boolean; roomId: string } = $props();
@@ -40,6 +40,31 @@
 			displayName: v.uploaded.toLocaleString()
 		}))
 	);
+
+	const handleDownload = () => {
+		trpc.room.project.thesis.get
+			.query({
+				roomId,
+				isDownload: true,
+				fileName: selectedVersion.replace('thesis/', '')
+			})
+			.then(({ url }) => {
+				const a = document.createElement('a');
+				a.href = url;
+				a.download = selectedVersion.replace('thesis/', '');
+				a.click();
+			});
+	};
+	const handleDelete = () => {
+		trpc.room.project.thesis.delete
+			.mutate({ roomId, fileName: selectedVersion.replace('thesis/', '') })
+			.then(() => {
+				versions.splice(
+					versions.findIndex((v) => v.name === selectedVersion),
+					1
+				);
+			});
+	};
 </script>
 
 {#await srcPromise}
@@ -48,14 +73,18 @@
 	<PdfView {src} bind:isOpen>
 		<div class="top-bar">
 			<div class="buttons">
-				<button class="btn2" aria-label={m.downloadFile()}>
+				<button
+					class="btn2"
+					aria-label={m.downloadFile()}
+					onclick={handleDownload}
+				>
 					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"
 						><path
 							d="M480-320 280-520l56-58 104 104v-326h80v326l104-104 56 58-200 200ZM240-160q-33 0-56.5-23.5T160-240v-120h80v120h480v-120h80v120q0 33-23.5 56.5T720-160H240Z"
 						/></svg
 					>
 				</button>
-				<button class="btn2" aria-label={m.deleteFile()}>
+				<button class="btn2" aria-label={m.deleteFile()} onclick={handleDelete}>
 					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"
 						><path
 							d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"
