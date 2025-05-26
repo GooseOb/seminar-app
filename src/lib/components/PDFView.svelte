@@ -104,6 +104,12 @@
 			max-width: 100%;
 			height: auto;
 		}
+		:global(span) {
+			position: absolute;
+			color: transparent;
+			white-space: pre;
+			transform-origin: 0 0;
+		}
 	}
 
 	.loader {
