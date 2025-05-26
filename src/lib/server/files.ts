@@ -37,7 +37,7 @@ export const getRoomFiles = dev
 				.then(
 					({ Contents }) =>
 						Contents?.map((file) => ({
-							name: file.Key!.split('/').at(-1)!,
+							name: file.Key!.replace(`rooms/${id}/`, ''),
 							size: file.Size!,
 							uploaded: new Date(file.LastModified!),
 							uploader: undefined
@@ -52,7 +52,7 @@ export const getRoomFiles = dev
 				.then((res) =>
 					res.objects.map(
 						(file): FileData => ({
-							name: file.key.split('/').at(-1)!,
+							name: file.key.replace(`rooms/${id}/`, ''),
 							size: file.size,
 							uploaded: file.uploaded,
 							uploader: file.customMetadata?.uploader

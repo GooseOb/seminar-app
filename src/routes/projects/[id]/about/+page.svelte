@@ -32,7 +32,7 @@
 			required={false}
 		/>
 		<Textarea
-			label={m.thesis()}
+			label={m.thesisStatement()}
 			name="thesis"
 			value={thesis}
 			required={false}

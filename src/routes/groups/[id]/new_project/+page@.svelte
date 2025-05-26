@@ -12,7 +12,7 @@
 	<Input label={m.nameEn()} name="name_en" />
 	<Input label={m.namePl()} name="name_pl" />
 	<Textarea label={m.description()} name="description" required={false} />
-	<Textarea label={m.thesis()} name="thesis" required={false} />
+	<Textarea label={m.thesisStatement()} name="thesis" required={false} />
 
 	<button class="btn" type="submit"> {m.update()} </button>
 

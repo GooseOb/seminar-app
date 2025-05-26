@@ -8,10 +8,12 @@
 	"addGroup": "Add group",
 	"addProject": "Add project",
 	"addFile": "Add file",
+	"addFiles": "Add files",
 
 	"nameEn": "Name (English)",
 	"namePl": "Name (Polish)",
 	"description": "Description",
+	"thesisStatement": "Thesis statement",
 	"thesis": "Thesis",
 
 	"firstName": "First name",
@@ -32,6 +34,8 @@
 
 	"uploaded": "Uploaded {date}",
 	"uploadedBy": "Uploaded {date} by {name}",
+
+	"noFiles": "No files",
 
 	"openFile": "Open",
 	"deleteFile": "Delete",

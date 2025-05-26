@@ -8,11 +8,13 @@
 	"addGroup": "Dodaj grupę",
 	"addProject": "Dodaj projekt",
 	"addFile": "Dodaj plik",
+	"addFiles": "Dodaj pliki",
 
 	"nameEn": "Nazwa (angielski)",
 	"namePl": "Nazwa (polski)",
 	"description": "Opis",
-	"thesis": "Teza badawcza",
+	"thesisStatement": "Teza badawcza",
+	"thesis": "Praca",
 
 	"firstName": "Imię",
 	"lastName": "Nazwisko",
@@ -32,6 +34,8 @@
 
 	"uploaded": "Dodano {date}",
 	"uploadedBy": "Dodał {name} o {date}",
+
+	"noFiles": "Brak plików",
 
 	"openFile": "Otwórz",
 	"deleteFile": "Usuń",

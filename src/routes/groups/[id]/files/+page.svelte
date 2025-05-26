@@ -6,4 +6,19 @@
 	const { data }: PageProps = $props();
 </script>
 
-<FileList files={data.files} roomId={page.params.id} />
+<div class="page">
+	{#await data.files}
+		<p>Loading...</p>
+	{:then files}
+		<FileList {files} roomId={page.params.id} />
+	{/await}
+</div>
+
+<style>
+	.page {
+		padding-top: 1rem;
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+	}
+</style>

@@ -66,7 +66,6 @@
 	.card {
 		position: relative;
 		background: var(--bg2-color);
-		margin-bottom: 0.5rem;
 		border-radius: 0.5rem;
 		cursor: pointer;
 		transition: background 0.2s;

@@ -10,7 +10,7 @@
 	import FileCard from './FileCard.svelte';
 	import FileButton from './FileButton.svelte';
 
-	const { files: filesPromise, roomId } = $props();
+	const { files: _files, roomId } = $props();
 
 	type BlobData = {
 		url: string;
@@ -24,16 +24,7 @@
 		file2blob.clear();
 	});
 
-	let files: FileData[] = $state([]);
-
-	$effect(() => {
-		filesPromise.then((initialFiles: FileData[]) => {
-			files = initialFiles;
-		});
-		return () => {
-			files.length = 0;
-		};
-	});
+	let files: FileData[] = $state(_files);
 
 	let showMenuIndex: number | null = $state(null);
 	let isMenuOpen = $state(false);
@@ -182,38 +173,42 @@
 {/if}
 <ul class="nolist list">
 	<Dropzone {ondrop} />
-	{#each files as file, index}
-		{@const onclick = () => handleOpen(file)}
-		<li>
-			<FileCard
-				{file}
-				{isMenuOpen}
-				toggleMenu={() => {
-					toggleMenu(index);
-				}}
-				active={showMenuIndex === index}
-				{onclick}
-				buttons={[
-					{
-						text: m.openFile(),
-						onclick
-					},
-					{
-						text: m.downloadFile(),
-						onclick: () => handleDownload(file)
-					},
-					{
-						text: m.deleteFile(),
-						onclick: () => handleDelete(file)
-					}
-				]}
-			/>
-		</li>
-	{/each}
+	{#if files.length === 0}
+		<p>{m.noFiles()}</p>
+	{:else}
+		{#each files as file, index}
+			{@const onclick = () => handleOpen(file)}
+			<li>
+				<FileCard
+					{file}
+					{isMenuOpen}
+					toggleMenu={() => {
+						toggleMenu(index);
+					}}
+					active={showMenuIndex === index}
+					{onclick}
+					buttons={[
+						{
+							text: m.openFile(),
+							onclick
+						},
+						{
+							text: m.downloadFile(),
+							onclick: () => handleDownload(file)
+						},
+						{
+							text: m.deleteFile(),
+							onclick: () => handleDelete(file)
+						}
+					]}
+				/>
+			</li>
+		{/each}
+	{/if}
 </ul>
 
 <FileButton class="btn" input={{ multiple: true, onchange }}>
-	{m.addFile()}
+	{m.addFiles()}
 </FileButton>
 
 <ImageView bind:isOpen={isImageView} src={imageSrc} />
@@ -221,7 +216,6 @@
 
 <style>
 	.list {
-		padding: 1rem 0;
 		position: relative;
 	}
 
