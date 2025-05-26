@@ -14,7 +14,6 @@ html {
 		--bg2-color: #d8d9da;
 		--bg3-color: #c1c3c5;
 		--bg4-color: #e0e0e0;
-		--primary-color: #007bff;
 	}
 
 	@media (prefers-color-scheme: light) {
@@ -24,7 +23,6 @@ html {
 			--bg2-color: #d8d9da;
 			--bg3-color: #c1c3c5;
 			--bg4-color: #e0e0e0;
-			--primary-color: #007bff;
 		}
 	}
 }
@@ -109,6 +107,17 @@ form {
 }
 .danger-btn {
 	background: var(--danger-color);
+}
+
+.btn2 {
+	border: 0.2em solid var(--bg3-color);
+	border-radius: 0.5em;
+	background-color: var(--bg3-color);
+	transition: background-color 0.2s;
+	cursor: pointer;
+}
+.btn2:hover {
+	background-color: var(--bg2-color);
 }
 
 .error {

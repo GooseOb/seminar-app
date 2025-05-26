@@ -19,7 +19,7 @@
 
 <div class="selector">
 	<span>{label}</span>
-	<select {value} {onchange}>
+	<select class="btn2" {value} {onchange}>
 		{#each options as { value, displayName }}
 			<option {value}>{displayName}</option>
 		{/each}
@@ -41,17 +41,7 @@
 		text-align: center;
 		flex: 1;
 		padding: 0.5em;
-		border: 0.2em solid var(--bg3-color);
-		border-radius: 0.5em;
-		background-color: var(--bg3-color);
 		font-size: 0.9em;
-		cursor: pointer;
 		appearance: none;
-		background-repeat: no-repeat;
-		background-position: right 8px center;
-		transition: background-color 0.2s;
-	}
-	select:hover {
-		background-color: var(--bg2-color);
 	}
 </style>

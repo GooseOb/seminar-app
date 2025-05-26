@@ -10,23 +10,23 @@
 	import Overlay from './Overlay.svelte';
 
 	const {
-		data: _data,
+		versions: _versions,
 		role,
 		roomId
 	}: {
-		data: FileData[];
+		versions: FileData[];
 		role: Role;
 		roomId: string;
 	} = $props();
 
-	const data = $state(_data);
+	const versions = $state(_versions);
 	let src = $state('');
 	let isOpen = $state(false);
 	let isMenuOpen = $state(false);
 	let active = $state(false);
 
 	const file = $derived({
-		...data.at(-1)!,
+		...versions.at(-1)!,
 		name: m.thesis()
 	});
 
@@ -48,7 +48,7 @@
 				uploaded: new Date(),
 				isPending: true
 			};
-			data.push(fileData);
+			versions.push(fileData);
 
 			const { url } = await trpc.room.project.thesis.upload.query({
 				roomId
@@ -61,7 +61,7 @@
 				},
 				body: file
 			}).then(() => {
-				const item = data.at(-1)!;
+				const item = versions.at(-1)!;
 				item.isPending = false;
 				item.uploaded = new Date();
 			});
@@ -69,16 +69,7 @@
 	};
 
 	const onclick = () => {
-		trpc.room.project.thesis.get
-			.query({
-				roomId,
-				isDownload: false,
-				fileName: data.at(-1)!.name.replace('thesis/', '')
-			})
-			.then(({ url }) => {
-				src = url;
-				isOpen = true;
-			});
+		isOpen = true;
 	};
 </script>
 
@@ -95,14 +86,15 @@
 
 <div>
 	<Dropzone {ondrop} />
-	{#if data.length > 0}
+	{#if versions.length > 0}
 		<FileCard
 			{file}
 			bind:isMenuOpen
 			toggleMenu={() => {
+				active = true;
 				isMenuOpen = !isMenuOpen;
 			}}
-			active
+			{active}
 			{onclick}
 			buttons={[
 				{
@@ -128,7 +120,7 @@
 	</FileButton>
 {/if}
 
-<ThesisPDFView {src} bind:isOpen />
+<ThesisPDFView {versions} {roomId} bind:isOpen />
 
 <style>
 	div {

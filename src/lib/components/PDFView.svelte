@@ -39,7 +39,7 @@
 			<div class="top-bar">
 				{@render children?.()}
 				<button
-					class="close-btn"
+					class="close-btn btn2"
 					onclick={() => {
 						isOpen = false;
 					}}
@@ -83,17 +83,13 @@
 	}
 
 	.close-btn {
-		background: var(--bg3-color);
-		font-size: 1.5rem;
+		font-size: 1.25em;
 		font-weight: bold;
 		cursor: pointer;
-		padding: 0.25rem 0.5rem;
-		border-radius: 0.5rem;
+		padding: 0.1rem 0.5rem;
 		margin-left: auto;
-		transition: background 0.2s ease;
-	}
-	.close-btn:hover {
-		background: var(--bg3-color);
+		height: fit-content;
+		margin-bottom: auto;
 	}
 
 	.pdf-container {

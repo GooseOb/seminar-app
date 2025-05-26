@@ -6,12 +6,12 @@
 	import type { PageProps } from './$types';
 
 	const { data }: PageProps = $props();
-	const thesis: FileData[] = $state([]);
+	const versions: FileData[] = $state([]);
 	const files = $derived(
 		data.files.then((files) =>
 			files.filter((file) => {
 				if (file.name.startsWith('thesis/')) {
-					thesis.push(file);
+					versions.push(file);
 					return false;
 				}
 				return true;
@@ -24,7 +24,7 @@
 	{#await files}
 		<p>Loading...</p>
 	{:then}
-		<Thesis roomId={page.params.id} role={data.role!} data={thesis} />
+		<Thesis roomId={page.params.id} role={data.role!} {versions} />
 	{/await}
 
 	{#await files}
