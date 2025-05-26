@@ -23,6 +23,9 @@
 			<div class="error">{form.error}</div>
 		{/if}
 	</form>
+	<a href="/login">
+		{m.logIn()}
+	</a>
 </div>
 
 <style>

@@ -1,12 +1,12 @@
 .container {
-	font-size: min(4vw, 4vh);
-	padding: 1em;
+	font-size: min(4vw, 2rem);
+	padding-bottom: 1em;
+	padding-top: 5vh;
 	gap: 1em;
 	border-radius: 0.5em;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	padding-top: 10vh;
 }
 
 form {
