@@ -15,9 +15,9 @@
 
 	let scale = $state(1.5);
 
-	let scaleAcc = $state(1.5);
+	let newScale = $state(1.5);
 	const updateScale = throttle(() => {
-		scale = scaleAcc;
+		scale = newScale;
 	}, 100);
 </script>
 
@@ -33,7 +33,7 @@
 			if (e.ctrlKey) {
 				e.preventDefault();
 				e.stopPropagation();
-				scaleAcc += e.deltaY < 0 ? 0.01 : -0.01;
+				newScale += e.deltaY < 0 ? 0.01 : -0.01;
 				updateScale();
 			}
 		}}

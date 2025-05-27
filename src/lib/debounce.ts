@@ -20,13 +20,13 @@ export const throttle = <
 	fn: T,
 	ms: number
 ): ((...args: TArgs) => void) => {
-	let lastCall = 0;
-
+	let timerFlag: null | number = null;
 	return (...args: TArgs) => {
-		const now = Date.now();
-		if (now - lastCall >= ms) {
-			lastCall = now;
-			fn(...args);
+		if (timerFlag === null) {
+			timerFlag = window.setTimeout(() => {
+				fn(...args);
+				timerFlag = null;
+			}, ms);
 		}
 	};
 };
