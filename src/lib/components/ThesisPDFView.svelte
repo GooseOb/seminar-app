@@ -4,6 +4,7 @@
 	import * as m from '$lib/paraglide/messages.js';
 	import type { FileData } from '$lib/server/files';
 	import { trpc } from '$lib/trpc/client.svelte';
+	import { trace } from '$lib/debug';
 
 	let {
 		versions = $bindable(),
@@ -34,18 +35,14 @@
 		versions.slice(versions.findIndex((v) => v.name === selectedVersion))
 	);
 
-	const options = $derived(
+	const optionsFrom = (versions: FileData[]) =>
 		versions.map((v) => ({
 			value: v.name,
-			displayName: v.uploaded.toLocaleString()
-		}))
-	);
-	const prevOptions = $derived(
-		prevVersions.map((v) => ({
-			value: v.name,
-			displayName: v.uploaded.toLocaleString()
-		}))
-	);
+			label: new Date(+/\d+(?=\.pdf$)/.exec(v.name)![0]).toLocaleString()
+		}));
+
+	const options = $derived(optionsFrom(versions));
+	const prevOptions = $derived(optionsFrom(prevVersions));
 
 	const handleDownload = () => {
 		trpc.room.project.thesis.get

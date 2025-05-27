@@ -12,7 +12,7 @@
 		value: string;
 		options: {
 			value: string;
-			displayName: string;
+			label: string;
 		}[];
 	} = $props();
 </script>
@@ -20,8 +20,8 @@
 <div class="selector">
 	<span>{label}</span>
 	<select class="btn2" {value} {onchange}>
-		{#each options as { value, displayName }}
-			<option {value}>{displayName}</option>
+		{#each options as { value, label }}
+			<option {value}>{label}</option>
 		{/each}
 	</select>
 </div>

@@ -14,11 +14,6 @@
 	} = $props();
 
 	let scale = $state(1.5);
-
-	let newScale = $state(1.5);
-	const updateScale = throttle(() => {
-		scale = newScale;
-	}, 100);
 </script>
 
 {#if isOpen}
@@ -33,8 +28,7 @@
 			if (e.ctrlKey) {
 				e.preventDefault();
 				e.stopPropagation();
-				newScale += e.deltaY < 0 ? 0.01 : -0.01;
-				updateScale();
+				scale += e.deltaY < 0 ? 0.01 : -0.01;
 			}
 		}}
 	>

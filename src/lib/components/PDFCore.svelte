@@ -2,8 +2,6 @@
 	import { browser } from '$app/environment';
 	import { debounce } from '$lib/debounce';
 	import type { PDFPageProxy } from 'pdfjs-dist';
-	import type { TextContent } from 'pdfjs-dist/types/src/display/api';
-	import type { PageViewport } from 'pdfjs-dist/types/src/display/xfa_layer';
 
 	let {
 		src,
@@ -12,6 +10,8 @@
 		src: string;
 		scale: number;
 	} = $props();
+
+	let actualScale = $state(0);
 
 	let PDFJS: typeof import('pdfjs-dist') = $state(null)!;
 
@@ -26,9 +26,25 @@
 	);
 
 	const render = (node: HTMLDivElement, page: PDFPageProxy) => {
-		const appendText = debounce(
-			(textContent: TextContent, viewport: PageViewport) => {
-				textContent.items.forEach((item) => {
+		const start = () => {
+			const viewport = page.getViewport({ scale });
+			const canvas = document.createElement('canvas');
+			const canvasContext = canvas.getContext('2d')!;
+			canvas.width = viewport.width;
+			canvas.height = viewport.height;
+			node.style.width = `${viewport.width}px`;
+			node.style.height = `${viewport.height}px`;
+			node.replaceChildren(canvas);
+			page
+				.render({
+					canvasContext,
+					viewport
+				})
+				.promise.then(() => {
+					actualScale = scale;
+				});
+			page.getTextContent().then((textContent) => {
+				for (const item of textContent.items) {
 					const transform = PDFJS.Util.transform(
 						viewport.transform,
 						item.transform
@@ -42,27 +58,18 @@
 					span.style.fontFamily = item.fontName;
 					span.style.transform = `rotate(${Math.atan2(transform[1], transform[0]) * (180 / Math.PI)}deg)`;
 					node.appendChild(span);
-				});
-			},
-			500
-		);
+				}
+			});
+		};
+		start();
+		const debouncedRender = debounce(start, 100);
+
 		$effect(() => {
-			node.textContent = '';
-			const canvas = document.createElement('canvas');
-			const canvasContext = canvas.getContext('2d')!;
-			const viewport = page.getViewport(viewportParams);
-			canvas.width = viewport.width;
-			canvas.height = viewport.height;
-			node.style.width = `${viewport.width}px`;
-			node.style.height = `${viewport.height}px`;
-			node.appendChild(canvas);
-			page.render({
-				canvasContext,
-				viewport
-			});
-			page.getTextContent().then((textContent) => {
-				appendText(textContent, viewport);
-			});
+			const delta = scale - actualScale;
+			node.style.transform = `scale(${1 + delta})`;
+			if (delta) {
+				debouncedRender();
+			}
 		});
 	};
 
@@ -75,10 +82,6 @@
 			PDFJS = pdfjs;
 		});
 	}
-
-	const viewportParams = $derived({
-		scale
-	});
 </script>
 
 {#if PDFJS}
@@ -109,6 +112,7 @@
 
 		:global(div) {
 			position: relative;
+			transform-origin: top left;
 		}
 
 		:global(span) {
