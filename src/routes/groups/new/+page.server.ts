@@ -11,7 +11,7 @@ export const actions: Actions = {
 	create: async ({ request, locals: { user } }) => {
 		if (user.role !== 'lecturer') {
 			return fail(403, {
-				error: 'You are not allowed to create a group'
+				error: m.notAllowedToCreateGroup()
 			});
 		}
 
@@ -47,7 +47,7 @@ export const actions: Actions = {
 
 			console.error('Error inserting group with students:', error);
 			return fail(500, {
-				error: 'An error occurred while creating the group'
+				error: m.failedToCreateGroup()
 			});
 		}
 

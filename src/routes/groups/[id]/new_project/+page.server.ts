@@ -3,17 +3,18 @@ import { fail } from '@sveltejs/kit';
 import type { Actions } from './$types';
 import { isRoomMember } from '$lib/server/db/queries/room/isMember';
 import { insertProject } from '$lib/server/db/queries/project/insert';
+import * as m from '$lib/paraglide/messages';
 
 export const actions = {
 	default: async ({ request, params: { id }, locals: { user } }) => {
 		if (user.role !== 'student') {
 			return fail(403, {
-				error: 'You are not allowed to create a project'
+				error: m.notAllowedToCreateProject()
 			});
 		}
 		if (!(await isRoomMember(user!.id, +id))) {
 			return fail(403, {
-				error: 'You are not a member of this group'
+				error: m.notRoomMember()
 			});
 		}
 
@@ -25,7 +26,7 @@ export const actions = {
 
 		if (!name || !namePl) {
 			return fail(400, {
-				error: 'Name is required'
+				error: m.nameRequired()
 			});
 		}
 
@@ -38,13 +39,14 @@ export const actions = {
 					namePl,
 					description,
 					thesis,
-					ownerId: user!.id
+					ownerId: user!.id,
+					editable: true
 				})
 			).id;
 		} catch (error) {
 			console.error('Error updating project:', error);
 			return fail(500, {
-				error: 'Error creating project'
+				error: m.internalError()
 			});
 		}
 

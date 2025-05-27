@@ -32,7 +32,7 @@ export const load: PageServerLoad = async ({
 	} catch (err) {
 		console.error('Error loading group members:', err);
 		error(500, {
-			message: 'Error loading group members'
+			message: m.inernalError()
 		});
 	}
 };
@@ -46,7 +46,7 @@ export const actions = {
 		if (!groupName) {
 			return {
 				success: false,
-				error: 'Group name cannot be empty'
+				error: m.groupNameRequired()
 			};
 		}
 
@@ -59,7 +59,7 @@ export const actions = {
 			console.error('Error updating group name:', err);
 			return {
 				success: false,
-				error: 'Error updating group name'
+				error: m.inernalError()
 			};
 		}
 	},
@@ -135,7 +135,7 @@ export const actions = {
 		} catch (err) {
 			console.error('Error deleting group:', err);
 			return fail(500, {
-				error: 'Error deleting group'
+				error: m.inernalError()
 			});
 		}
 		redirect(303, '/');

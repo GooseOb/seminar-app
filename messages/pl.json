@@ -14,7 +14,7 @@
 	"namePl": "Nazwa (polski)",
 	"description": "Opis",
 	"thesisStatement": "Teza badawcza",
-	"thesis": "Praca",
+	"thesis": "Praca dyplomowa",
 
 	"compare": "Porównaj",
 	"to": "do",
@@ -42,6 +42,7 @@
 	"uploadedBy": "Dodał {name} o {date}",
 
 	"noFiles": "Brak plików",
+	"noThesis": "Brak pracy dyplomowej",
 
 	"openFile": "Otwórz",
 	"deleteFile": "Usuń",
@@ -72,11 +73,28 @@
 
 	"failedToRemoveStudent": "Nie udało się usunąć studenta",
 	"failedToUpdateGroupName": "Nie udało się zaktualizować nazwy grupy",
+	"failedToCreateGroup": "Nie udało się utworzyć grupy",
+	"failedToLoadGroupMembers": "Nie udało się załadować członków grupy",
+
+	"internalError": "Wystąpił błąd wewnętrzny",
+
+	"nameRequired": "Nazwa jest wymagana",
+	"allFieldsRequired": "Wszystkie pola są wymagane",
+	"groupNameRequired": "Nazwa grupy jest wymagana",
+	"loginDataRequired": "Imię, nazwisko i login są wymagane",
+	"loginAndPasswordRequired": "Login i hasło są wymagane",
+
+	"invalidLoginOrPassword": "Nieprawidłowy login lub hasło",
+	"loginAlreadyExists": "Login już istnieje",
 
 	"studentAlreadyExists": "Student z numerem albumu {number} już istnieje",
 	"studentNotFound": "Student z numerem albumu {number} nie został znaleziony",
 
 	"notGroupMember": "Nie jesteś członkiem tej grupy",
 	"noAccessToProject": "Nie masz dostępu do tego projektu",
-	"notRoomOwner": "Nie jesteś właścicielem tego pokoju"
+	"notRoomOwner": "Nie jesteś właścicielem tego pokoju",
+	"notRoomMember": "Nie jesteś członkiem tego pokoju",
+	"notAllowedToCreateGroup": "Nie masz uprawnień do tworzenia grup",
+	"notAllowedToUpdateProfile": "Nie masz uprawnień do aktualizacji tego profilu",
+	"notAllowedToCreateProject": "Nie masz uprawnień do tworzenia projektu"
 }

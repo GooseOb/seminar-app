@@ -106,7 +106,7 @@
 
 		<ThesisPDFView bind:versions {roomId} bind:isOpen canDelete={isStudent} />
 	{:else}
-		<p>No thesis file</p>
+		<p>{m.noThesis()}</p>
 	{/if}
 </div>
 

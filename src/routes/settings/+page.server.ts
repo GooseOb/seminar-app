@@ -19,7 +19,7 @@ export const actions: Actions = {
 	default: async ({ request, locals }) => {
 		if (locals.user.role !== 'lecturer') {
 			return fail(403, {
-				error: 'You are not allowed to update your data'
+				error: m.notAllowedToUpdateProfile()
 			});
 		}
 
@@ -31,7 +31,7 @@ export const actions: Actions = {
 
 		if (!firstname || !lastname || !login) {
 			return fail(400, {
-				error: 'Firstname, lastname and login cannot be empty'
+				error: m.loginDataRequired()
 			});
 		}
 
@@ -50,7 +50,7 @@ export const actions: Actions = {
 		} catch (error) {
 			console.error('Error updating user:', error);
 			return {
-				error: 'An error occurred while updating the user'
+				error: m.internalError()
 			};
 		}
 

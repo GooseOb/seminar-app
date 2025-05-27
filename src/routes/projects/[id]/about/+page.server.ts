@@ -3,6 +3,7 @@ import { getProject } from '$lib/server/db/queries/project/get';
 import { updateProject } from '$lib/server/db/queries/project/update';
 import { getUserById } from '$lib/server/db/queries/user/getById';
 import type { Actions, PageServerLoad } from './$types';
+import * as m from '$lib/paraglide/messages';
 
 export const load: PageServerLoad = async ({ params: { id } }) => {
 	await checkProjectAccess(+id);
@@ -28,7 +29,7 @@ export const actions = {
 
 		if (!name || !namePl) {
 			return {
-				error: 'Name is required'
+				error: m.nameRequired()
 			};
 		}
 
@@ -37,7 +38,7 @@ export const actions = {
 		} catch (error) {
 			console.error('Error updating project:', error);
 			return {
-				error: 'An error occurred while updating the project'
+				error: m.internalError()
 			};
 		}
 

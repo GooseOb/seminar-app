@@ -12,7 +12,8 @@ export const insertProjectQuery = () =>
 			groupId: sql.placeholder('groupId'),
 			namePl: sql.placeholder('namePl'),
 			description: sql.placeholder('description'),
-			thesis: sql.placeholder('thesis')
+			thesis: sql.placeholder('thesis'),
+			editable: sql.placeholder('editable')
 		})
 		.prepare('insertProjectQuery');
 
@@ -32,7 +33,8 @@ export const insertProject = async (
 			groupId,
 			namePl: roomData.namePl,
 			description: roomData.description,
-			thesis: roomData.thesis
+			thesis: roomData.thesis,
+			editable: roomData.editable ?? true
 		}),
 		insertRoomMembers(result.id, [roomData.ownerId, lecturer!.id])
 	]);

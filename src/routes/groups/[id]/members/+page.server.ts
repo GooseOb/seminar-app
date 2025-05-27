@@ -3,6 +3,7 @@ import { error } from '@sveltejs/kit';
 import { checkGroupMembership } from '$lib/guards/groupMembership';
 import { getStudentsWithProjectsInGroup } from '$lib/server/db/queries/group/getStudentsWithProjects';
 import { getGroupOwner } from '$lib/server/db/queries/group/getOwner';
+import * as m from '$lib/paraglide/messages';
 
 export const load: PageServerLoad = async ({
 	params: { id },
@@ -20,7 +21,7 @@ export const load: PageServerLoad = async ({
 	} catch (err) {
 		console.error('Error loading group members:', err);
 		error(500, {
-			message: 'Error loading group members'
+			message: m.failedToLoadGroupMembers()
 		});
 	}
 };

@@ -44,15 +44,15 @@
 	const languageOptions = [
 		{
 			value: 'en',
-			displayName: 'English'
+			label: 'English'
 		},
 		{
 			value: 'pl',
-			displayName: 'Polski'
+			label: 'Polski'
 		}
 	] satisfies {
 		value: AvailableLanguageTag;
-		displayName: string;
+		label: string;
 	}[];
 </script>
 
@@ -137,7 +137,7 @@
 		}}
 		options={themes.map((value) => ({
 			value,
-			displayName: m[`theme_${value}`]()
+			label: m[`theme_${value}`]()
 		}))}
 	/>
 </div>

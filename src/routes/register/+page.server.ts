@@ -7,6 +7,7 @@ import {
 	createSession,
 	generateSessionToken
 } from '$lib/server/db/queries/sessions';
+import * as m from '$lib/paraglide/messages';
 
 export const actions: Actions = {
 	default: async ({ request, cookies }) => {
@@ -17,12 +18,12 @@ export const actions: Actions = {
 		const password = form.get('password')?.toString();
 
 		if (!firstname || !lastname || !login || !password) {
-			return fail(400, { error: 'All fields are required' });
+			return fail(400, { error: m.allFieldsRequired() });
 		}
 
 		try {
 			if (await getUserByLogin(login)) {
-				return fail(400, { error: 'Login already exists' });
+				return fail(400, { error: m.loginAlreadyExists() });
 			}
 
 			const [user] = await insertUsers([
@@ -48,7 +49,7 @@ export const actions: Actions = {
 			});
 		} catch (error) {
 			console.error(error);
-			return fail(500, { error: 'An error occurred during registration' });
+			return fail(500, { error: m.internalError() });
 		}
 		redirect(303, '/');
 	}

@@ -21,7 +21,7 @@ export const insertGroupWithStudents = async (
 	]);
 
 	return {
-		group: group,
+		group,
 		students: studentsWithIds
 	};
 };

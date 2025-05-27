@@ -72,11 +72,28 @@
 
 	"failedToRemoveStudent": "Failed to remove student",
 	"failedToUpdateGroupName": "Failed to update group name",
+	"failedToCreateGroup": "Failed to create group",
+	"failedToLoadGroupMembers": "Failed to load group members",
+
+	"inernalError": "Internal error",
+
+	"nameRequired": "Name is required",
+	"groupNameRequired": "Group name in required",
+	"loginDataRequired": "Firstname, lastname and login are required",
+	"loginAndPasswordRequired": "Login and password are required",
+	"allFieldsRequired": "All fields are required",
+
+	"invalidLoginOrPassword": "Invalid login or password",
+	"loginAlreadyExists": "Login already exists",
 
 	"studentAlreadyExists": "Student with number {number} already exists",
 	"studentNotFound": "Student with number {number} not found",
 
 	"notGroupMember": "You are not a member of this group",
 	"noAccessToProject": "You do not have access to this project",
-	"notRoomOwner": "You are not the owner of this room"
+	"notRoomOwner": "You are not the owner of this room",
+	"notRoomMember": "You are not a member of this room",
+	"notAllowedToCreateGroup": "You are not allowed to create a group",
+	"notAllowedToUpdateProfile": "You are not allowed to update this profile",
+	"notAllowedToCreateProject": "You are not allowed to create a project"
 }

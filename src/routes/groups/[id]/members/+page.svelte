@@ -21,7 +21,7 @@
 		<StudentList {students} {role}>
 			{#snippet actionButtons(student: (typeof students)[number])}
 				{#if student.projectId}
-					<a href={`/projects/${student.projectId}`} class="btn">
+					<a href="/projects/{student.projectId}" class="btn">
 						{m.project()}
 					</a>
 				{/if}
