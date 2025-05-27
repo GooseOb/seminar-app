@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Overlay from './Overlay.svelte';
-	import { loadPDF } from '$lib/pdf';
+	import { throttle } from '$lib/debounce';
+	import PDFCore from './PDFCore.svelte';
 
 	let {
 		src,
@@ -14,16 +15,12 @@
 
 	let loading = $state(true);
 
-	let container = $state<HTMLDivElement | null>(null);
+	let scale = $state(1.5);
 
-	$effect(() => {
-		if (container) {
-			loading = true;
-			loadPDF(container, src).then(() => {
-				loading = false;
-			});
-		}
-	});
+	let scaleAcc = $state(1.5);
+	const updateScale = throttle(() => {
+		scale = scaleAcc;
+	}, 100);
 </script>
 
 {#if isOpen}
@@ -32,6 +29,14 @@
 		onclick={({ target, currentTarget }) => {
 			if (target === currentTarget) {
 				isOpen = false;
+			}
+		}}
+		onwheel={(e) => {
+			if (e.shiftKey) {
+				e.preventDefault();
+				e.stopPropagation();
+				scaleAcc += e.deltaY < 0 ? 0.01 : -0.01;
+				updateScale();
 			}
 		}}
 	>
@@ -50,7 +55,7 @@
 			{#if loading}
 				<div class="loader">Loading PDF…</div>
 			{/if}
-			<div class="pdf-container" bind:this={container}></div>
+			<PDFCore {src} {scale} bind:loading />
 		</div>
 	</Overlay>
 {/if}
@@ -90,22 +95,6 @@
 		margin-left: auto;
 		height: fit-content;
 		margin-bottom: auto;
-	}
-
-	.pdf-container {
-		flex: 1;
-		overflow-y: auto;
-		background: var(--bg4-color);
-		:global(canvas) {
-			max-width: 100%;
-			height: auto;
-		}
-		:global(span) {
-			position: absolute;
-			color: transparent;
-			white-space: pre;
-			transform-origin: 0 0;
-		}
 	}
 
 	.loader {
