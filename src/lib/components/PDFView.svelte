@@ -13,8 +13,6 @@
 		children?: any;
 	} = $props();
 
-	let loading = $state(true);
-
 	let scale = $state(1.5);
 
 	let scaleAcc = $state(1.5);
@@ -32,7 +30,7 @@
 			}
 		}}
 		onwheel={(e) => {
-			if (e.shiftKey) {
+			if (e.ctrlKey) {
 				e.preventDefault();
 				e.stopPropagation();
 				scaleAcc += e.deltaY < 0 ? 0.01 : -0.01;
@@ -52,10 +50,7 @@
 				>
 			</div>
 
-			{#if loading}
-				<div class="loader">Loading PDF…</div>
-			{/if}
-			<PDFCore {src} {scale} bind:loading />
+			<PDFCore {src} {scale} />
 		</div>
 	</Overlay>
 {/if}
@@ -95,12 +90,5 @@
 		margin-left: auto;
 		height: fit-content;
 		margin-bottom: auto;
-	}
-
-	.loader {
-		padding: 2rem;
-		text-align: center;
-		font-weight: bold;
-		font-size: 1.2rem;
 	}
 </style>
