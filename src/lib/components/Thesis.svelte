@@ -69,6 +69,8 @@
 	const onclick = () => {
 		isOpen = true;
 	};
+
+	const isStudent = $derived(role === 'student');
 </script>
 
 {#if isMenuOpen}
@@ -101,12 +103,14 @@
 				}
 			]}
 		/>
+
+		<ThesisPDFView bind:versions {roomId} bind:isOpen canDelete={isStudent} />
 	{:else}
 		<p>No thesis file</p>
 	{/if}
 </div>
 
-{#if role === 'student'}
+{#if isStudent}
 	<FileButton
 		class="btn"
 		input={{
@@ -117,8 +121,6 @@
 		{m.addFile()}
 	</FileButton>
 {/if}
-
-<ThesisPDFView bind:versions {roomId} bind:isOpen />
 
 <style>
 	div {
