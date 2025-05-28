@@ -1,5 +1,12 @@
 {
 	"$schema": "https://inlang.com/schema/inlang-message-format",
+
+	"loading": "Ładowanie...",
+	"loadingFiles": "Ładowanie plików...",
+	"loadingProjectDetails": "Ładowanie szczegółów projektu...",
+	"loadingPages": "Ładowanie stron...",
+	"loadingThesis": "Ładowanie pracy dyplomowej...",
+
 	"logout": "Wyloguj się",
 	"logIn": "Zaloguj się",
 	"goSignUp": "Utwórz konto prowadzącego",

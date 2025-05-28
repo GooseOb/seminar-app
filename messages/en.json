@@ -1,5 +1,12 @@
 {
 	"$schema": "https://inlang.com/schema/inlang-message-format",
+
+	"loading": "Loading...",
+	"loadingFiles": "Loading files...",
+	"loadingProjectDetails": "Loading project details...",
+	"loadingPages": "Loading pages...",
+	"loadingThesis": "Loading thesis...",
+
 	"logout": "Logout",
 	"logIn": "Log in",
 	"goSignUp": "Create a lecturer account",
@@ -78,10 +85,10 @@
 	"inernalError": "Internal error",
 
 	"nameRequired": "Name is required",
+	"allFieldsRequired": "All fields are required",
 	"groupNameRequired": "Group name in required",
 	"loginDataRequired": "Firstname, lastname and login are required",
 	"loginAndPasswordRequired": "Login and password are required",
-	"allFieldsRequired": "All fields are required",
 
 	"invalidLoginOrPassword": "Invalid login or password",
 	"loginAlreadyExists": "Login already exists",

@@ -2,13 +2,14 @@
 	import { page } from '$app/state';
 	import FileList from '$lib/components/FileList.svelte';
 	import type { PageProps } from './$types';
+	import * as m from '$lib/paraglide/messages';
 
 	const { data }: PageProps = $props();
 </script>
 
 <div class="page">
 	{#await data.files}
-		<p>Loading...</p>
+		<p>{m.loadingFiles()}</p>
 	{:then files}
 		<FileList {files} roomId={page.params.id} />
 	{/await}

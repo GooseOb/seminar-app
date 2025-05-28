@@ -1,6 +1,5 @@
 <script lang="ts">
 	import Overlay from './Overlay.svelte';
-	import { throttle } from '$lib/debounce';
 	import PDFCore from './PDFCore.svelte';
 
 	let {
@@ -14,6 +13,39 @@
 	} = $props();
 
 	let scale = $state(1.5);
+	let lastDist = 0;
+
+	const ontouchstart = (e: TouchEvent) => {
+		if (e.touches.length === 2) {
+			lastDist = getDistance(e.touches[0], e.touches[1]);
+		}
+	};
+	const ontouchend = (e: TouchEvent) => {
+		if (e.touches.length < 2) {
+			lastDist = 0;
+		}
+	};
+
+	const ontouchmove = (e: TouchEvent) => {
+		if (e.touches.length === 2) {
+			e.preventDefault();
+			e.stopPropagation();
+
+			const newDist = getDistance(e.touches[0], e.touches[1]);
+			const delta = newDist - lastDist;
+
+			if (Math.abs(delta) > 2) {
+				scale += delta > 0 ? 0.02 : -0.02;
+				lastDist = newDist;
+			}
+		}
+	};
+
+	const getDistance = (touch1: Touch, touch2: Touch) => {
+		const dx = touch1.clientX - touch2.clientX;
+		const dy = touch1.clientY - touch2.clientY;
+		return Math.sqrt(dx * dx + dy * dy);
+	};
 </script>
 
 {#if isOpen}
@@ -31,6 +63,9 @@
 				scale += e.deltaY < 0 ? 0.01 : -0.01;
 			}
 		}}
+		{ontouchstart}
+		{ontouchmove}
+		{ontouchend}
 	>
 		<div class="pdf-modal">
 			<div class="top-bar">

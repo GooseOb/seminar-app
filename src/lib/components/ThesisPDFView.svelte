@@ -4,7 +4,6 @@
 	import * as m from '$lib/paraglide/messages.js';
 	import type { FileData } from '$lib/server/files';
 	import { trpc } from '$lib/trpc/client.svelte';
-	import { trace } from '$lib/debug';
 
 	let {
 		versions = $bindable(),
@@ -71,7 +70,7 @@
 </script>
 
 {#await srcPromise}
-	<p>Loading...</p>
+	<p>{m.loadingThesis()}</p>
 {:then src}
 	<PdfView {src} bind:isOpen>
 		<div class="top-bar">

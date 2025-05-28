@@ -82,7 +82,7 @@
 			<button class="btn" type="submit"> {m.update()} </button>
 		{/if}
 	{:else}
-		<p>Loading project details...</p>
+		<p>{m.loadingProjectDetails()}</p>
 	{/if}
 
 	<Success value={form?.success}>{m.successfullyUpdated()}</Success>

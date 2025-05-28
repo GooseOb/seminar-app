@@ -4,6 +4,7 @@
 	import Thesis from '$lib/components/Thesis.svelte';
 	import type { FileData } from '$lib/server/files';
 	import type { PageProps } from './$types';
+	import * as m from '$lib/paraglide/messages';
 
 	const { data }: PageProps = $props();
 	let versions: FileData[] = $state([]);
@@ -22,13 +23,13 @@
 
 <div class="page">
 	{#await files}
-		<p>Loading...</p>
+		<p>{m.loadingThesis()}</p>
 	{:then}
 		<Thesis roomId={page.params.id} role={data.role!} bind:versions />
 	{/await}
 
 	{#await files}
-		<p>Loading...</p>
+		<p>{m.loadingFiles()}</p>
 	{:then files}
 		<FileList {files} roomId={page.params.id} />
 	{/await}

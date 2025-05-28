@@ -2,6 +2,7 @@
 	import { browser } from '$app/environment';
 	import { debounce } from '$lib/debounce';
 	import type { PDFPageProxy } from 'pdfjs-dist';
+	import * as m from '$lib/paraglide/messages';
 
 	let {
 		src,
@@ -30,15 +31,18 @@
 			const viewport = page.getViewport({ scale });
 			const canvas = document.createElement('canvas');
 			const canvasContext = canvas.getContext('2d')!;
-			canvas.width = viewport.width;
-			canvas.height = viewport.height;
+			const dpr = window.devicePixelRatio || 1;
+			canvas.width = viewport.width * dpr;
+			canvas.height = viewport.height * dpr;
 			node.style.width = `${viewport.width}px`;
 			node.style.height = `${viewport.height}px`;
 			node.replaceChildren(canvas);
+			const scaledViewport = page.getViewport({ scale: scale * dpr });
 			page
 				.render({
 					canvasContext,
-					viewport
+					viewport: scaledViewport,
+					transform: [1, 0, 0, 1, 0, 0]
 				})
 				.promise.then(() => {
 					actualScale = scale;
@@ -52,9 +56,9 @@
 					const fontSize = Math.hypot(transform[2], transform[3]);
 					const span = document.createElement('span');
 					span.textContent = item.str;
-					span.style.left = `${transform[4]}px`;
-					span.style.top = `${transform[5] - fontSize}px`;
-					span.style.fontSize = `${fontSize}px`;
+					span.style.left = `${transform[4] / dpr}px`;
+					span.style.top = `${(transform[5] - fontSize) / dpr}px`;
+					span.style.fontSize = `${fontSize / dpr}px`;
 					span.style.fontFamily = item.fontName;
 					span.style.transform = `rotate(${Math.atan2(transform[1], transform[0]) * (180 / Math.PI)}deg)`;
 					node.appendChild(span);
@@ -87,7 +91,7 @@
 {#if PDFJS}
 	<div class="container">
 		{#await pages}
-			<p>Loading pages...</p>
+			<p>{m.loadingPages()}</p>
 		{:then pages}
 			{#if pages}
 				{#each pages as page}
@@ -97,7 +101,7 @@
 		{/await}
 	</div>
 {:else}
-	<p>Loading...</p>
+	<p>{m.loading()}</p>
 {/if}
 
 <style>
