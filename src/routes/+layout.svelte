@@ -29,7 +29,7 @@
 	}
 
 	const isMobile = browser ? window.innerWidth < 768 : false;
-	let isOpen = $state(isMobile ? page.url.pathname !== '/' : true);
+	let isOpen = $state(isMobile ? page.url.pathname === '/' : true);
 	const isLoginPageValue = $derived(isLoginPage());
 	const pathname = $derived(
 		/^\/[^/]*(?:\/[^/]*)?/.exec(i18n.route(page.url.pathname))?.[0]
