@@ -12,7 +12,8 @@
 		scale: number;
 	} = $props();
 
-	let actualScale = $state(0);
+	let actualScale = $state(scale);
+	let scalingDelta = $derived(scale - actualScale);
 
 	let PDFJS: typeof import('pdfjs-dist') = $state(null)!;
 
@@ -27,13 +28,17 @@
 	);
 
 	const render = (node: HTMLDivElement, page: PDFPageProxy) => {
-		const start = () => {
+		let width: number;
+		let height: number;
+		const start = (scale: number) => {
 			const viewport = page.getViewport({ scale });
 			const canvas = document.createElement('canvas');
 			const canvasContext = canvas.getContext('2d')!;
 			const dpr = window.devicePixelRatio || 1;
 			canvas.width = viewport.width * dpr;
 			canvas.height = viewport.height * dpr;
+			width = viewport.width;
+			height = viewport.height;
 			node.style.width = `${viewport.width}px`;
 			node.style.height = `${viewport.height}px`;
 			node.replaceChildren(canvas);
@@ -65,14 +70,19 @@
 				}
 			});
 		};
-		start();
+		start(scale);
 		const debouncedRender = debounce(start, 100);
 
 		$effect(() => {
-			const delta = scale - actualScale;
-			node.style.transform = `scale(${1 + delta})`;
-			if (delta) {
-				debouncedRender();
+			if (scalingDelta > 0) {
+				debouncedRender(scale);
+			} else if (scalingDelta < 0) {
+				const scaleRatio = 1 + scalingDelta;
+				node.style.width = `${width * scaleRatio}px`;
+				node.style.height = `${height * scaleRatio}px`;
+				node.style.transform = `scale(${scaleRatio}) translateY(${
+					(height * scalingDelta) / 2
+				})`;
 			}
 		});
 	};

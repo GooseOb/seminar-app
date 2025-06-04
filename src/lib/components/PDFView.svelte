@@ -1,4 +1,5 @@
 <script lang="ts">
+	import NoZoom from './NoZoom.svelte';
 	import Overlay from './Overlay.svelte';
 	import PDFCore from './PDFCore.svelte';
 
@@ -49,6 +50,7 @@
 </script>
 
 {#if isOpen}
+	<NoZoom />
 	<Overlay
 		style="z-index: 11"
 		onclick={({ target, currentTarget }) => {
