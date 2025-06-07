@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { ChangeEventHandler } from 'svelte/elements';
 
-	const {
+	let {
 		label,
 		onchange = null,
 		value = $bindable(),
@@ -19,7 +19,7 @@
 
 <div class="selector">
 	<span>{label}</span>
-	<select class="btn2" {value} {onchange}>
+	<select class="btn2" bind:value {onchange}>
 		{#each options as { value, label }}
 			<option {value}>{label}</option>
 		{/each}

@@ -22,18 +22,21 @@
 	let selectedVersion = $derived(versions.at(-1)!.name);
 	let prevVersion = $derived(versions.at(-1)!.name);
 
-	const srcPromise = $derived(
+	let src: string = $state('');
+	$effect(() => {
 		trpc.room.project.thesis.get
 			.query({
 				roomId,
 				isDownload: false,
 				fileName: selectedVersion.replace('thesis/', '')
 			})
-			.then(({ url }) => url)
-	);
+			.then(({ url }) => {
+				src = url;
+			});
+	});
 
 	const prevVersions = $derived(
-		versions.slice(versions.findIndex((v) => v.name === selectedVersion))
+		versions.slice(0, versions.findIndex((v) => v.name === selectedVersion) + 1)
 	);
 
 	const optionsFrom = (versions: FileData[]) =>
@@ -71,9 +74,7 @@
 	};
 </script>
 
-{#await srcPromise}
-	<p>{m.loadingThesis()}</p>
-{:then src}
+{#if src}
 	<PdfView {src} bind:isOpen>
 		<div class="top-bar">
 			<div class="buttons">
@@ -98,7 +99,7 @@
 			<Select label={m.to()} bind:value={prevVersion} options={prevOptions} />
 		</div>
 	</PdfView>
-{/await}
+{/if}
 
 <style>
 	.top-bar {

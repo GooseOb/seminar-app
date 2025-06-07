@@ -17,17 +17,25 @@
 
 	let PDFJS: typeof import('pdfjs-dist') = $state(null)!;
 
-	const pages = $derived(
-		PDFJS
+	$effect(() => {
+		isLoading = true;
+		(PDFJS
 			? PDFJS.getDocument(src).promise.then((pdf) =>
 					Promise.all(
 						Array.from({ length: pdf.numPages }, (_, i) => pdf.getPage(i + 1))
 					)
 				)
 			: Promise.resolve(null)
-	);
+		).then((data) => {
+			pages = data;
+			isLoading = false;
+		});
+	});
+	let isLoading = $state(true);
+	let pages: PDFPageProxy[] | null = $state(null);
 
 	const render = (node: HTMLDivElement, page: PDFPageProxy) => {
+		console.log('rendering page', page.pageNumber);
 		let width: number;
 		let height: number;
 		const start = (scale: number) => {
@@ -98,27 +106,30 @@
 	}
 </script>
 
-{#if PDFJS}
-	<div class="container">
-		{#await pages}
+<div class="container">
+	{#if PDFJS}
+		{#if isLoading}
 			<p>{m.loadingPages()}</p>
-		{:then pages}
-			{#if pages}
+		{/if}
+		{#if pages}
+			{#key pages}
 				{#each pages as page}
 					<div use:render={page}></div>
 				{/each}
-			{/if}
-		{/await}
-	</div>
-{:else}
-	<p>{m.loading()}</p>
-{/if}
+			{/key}
+		{/if}
+	{:else}
+		<p>{m.loading()}</p>
+	{/if}
+</div>
 
 <style>
 	.container {
 		flex: 1;
 		overflow-y: auto;
 		background: var(--bg4-color);
+		position: relative;
+
 		:global(canvas) {
 			max-width: 100%;
 			height: auto;
@@ -135,5 +146,14 @@
 			white-space: pre;
 			transform-origin: 0 0;
 		}
+	}
+	p {
+		position: absolute;
+		background: var(--bg-color);
+		z-index: 10;
+		padding: 0.5rem;
+		border-radius: 0.5rem;
+		top: 1rem;
+		left: 1rem;
 	}
 </style>
