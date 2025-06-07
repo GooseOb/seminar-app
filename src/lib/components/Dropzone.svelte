@@ -1,9 +1,15 @@
 <script lang="ts">
 	import type { DragEventHandler } from 'svelte/elements';
 	import { debounce } from '$lib/debounce';
+	import * as m from '$lib/paraglide/messages';
 
-	const { ondrop }: { ondrop: DragEventHandler<HTMLDivElement> | null } =
-		$props();
+	const {
+		ondrop,
+		children = () => m.dropFiles()
+	}: {
+		ondrop: DragEventHandler<HTMLDivElement> | null;
+		children?: () => any;
+	} = $props();
 	let active = $state(false);
 	let discoverable = $state(false);
 </script>
@@ -29,7 +35,9 @@
 	class:active
 	class:discoverable
 >
-	<span> Drop files here </span>
+	<span>
+		{@render children()}
+	</span>
 </div>
 
 <svelte:body

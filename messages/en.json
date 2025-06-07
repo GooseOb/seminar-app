@@ -7,6 +7,10 @@
 	"loadingPages": "Loading pages...",
 	"loadingThesis": "Loading thesis...",
 
+	"dropFiles": "Drop files here",
+	"dropThesis": "Drop your thesis here",
+	"onlyRoleCanUpload": "Only {role} can upload this file",
+
 	"logout": "Logout",
 	"logIn": "Log in",
 	"goSignUp": "Create a lecturer account",
@@ -76,6 +80,7 @@
 	"aboutProject": "About",
 
 	"lecturer": "Lecturer",
+	"student": "Student",
 
 	"failedToRemoveStudent": "Failed to remove student",
 	"failedToUpdateGroupName": "Failed to update group name",

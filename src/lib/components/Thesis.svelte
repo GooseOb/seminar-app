@@ -71,7 +71,6 @@
 					const item = versions.at(-1)!;
 					item.isPending = false;
 					item.uploaded = new Date();
-					item.error = true;
 				});
 		}
 	};
@@ -95,7 +94,14 @@
 {/if}
 
 <div>
-	<Dropzone {ondrop} />
+	<Dropzone {ondrop}>
+		{#if isStudent}
+			{m.dropThesis()}
+		{:else}
+			{m.onlyRoleCanUpload({ role: m.student().toLowerCase() })}
+		{/if}
+	</Dropzone>
+
 	{#if versions.length > 0}
 		<FileCard
 			{file}

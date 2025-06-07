@@ -7,6 +7,10 @@
 	"loadingPages": "Ładowanie stron...",
 	"loadingThesis": "Ładowanie pracy dyplomowej...",
 
+	"dropFiles": "Upuść pliki tutaj",
+	"dropThesis": "Upuść swoją pracę dyplomową tutaj",
+	"onlyRoleCanUpload": "Tylko {role} może przesyłać ten plik",
+
 	"logout": "Wyloguj się",
 	"logIn": "Zaloguj się",
 	"goSignUp": "Utwórz konto prowadzącego",
@@ -77,6 +81,7 @@
 	"aboutProject": "O projekcie",
 
 	"lecturer": "Prowadzący",
+	"student": "Student",
 
 	"failedToRemoveStudent": "Nie udało się usunąć studenta",
 	"failedToUpdateGroupName": "Nie udało się zaktualizować nazwy grupy",

@@ -36,7 +36,9 @@ export default ts.config(
 			'no-undef': 'off',
 			'no-constant-condition': 'off',
 			'@typescript-eslint/no-unused-vars': 'off',
-			'@typescript-eslint/no-explicit-any': 'off'
+			'@typescript-eslint/no-explicit-any': 'off',
+			'svelte/valid-compile': 'off',
+			'svelte/no-unused-svelte-ignore': 'off'
 		}
 	}
 );
