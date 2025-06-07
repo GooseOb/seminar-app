@@ -1,14 +1,14 @@
 <script lang="ts">
+	import type { ComponentProps } from 'svelte';
 	import NoZoom from './NoZoom.svelte';
 	import Overlay from './Overlay.svelte';
 	import PDFCore from './PDFCore.svelte';
 
 	let {
-		src,
 		isOpen = $bindable(),
-		children
-	}: {
-		src: string;
+		children,
+		...props
+	}: Omit<ComponentProps<typeof PDFCore>, 'scale'> & {
 		isOpen: boolean;
 		children?: any;
 	} = $props();
@@ -81,7 +81,7 @@
 				>
 			</div>
 
-			<PDFCore {src} {scale} />
+			<PDFCore {...props} {scale} />
 		</div>
 	</Overlay>
 {/if}

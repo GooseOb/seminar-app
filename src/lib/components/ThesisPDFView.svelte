@@ -6,6 +6,10 @@
 	import { trpc } from '$lib/trpc/client.svelte';
 	import DownloadIcon from './icons/DownloadIcon.svelte';
 	import DeleteIcon from './icons/DeleteIcon.svelte';
+	import { PDFJS } from '$lib/pdf.svelte';
+	import { diff } from '$lib/diff';
+	import type { TextContent, TextItem } from 'pdfjs-dist/types/src/display/api';
+	import { flatten } from '$lib/flatten';
 
 	let {
 		versions = $bindable(),
@@ -22,22 +26,43 @@
 	let selectedVersion = $derived(versions.at(-1)!.name);
 	let prevVersion = $derived(versions.at(-1)!.name);
 
+	const getThesis = (version: string) =>
+		trpc.room.project.thesis.get.query({
+			roomId,
+			isDownload: false,
+			fileName: version.replace('thesis/', '')
+		});
+
 	let src: string = $state('');
 	$effect(() => {
-		trpc.room.project.thesis.get
-			.query({
-				roomId,
-				isDownload: false,
-				fileName: selectedVersion.replace('thesis/', '')
-			})
-			.then(({ url }) => {
-				src = url;
-			});
+		getThesis(selectedVersion).then(({ url }) => {
+			src = url;
+		});
 	});
 
 	const prevVersions = $derived(
 		versions.slice(0, versions.findIndex((v) => v.name === selectedVersion) + 1)
 	);
+
+	let prevPdfPageTextContents: TextContent[] | null = $state(null);
+	$effect(() => {
+		if (prevVersion === selectedVersion) {
+			prevPdfPageTextContents = null;
+		} else {
+			getThesis(prevVersion)
+				.then(({ url }) => PDFJS()!.getDocument(url).promise)
+				.then((pdf) =>
+					Promise.all(
+						Array.from({ length: pdf.numPages }, (_, i) =>
+							pdf.getPage(i + 1).then((page) => page.getTextContent())
+						)
+					)
+				)
+				.then((pdf) => {
+					prevPdfPageTextContents = pdf;
+				});
+		}
+	});
 
 	const optionsFrom = (versions: FileData[]) =>
 		versions.map((v) => ({
@@ -72,33 +97,86 @@
 				);
 			});
 	};
+	let prevTexts: string[] = $state([]);
+	let currentDiff: { parent: HTMLElement; child: HTMLElement } | null = null;
 </script>
 
 {#if src}
-	<PdfView {src} bind:isOpen>
-		<div class="top-bar">
-			<div class="buttons">
-				<button
-					class="btn2"
-					aria-label={m.downloadFile()}
-					onclick={handleDownload}
-				>
-					<DownloadIcon />
-				</button>
-				{#if canDelete}
-					<button
-						class="btn2"
-						aria-label={m.deleteFile()}
-						onclick={handleDelete}
-					>
-						<DeleteIcon />
-					</button>
-				{/if}
-			</div>
-			<Select label={m.compare()} bind:value={selectedVersion} {options} />
-			<Select label={m.to()} bind:value={prevVersion} options={prevOptions} />
+	{#key prevPdfPageTextContents}
+		<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
+		<div
+			onclick={(e) => {
+				const parent = e.target as HTMLElement;
+				if ('prev' in parent.dataset) {
+					currentDiff?.child.remove();
+					if (currentDiff?.parent === parent) {
+						currentDiff = null;
+					} else {
+						const child = document.createElement('div');
+						child.className = 'prev';
+						child.textContent = prevTexts[+parent.dataset.prev!];
+						parent.appendChild(child);
+						currentDiff = { parent, child };
+					}
+				} else if (currentDiff) {
+					currentDiff.child.remove();
+					currentDiff = null;
+				}
+			}}
+		>
+			<PdfView
+				{src}
+				bind:isOpen
+				transformTextItems={(origTextItems) => {
+					if (prevPdfPageTextContents) {
+						const { value: textItems, unflatten } = flatten(origTextItems);
+						const prevTextItems = prevPdfPageTextContents.flatMap(
+							({ items }) => items as TextItem[]
+						);
+						const { result, content } = diff(
+							textItems.map((item) => item.str),
+							prevTextItems.map((item) => item.str)
+						);
+						prevTexts = content;
+						return unflatten(
+							textItems.map((item, i) => ({
+								...item,
+								str: result[i] || item.str
+							}))
+						);
+					}
+					return origTextItems;
+				}}
+			>
+				<div class="top-bar">
+					<div class="buttons">
+						<button
+							class="btn2"
+							aria-label={m.downloadFile()}
+							onclick={handleDownload}
+						>
+							<DownloadIcon />
+						</button>
+						{#if canDelete}
+							<button
+								class="btn2"
+								aria-label={m.deleteFile()}
+								onclick={handleDelete}
+							>
+								<DeleteIcon />
+							</button>
+						{/if}
+					</div>
+					<Select label={m.compare()} bind:value={selectedVersion} {options} />
+					<Select
+						label={m.to()}
+						bind:value={prevVersion}
+						options={prevOptions}
+					/>
+				</div>
+			</PdfView>
 		</div>
-	</PdfView>
+	{/key}
 {/if}
 
 <style>
@@ -128,5 +206,15 @@
 		align-items: center;
 		justify-content: center;
 		width: 2.5em;
+	}
+	div :global(.prev) {
+		position: absolute;
+		top: 1.5em;
+		left: 0;
+		background: var(--bg4-color);
+		color: var(--fg-color);
+		border: 3px solid var(--bg3-color);
+		border-radius: 0.5rem;
+		padding: 0.25rem;
 	}
 </style>

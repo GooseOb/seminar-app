@@ -1,30 +1,37 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
 	import { debounce } from '$lib/debounce';
 	import type { PDFPageProxy } from 'pdfjs-dist';
+	import type { TextContent, TextItem } from 'pdfjs-dist/types/src/display/api';
 	import * as m from '$lib/paraglide/messages';
+	import { PDFJS } from '$lib/pdf.svelte';
 
 	let {
 		src,
-		scale
+		scale,
+		transformTextItems = (items) => items,
+		afterPages
 	}: {
 		src: string;
 		scale: number;
+		transformTextItems?: (
+			textItems: TextItem[][]
+		) => Promise<TextItem[][]> | TextItem[][];
+		afterPages?: () => any;
 	} = $props();
 
 	let actualScale = $state(scale);
 	let scalingDelta = $derived(scale - actualScale);
 
-	let PDFJS: typeof import('pdfjs-dist') = $state(null)!;
-
 	$effect(() => {
 		isLoading = true;
-		(PDFJS
-			? PDFJS.getDocument(src).promise.then((pdf) =>
-					Promise.all(
-						Array.from({ length: pdf.numPages }, (_, i) => pdf.getPage(i + 1))
+		(PDFJS()
+			? PDFJS()
+					.getDocument(src)
+					.promise.then((pdf) =>
+						Promise.all(
+							Array.from({ length: pdf.numPages }, (_, i) => pdf.getPage(i + 1))
+						)
 					)
-				)
 			: Promise.resolve(null)
 		).then((data) => {
 			pages = data;
@@ -32,10 +39,19 @@
 		});
 	});
 	let isLoading = $state(true);
-	let pages: PDFPageProxy[] | null = $state(null);
+	let pages = $state(null) as PDFPageProxy[] | null;
+
+	const textItems = $derived(
+		pages
+			? Promise.all(pages.map((page) => page.getTextContent()))
+					.then((textContents) =>
+						textContents.map(({ items }) => items as TextItem[])
+					)
+					.then(transformTextItems)
+			: null
+	);
 
 	const render = (node: HTMLDivElement, page: PDFPageProxy) => {
-		console.log('rendering page', page.pageNumber);
 		let width: number;
 		let height: number;
 		const start = (scale: number) => {
@@ -45,8 +61,8 @@
 			const dpr = window.devicePixelRatio || 1;
 			canvas.width = viewport.width * dpr;
 			canvas.height = viewport.height * dpr;
-			width = viewport.width;
-			height = viewport.height;
+			width = canvas.width;
+			height = canvas.height;
 			node.style.width = `${viewport.width}px`;
 			node.style.height = `${viewport.height}px`;
 			node.replaceChildren(canvas);
@@ -60,15 +76,15 @@
 				.promise.then(() => {
 					actualScale = scale;
 				});
-			page.getTextContent().then((textContent) => {
-				for (const item of textContent.items) {
-					const transform = PDFJS.Util.transform(
+			textItems?.then((items) => {
+				for (const item of items[page.pageNumber - 1]) {
+					const transform = PDFJS().Util.transform(
 						viewport.transform,
 						item.transform
 					);
 					const fontSize = Math.hypot(transform[2], transform[3]);
 					const span = document.createElement('span');
-					span.textContent = item.str;
+					span.innerHTML = item.str;
 					span.style.left = `${transform[4] / dpr}px`;
 					span.style.top = `${(transform[5] - fontSize) / dpr}px`;
 					span.style.fontSize = `${fontSize / dpr}px`;
@@ -94,20 +110,10 @@
 			}
 		});
 	};
-
-	if (browser) {
-		Promise.all([
-			import('pdfjs-dist'),
-			import('pdfjs-dist/build/pdf.worker.min.mjs?url')
-		]).then(([pdfjs, worker]) => {
-			pdfjs.GlobalWorkerOptions.workerSrc = worker.default;
-			PDFJS = pdfjs;
-		});
-	}
 </script>
 
 <div class="container">
-	{#if PDFJS}
+	{#if PDFJS()}
 		{#if isLoading}
 			<p>{m.loadingPages()}</p>
 		{/if}
@@ -116,6 +122,7 @@
 				{#each pages as page}
 					<div use:render={page}></div>
 				{/each}
+				{@render afterPages?.()}
 			{/key}
 		{/if}
 	{:else}
@@ -145,6 +152,14 @@
 			color: transparent;
 			white-space: pre;
 			transform-origin: 0 0;
+		}
+		:global(span[data-prev]) {
+			background: #a0a0f0;
+			color: black;
+			cursor: pointer;
+			&:hover {
+				background: #8080f0;
+			}
 		}
 	}
 	p {

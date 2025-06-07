@@ -38,6 +38,7 @@
 
 	const handleUpload = async (filesToUpload: FileList | null) => {
 		if (filesToUpload && filesToUpload.length === 1) {
+			console.log('Uploading thesis file:', filesToUpload[0].name);
 			const file = filesToUpload[0];
 
 			const fileData: FileData = {
@@ -58,11 +59,20 @@
 					'Content-Type': 'application/pdf'
 				},
 				body: file
-			}).then(() => {
-				const item = versions.at(-1)!;
-				item.isPending = false;
-				item.uploaded = new Date();
-			});
+			})
+				.then(() => {
+					console.log('File uploaded successfully:', file.name);
+					const item = versions.at(-1)!;
+					item.isPending = false;
+					item.uploaded = new Date();
+				})
+				.catch((error) => {
+					console.error('Error uploading file:', error);
+					const item = versions.at(-1)!;
+					item.isPending = false;
+					item.uploaded = new Date();
+					item.error = true;
+				});
 		}
 	};
 
