@@ -1,22 +1,20 @@
 <script lang="ts">
 	import { debounce } from '$lib/debounce';
 	import type { PDFPageProxy } from 'pdfjs-dist';
-	import type { TextContent, TextItem } from 'pdfjs-dist/types/src/display/api';
+	import type { TextItem } from 'pdfjs-dist/types/src/display/api';
 	import * as m from '$lib/paraglide/messages';
 	import { PDFJS } from '$lib/pdf.svelte';
 
 	let {
 		src,
 		scale,
-		transformTextItems = (items) => items,
-		afterPages
+		transformTextItems = (items) => items
 	}: {
 		src: string;
 		scale: number;
 		transformTextItems?: (
 			textItems: TextItem[][]
 		) => Promise<TextItem[][]> | TextItem[][];
-		afterPages?: () => any;
 	} = $props();
 
 	let actualScale = $state(scale);
@@ -84,6 +82,7 @@
 					);
 					const fontSize = Math.hypot(transform[2], transform[3]);
 					const span = document.createElement('span');
+					span.className = 'textNode';
 					span.innerHTML = item.str;
 					span.style.left = `${transform[4] / dpr}px`;
 					span.style.top = `${(transform[5] - fontSize) / dpr}px`;
@@ -98,16 +97,13 @@
 		const debouncedRender = debounce(start, 100);
 
 		$effect(() => {
-			if (scalingDelta > 0) {
-				debouncedRender(scale);
-			} else if (scalingDelta < 0) {
-				const scaleRatio = 1 + scalingDelta;
-				node.style.width = `${width * scaleRatio}px`;
-				node.style.height = `${height * scaleRatio}px`;
-				node.style.transform = `scale(${scaleRatio}) translateY(${
-					(height * scalingDelta) / 2
-				})`;
-			}
+			const scaleRatio = 1 + scalingDelta;
+			node.style.width = `${width * scaleRatio}px`;
+			node.style.height = `${height * scaleRatio}px`;
+			node.style.transform = `scale(${scaleRatio}) translateY(${
+				(height * scalingDelta) / 2
+			})`;
+			debouncedRender(scale);
 		});
 	};
 </script>
@@ -122,7 +118,6 @@
 				{#each pages as page}
 					<div use:render={page}></div>
 				{/each}
-				{@render afterPages?.()}
 			{/key}
 		{/if}
 	{:else}
@@ -147,16 +142,19 @@
 			transform-origin: top left;
 		}
 
-		:global(span) {
+		:global(.textNode) {
 			position: absolute;
 			color: transparent;
 			white-space: pre;
 			transform-origin: 0 0;
+			font-variant-ligatures: none;
 		}
 		:global(span[data-prev]) {
 			background: #a0a0f0;
 			color: black;
 			cursor: pointer;
+			font: inherit;
+			position: relative;
 			&:hover {
 				background: #8080f0;
 			}
