@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { languageTag } from '$lib/paraglide/runtime.js';
-	import { isPathnameStart, isPathnameEnd } from '$lib/pathname';
+	import { isPathnameStart, isPathnameEnd } from '$lib/utils/pathname';
 	import type { Role } from '$lib/server/db';
 	import type { GroupWithProjects } from '$lib/server/db/queries/getGroupsWithProjects';
 	import { slide } from 'svelte/transition';

@@ -4,7 +4,7 @@
 	import Sidebar from '$lib/components/Sidebar.svelte';
 	import BurgerButton from '$lib/components/BurgerButton.svelte';
 	import { i18n } from '$lib/i18n';
-	import { isLoginPage } from '$lib/pathname';
+	import { isLoginPage } from '$lib/utils/pathname';
 	import { ParaglideJS } from '@inlang/paraglide-sveltekit';
 	import type { LayoutProps } from './$types';
 	import { browser } from '$app/environment';

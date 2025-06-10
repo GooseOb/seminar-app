@@ -1,5 +1,5 @@
 import { page } from '$app/state';
-import { i18n } from './i18n';
+import { i18n } from '$lib/i18n';
 
 export const getPathname = () =>
 	i18n.route(page.url.pathname + page.url.search);

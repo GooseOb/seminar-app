@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { isPathnameStart } from '$lib/pathname';
+	import { isPathnameStart } from '$lib/utils/pathname';
 	import { mainResizeListeners } from '$lib/resize';
 
 	const { items }: { items: { name: string; href: string }[] } = $props();

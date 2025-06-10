@@ -1,10 +1,6 @@
-type DiffResult = {
-	fromIndex: number;
-	toIndex: number;
-	prevContent: string;
-};
+import type { RangeData } from '$lib/ranges';
 
-export const diffStrings = (curr: string, prev: string): DiffResult[] => {
+export const diffStrings = (curr: string, prev: string): RangeData[] => {
 	const m = prev.length;
 	const n = curr.length;
 
@@ -35,7 +31,7 @@ export const diffStrings = (curr: string, prev: string): DiffResult[] => {
 	}
 
 	// Backtrack to find the actual operations
-	const result: DiffResult[] = [];
+	const result: RangeData[] = [];
 	let i = m,
 		j = n;
 
@@ -77,7 +73,7 @@ export const diffStrings = (curr: string, prev: string): DiffResult[] => {
 				result.unshift({
 					fromIndex: j,
 					toIndex: endJ,
-					prevContent: prev.slice(i, endI)
+					data: prev.slice(i, endI)
 				});
 			}
 		}

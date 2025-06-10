@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { DragEventHandler } from 'svelte/elements';
-	import { debounce } from '$lib/debounce';
+	import { debounce } from '$lib/utils/debounce';
 	import * as m from '$lib/paraglide/messages';
 
 	const {

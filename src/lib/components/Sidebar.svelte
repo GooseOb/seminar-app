@@ -2,7 +2,7 @@
 	import { enhance } from '$app/forms';
 	import Accordion from '$lib/components/Accordion.svelte';
 	import Search from '$lib/components/Search.svelte';
-	import { isPathnameStart } from '$lib/pathname';
+	import { isPathnameStart } from '$lib/utils/pathname';
 	import type { Role } from '$lib/server/db';
 	import type { GroupWithProjects } from '$lib/server/db/queries/getGroupsWithProjects';
 	import * as m from '$lib/paraglide/messages.js';

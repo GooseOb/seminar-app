@@ -9,7 +9,7 @@
 	import { PDFJS } from '$lib/pdf.svelte';
 	import { diff } from '$lib/diff';
 	import type { TextContent, TextItem } from 'pdfjs-dist/types/src/display/api';
-	import { flatten } from '$lib/flatten';
+	import { flatten } from '$lib/utils/flatten';
 
 	let {
 		versions = $bindable(),

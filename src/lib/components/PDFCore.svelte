@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { debounce } from '$lib/debounce';
+	import { debounce } from '$lib/utils/debounce';
 	import type { PDFPageProxy } from 'pdfjs-dist';
 	import type { TextItem } from 'pdfjs-dist/types/src/display/api';
 	import * as m from '$lib/paraglide/messages';

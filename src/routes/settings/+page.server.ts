@@ -5,6 +5,7 @@ import {
 	updateUser,
 	type UserUpdateData
 } from '$lib/server/db/queries/user/update';
+import * as m from '$lib/paraglide/messages';
 
 export const load: PageServerLoad = async ({ cookies, locals }) => {
 	const theme = cookies.get('theme') as Theme;

@@ -84,7 +84,7 @@ export const actions = {
 		};
 	},
 	submitStudent: async ({ request, locals, params: { id: groupId } }) => {
-		await checkRoomOwner(+id);
+		await checkRoomOwner(+locals.user.id);
 		const formData = await request.formData();
 		const id = formData.get('id') as string;
 		const number = formData.get('student_number') as string;
