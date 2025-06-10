@@ -98,7 +98,32 @@
 			});
 	};
 	let prevTexts: string[] = $state([]);
-	let currentDiff: { parent: HTMLElement; child: HTMLElement } | null = null;
+	let currentDiff: { parent: HTMLElement } | null = null;
+	const hovers: HTMLElement[] = [];
+	let currHover: string = $state('');
+	const onmouseover = (e: Event) => {
+		const parent = e.target as HTMLElement;
+		if ('prev' in parent.dataset) {
+			const value = parent.dataset.prev!;
+			if (currHover === value) return;
+			for (const el of hovers) {
+				el.classList.remove('hover');
+			}
+			currHover = value;
+			for (const el of (
+				e.currentTarget as HTMLElement
+			).querySelectorAll<HTMLElement>(`span[data-prev="${value}"]`)) {
+				el.classList.add('hover');
+				hovers.push(el);
+			}
+		} else {
+			for (const el of hovers) {
+				el.classList.remove('hover');
+			}
+			currHover = '';
+		}
+	};
+	let child: HTMLElement = $state(null)!;
 </script>
 
 {#if src}
@@ -108,21 +133,24 @@
 			onclick={(e) => {
 				const parent = e.target as HTMLElement;
 				if ('prev' in parent.dataset) {
-					currentDiff?.child.remove();
+					child.style.visibility = 'hidden';
 					if (currentDiff?.parent === parent) {
 						currentDiff = null;
 					} else {
-						const child = document.createElement('div');
-						child.className = 'prev';
+						const { bottom, left } = parent.getBoundingClientRect();
+						child.style.top = `${bottom + 5}px`;
+						child.style.left = `${left}px`;
+						child.style.visibility = 'visible';
 						child.textContent = prevTexts[+parent.dataset.prev!];
-						parent.appendChild(child);
-						currentDiff = { parent, child };
+						currentDiff = { parent };
 					}
 				} else if (currentDiff) {
-					currentDiff.child.remove();
+					child.style.visibility = 'hidden';
 					currentDiff = null;
 				}
 			}}
+			{onmouseover}
+			onfocus={onmouseover}
 		>
 			<PdfView
 				{src}
@@ -177,6 +205,7 @@
 			</PdfView>
 		</div>
 	{/key}
+	<div class="prev" bind:this={child}></div>
 {/if}
 
 <style>
@@ -207,14 +236,15 @@
 		justify-content: center;
 		width: 2.5em;
 	}
-	div :global(.prev) {
-		position: absolute;
-		top: 1.5em;
-		left: 0;
+	.prev {
+		position: fixed;
+		display: block;
+		visibility: hidden;
 		background: var(--bg4-color);
 		color: var(--fg-color);
 		border: 3px solid var(--bg3-color);
 		border-radius: 0.5rem;
 		padding: 0.25rem;
+		z-index: 20;
 	}
 </style>

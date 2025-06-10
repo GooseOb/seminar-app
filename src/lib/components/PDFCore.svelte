@@ -137,7 +137,7 @@
 			height: auto;
 		}
 
-		:global(div) {
+		div {
 			position: relative;
 			transform-origin: top left;
 		}
@@ -150,13 +150,13 @@
 			font-variant-ligatures: none;
 		}
 		:global(span[data-prev]) {
-			background: #a0a0f0;
-			color: black;
+			background: #a0a0f055;
 			cursor: pointer;
 			font: inherit;
 			position: relative;
-			&:hover {
-				background: #8080f0;
+			border-radius: 0.25rem;
+			&.hover {
+				background: #8080f055;
 			}
 		}
 	}
