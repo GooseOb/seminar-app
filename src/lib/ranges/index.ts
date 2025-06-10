@@ -7,7 +7,7 @@ export type RangeData = {
 export const getApplyRanges =
 	<T, U>(
 		wrapRange: (text: string, i: number) => T,
-		wrapOutsideRange: (text: string) => U
+		wrapNoRange: (text: string) => U
 	) =>
 	(
 		text: string,
@@ -25,44 +25,38 @@ export const getApplyRanges =
 			let oldLength = length - arr[textIndex]!.length;
 			if (currItem && range.fromIndex >= length) {
 				currItem.push(
-					wrapOutsideRange(text.slice(oldLength + currItemLength, length))
+					wrapNoRange(text.slice(oldLength + currItemLength, length))
 				);
 				result.push(currItem);
-				currItem = [];
-				currItemLength = 0;
 				++textIndex;
 				length += arr[textIndex]!.length;
+				currItem = [];
+				currItemLength = 0;
 			}
 			while (range.fromIndex >= length) {
-				result.push([wrapOutsideRange(arr[textIndex]!)]);
+				result.push([wrapNoRange(arr[textIndex]!)]);
 				++textIndex;
 				length += arr[textIndex]!.length;
 			}
 			oldLength = length - arr[textIndex]!.length;
 			if (range.toIndex <= length) {
 				currItem.push(
-					wrapOutsideRange(
-						text.slice(oldLength + currItemLength, range.fromIndex)
-					),
+					wrapNoRange(text.slice(oldLength + currItemLength, range.fromIndex)),
 					wrapRange(text.slice(range.fromIndex, range.toIndex), i)
 				);
 				currItemLength = range.toIndex - oldLength;
 			} else {
 				currItem.push(
-					wrapOutsideRange(
-						text.slice(oldLength + currItemLength, range.fromIndex)
-					),
+					wrapNoRange(text.slice(oldLength + currItemLength, range.fromIndex)),
 					wrapRange(text.slice(range.fromIndex, length), i)
 				);
-				result.push(currItem);
-				currItem = [];
-				currItemLength = 0;
 				oldLength = length;
+				result.push(currItem);
 				++textIndex;
 				length += arr[textIndex]!.length;
 				while (range.toIndex > length) {
-					result.push([wrapRange(text[textIndex]!, i)]);
 					oldLength = length;
+					result.push([wrapRange(arr[textIndex]!, i)]);
 					++textIndex;
 					length += arr[textIndex]!.length;
 				}
@@ -72,7 +66,7 @@ export const getApplyRanges =
 		}
 
 		while (textIndex < arr.length) {
-			result.push([wrapOutsideRange(arr[textIndex]!)]);
+			result.push([wrapNoRange(arr[textIndex]!)]);
 			++textIndex;
 		}
 
