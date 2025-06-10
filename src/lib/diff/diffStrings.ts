@@ -5,91 +5,82 @@ type DiffResult = {
 };
 
 export const diffStrings = (curr: string, prev: string): DiffResult[] => {
-	const result: DiffResult[] = [];
-	let currIndex = 0;
-	let prevIndex = 0;
+	const m = prev.length;
+	const n = curr.length;
 
-	while (currIndex <= curr.length || prevIndex <= prev.length) {
-		// Skip matching characters
-		while (
-			currIndex < curr.length &&
-			prevIndex < prev.length &&
-			curr[currIndex] === prev[prevIndex]
-		) {
-			currIndex++;
-			prevIndex++;
-		}
+	// Use dynamic programming to find edit operations
+	const dp: number[][] = Array(m + 1)
+		.fill(null)
+		.map(() => Array(n + 1).fill(0));
 
-		// If both strings are exhausted, we're done
-		if (currIndex >= curr.length && prevIndex >= prev.length) {
-			break;
-		}
+	// Initialize base cases
+	for (let i = 0; i <= m; i++) dp[i][0] = i;
+	for (let j = 0; j <= n; j++) dp[0][j] = j;
 
-		// Mark the start of a difference
-		const changeFromIndex = currIndex;
-		const changePrevStartIndex = prevIndex;
-
-		// Handle end-of-string cases
-		if (currIndex >= curr.length) {
-			// curr is shorter - remaining prev content was deleted
-			result.push({
-				fromIndex: changeFromIndex,
-				toIndex: changeFromIndex,
-				prevContent: prev.slice(changePrevStartIndex)
-			});
-			break;
-		}
-
-		if (prevIndex >= prev.length) {
-			// prev is shorter - remaining curr content was inserted
-			result.push({
-				fromIndex: changeFromIndex,
-				toIndex: curr.length,
-				prevContent: ''
-			});
-			break;
-		}
-
-		// Find the next matching point or end of strings
-		let bestCurrEnd = curr.length;
-		let bestPrevEnd = prev.length;
-		let found = false;
-
-		// Look for a point where strings sync up again
-		for (let i = currIndex + 1; i <= curr.length && !found; i++) {
-			for (let j = prevIndex + 1; j <= prev.length && !found; j++) {
-				// Check if we have a match from position i in curr and j in prev
-				if (i < curr.length && j < prev.length && curr[i] === prev[j]) {
-					// Verify it's a good sync point by checking a few characters ahead
-					let matchCount = 0;
-					while (
-						i + matchCount < curr.length &&
-						j + matchCount < prev.length &&
-						curr[i + matchCount] === prev[j + matchCount] &&
-						matchCount < 3
-					) {
-						matchCount++;
-					}
-
-					if (matchCount >= 1) {
-						bestCurrEnd = i;
-						bestPrevEnd = j;
-						found = true;
-					}
-				}
+	// Fill the DP table
+	for (let i = 1; i <= m; i++) {
+		for (let j = 1; j <= n; j++) {
+			if (prev[i - 1] === curr[j - 1]) {
+				dp[i][j] = dp[i - 1][j - 1];
+			} else {
+				dp[i][j] =
+					1 +
+					Math.min(
+						dp[i - 1][j], // deletion
+						dp[i][j - 1], // insertion
+						dp[i - 1][j - 1] // substitution
+					);
 			}
 		}
+	}
 
-		// Record the difference
-		result.push({
-			fromIndex: changeFromIndex,
-			toIndex: bestCurrEnd,
-			prevContent: prev.slice(changePrevStartIndex, bestPrevEnd)
-		});
+	// Backtrack to find the actual operations
+	const result: DiffResult[] = [];
+	let i = m,
+		j = n;
 
-		// Move to the sync point
-		currIndex = bestCurrEnd;
-		prevIndex = bestPrevEnd;
+	while (i > 0 || j > 0) {
+		// Find sequences of operations
+		if (i > 0 && j > 0 && prev[i - 1] === curr[j - 1]) {
+			// Characters match, move diagonally
+			i--;
+			j--;
+		} else {
+			// Found a difference - determine the range
+			const endJ = j;
+			const endI = i;
+
+			// Collect consecutive operations
+			while (i > 0 || j > 0) {
+				if (i > 0 && j > 0 && dp[i][j] === dp[i - 1][j - 1] + 1) {
+					// Substitution
+					i--;
+					j--;
+				} else if (i > 0 && dp[i][j] === dp[i - 1][j] + 1) {
+					// Deletion from prev
+					i--;
+				} else if (j > 0 && dp[i][j] === dp[i][j - 1] + 1) {
+					// Insertion to curr
+					j--;
+				} else {
+					break;
+				}
+
+				// Check if we've found a matching character (end of this diff block)
+				if (i > 0 && j > 0 && prev[i - 1] === curr[j - 1]) {
+					break;
+				}
+			}
+
+			// Add the difference
+			if (j !== endJ || i !== endI) {
+				result.unshift({
+					fromIndex: j,
+					toIndex: endJ,
+					prevContent: prev.slice(i, endI)
+				});
+			}
+		}
 	}
 
 	return result;

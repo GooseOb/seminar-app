@@ -98,13 +98,13 @@
 			});
 	};
 	let prevTexts: string[] = $state([]);
-	let currentDiff: { parent: HTMLElement } | null = null;
+	let selectedDiffEl: HTMLElement | null = null;
 	const hovers: HTMLElement[] = [];
 	let currHover: string = $state('');
 	const onmouseover = (e: Event) => {
-		const parent = e.target as HTMLElement;
-		if ('prev' in parent.dataset) {
-			const value = parent.dataset.prev!;
+		const { dataset } = e.target as HTMLElement;
+		if ('prev' in dataset) {
+			const value = dataset.prev!;
 			if (currHover === value) return;
 			for (const el of hovers) {
 				el.classList.remove('hover');
@@ -131,22 +131,22 @@
 		<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
 		<div
 			onclick={(e) => {
-				const parent = e.target as HTMLElement;
-				if ('prev' in parent.dataset) {
+				const el = e.target as HTMLElement;
+				if ('prev' in el.dataset) {
 					child.style.visibility = 'hidden';
-					if (currentDiff?.parent === parent) {
-						currentDiff = null;
+					if (selectedDiffEl === el) {
+						selectedDiffEl = null;
 					} else {
-						const { bottom, left } = parent.getBoundingClientRect();
+						const { bottom, left } = el.getBoundingClientRect();
 						child.style.top = `${bottom + 5}px`;
 						child.style.left = `${left}px`;
 						child.style.visibility = 'visible';
-						child.textContent = prevTexts[+parent.dataset.prev!];
-						currentDiff = { parent };
+						child.textContent = prevTexts[+el.dataset.prev!];
+						selectedDiffEl = el;
 					}
-				} else if (currentDiff) {
+				} else if (selectedDiffEl) {
 					child.style.visibility = 'hidden';
-					currentDiff = null;
+					selectedDiffEl = null;
 				}
 			}}
 			{onmouseover}

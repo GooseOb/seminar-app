@@ -1,4 +1,4 @@
-import { diffStringsOptimal } from './diffOptimal';
+import { diffStrings } from './diffStrings';
 
 export const createDiff =
 	<T, U>(
@@ -12,7 +12,7 @@ export const createDiff =
 		const currText = curr.join('');
 		const prevText = prev.join('');
 
-		const arr = diffStringsOptimal(currText, prevText);
+		const arr = diffStrings(currText, prevText);
 
 		const result: (T | U)[][] = [];
 
