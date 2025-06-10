@@ -155,7 +155,7 @@
 			<PdfView
 				{src}
 				bind:isOpen
-				transformTextItems={(origTextItems) => {
+				transformTextItems={(origTextItems, fallback) => {
 					if (prevPdfPageTextContents) {
 						const { value: textItems, unflatten } = flatten(origTextItems);
 						const prevTextItems = prevPdfPageTextContents.flatMap(
@@ -169,11 +169,11 @@
 						return unflatten(
 							textItems.map((item, i) => ({
 								...item,
-								str: result[i] || item.str
+								content: result[i] || [document.createTextNode(item.str)]
 							}))
 						);
 					}
-					return origTextItems;
+					return fallback(origTextItems);
 				}}
 			>
 				<div class="top-bar">

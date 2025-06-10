@@ -5,16 +5,29 @@
 	import * as m from '$lib/paraglide/messages';
 	import { PDFJS } from '$lib/pdf.svelte';
 
+	type TextItemWithContent = TextItem & {
+		content: Slottable[];
+	};
+
+	const transformTextItemsDefault = (items: TextItem[][]) =>
+		items.map((textItems) =>
+			textItems.map((item) => ({
+				...item,
+				content: [document.createTextNode(item.str)]
+			}))
+		);
+
 	let {
 		src,
 		scale,
-		transformTextItems = (items) => items
+		transformTextItems = transformTextItemsDefault
 	}: {
 		src: string;
 		scale: number;
 		transformTextItems?: (
-			textItems: TextItem[][]
-		) => Promise<TextItem[][]> | TextItem[][];
+			textItems: TextItem[][],
+			fallback: (item: TextItem[][]) => TextItemWithContent[][]
+		) => Promise<TextItemWithContent[][]> | TextItemWithContent[][];
 	} = $props();
 
 	let actualScale = $state(scale);
@@ -45,7 +58,7 @@
 					.then((textContents) =>
 						textContents.map(({ items }) => items as TextItem[])
 					)
-					.then(transformTextItems)
+					.then((data) => transformTextItems(data, transformTextItemsDefault))
 			: null
 	);
 
@@ -83,7 +96,8 @@
 					const fontSize = Math.hypot(transform[2], transform[3]);
 					const span = document.createElement('span');
 					span.className = 'textNode';
-					span.innerHTML = item.str;
+					// @ts-expect-error content is of reasonable size
+					span.append(...item.content);
 					span.style.left = `${transform[4] / dpr}px`;
 					span.style.top = `${(transform[5] - fontSize) / dpr}px`;
 					span.style.fontSize = `${fontSize / dpr}px`;
