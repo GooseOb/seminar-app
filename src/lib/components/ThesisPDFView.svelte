@@ -174,7 +174,7 @@
 						return unflatten(
 							textItems.map((item, i) => ({
 								...item,
-								content: result[i] || [document.createTextNode(item.str)]
+								content: result[i]
 							}))
 						);
 					}

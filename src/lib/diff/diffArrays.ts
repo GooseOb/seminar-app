@@ -70,7 +70,7 @@ export const createDiff =
 				currItemLength = diffItem.toIndex - oldLength;
 			}
 		}
-		++textIndex;
+
 		while (textIndex < curr.length) {
 			result.push([wrapUnchanged(curr[textIndex]!)]);
 			++textIndex;
