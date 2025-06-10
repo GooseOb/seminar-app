@@ -38,6 +38,12 @@
 		getThesis(selectedVersion).then(({ url }) => {
 			src = url;
 		});
+		if (
+			versions.findIndex((v) => v.name === selectedVersion) <
+			versions.findIndex((v) => v.name === prevVersion)
+		) {
+			prevVersion = selectedVersion;
+		}
 	});
 
 	const prevVersions = $derived(
@@ -127,38 +133,37 @@
 </script>
 
 {#if src}
-	{#key prevPdfPageTextContents}
-		<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
-		<div
-			onclick={(e) => {
-				const el = e.target as HTMLElement;
-				if ('prev' in el.dataset) {
-					child.style.visibility = 'hidden';
-					if (selectedDiffEl === el) {
-						selectedDiffEl = null;
-					} else {
-						const { bottom, left } = el.getBoundingClientRect();
-						child.style.top = `${bottom + 5}px`;
-						child.style.left = `${left}px`;
-						child.style.visibility = 'visible';
-						child.textContent = prevTexts[+el.dataset.prev!];
-						selectedDiffEl = el;
-					}
-				} else if (selectedDiffEl) {
-					child.style.visibility = 'hidden';
+	<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
+	<div
+		onclick={(e) => {
+			const el = e.target as HTMLElement;
+			if ('prev' in el.dataset) {
+				child.style.visibility = 'hidden';
+				if (selectedDiffEl === el) {
 					selectedDiffEl = null;
+				} else {
+					const { bottom, left } = el.getBoundingClientRect();
+					child.style.top = `${bottom + 5}px`;
+					child.style.left = `${left}px`;
+					child.style.visibility = 'visible';
+					child.textContent = prevTexts[+el.dataset.prev!];
+					selectedDiffEl = el;
 				}
-			}}
-			{onmouseover}
-			onfocus={onmouseover}
-		>
-			<PdfView
-				{src}
-				bind:isOpen
-				transformTextItems={(origTextItems, fallback) => {
-					if (prevPdfPageTextContents) {
+			} else if (selectedDiffEl) {
+				child.style.visibility = 'hidden';
+				selectedDiffEl = null;
+			}
+		}}
+		{onmouseover}
+		onfocus={onmouseover}
+	>
+		<PdfView
+			{src}
+			bind:isOpen
+			transformTextItems={prevPdfPageTextContents
+				? (origTextItems) => {
 						const { value: textItems, unflatten } = flatten(origTextItems);
-						const prevTextItems = prevPdfPageTextContents.flatMap(
+						const prevTextItems = prevPdfPageTextContents!.flatMap(
 							({ items }) => items as TextItem[]
 						);
 						const { result, content } = diff(
@@ -173,38 +178,32 @@
 							}))
 						);
 					}
-					return fallback(origTextItems);
-				}}
-			>
-				<div class="top-bar">
-					<div class="buttons">
+				: undefined}
+		>
+			<div class="top-bar">
+				<div class="buttons">
+					<button
+						class="btn2"
+						aria-label={m.downloadFile()}
+						onclick={handleDownload}
+					>
+						<DownloadIcon />
+					</button>
+					{#if canDelete}
 						<button
 							class="btn2"
-							aria-label={m.downloadFile()}
-							onclick={handleDownload}
+							aria-label={m.deleteFile()}
+							onclick={handleDelete}
 						>
-							<DownloadIcon />
+							<DeleteIcon />
 						</button>
-						{#if canDelete}
-							<button
-								class="btn2"
-								aria-label={m.deleteFile()}
-								onclick={handleDelete}
-							>
-								<DeleteIcon />
-							</button>
-						{/if}
-					</div>
-					<Select label={m.compare()} bind:value={selectedVersion} {options} />
-					<Select
-						label={m.to()}
-						bind:value={prevVersion}
-						options={prevOptions}
-					/>
+					{/if}
 				</div>
-			</PdfView>
-		</div>
-	{/key}
+				<Select label={m.compare()} bind:value={selectedVersion} {options} />
+				<Select label={m.to()} bind:value={prevVersion} options={prevOptions} />
+			</div>
+		</PdfView>
+	</div>
 	<div class="prev" bind:this={child}></div>
 {/if}
 

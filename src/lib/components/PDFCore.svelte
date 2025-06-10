@@ -9,24 +9,21 @@
 		content: Slottable[];
 	};
 
-	const transformTextItemsDefault = (items: TextItem[][]) =>
-		items.map((textItems) =>
-			textItems.map((item) => ({
-				...item,
-				content: [document.createTextNode(item.str)]
-			}))
-		);
-
 	let {
 		src,
 		scale,
-		transformTextItems = transformTextItemsDefault
+		transformTextItems = (items: TextItem[][]) =>
+			items.map((textItems) =>
+				textItems.map((item) => ({
+					...item,
+					content: [document.createTextNode(item.str)]
+				}))
+			)
 	}: {
 		src: string;
 		scale: number;
 		transformTextItems?: (
-			textItems: TextItem[][],
-			fallback: (item: TextItem[][]) => TextItemWithContent[][]
+			textItems: TextItem[][]
 		) => Promise<TextItemWithContent[][]> | TextItemWithContent[][];
 	} = $props();
 
@@ -52,15 +49,15 @@
 	let isLoading = $state(true);
 	let pages = $state(null) as PDFPageProxy[] | null;
 
-	const textItems = $derived(
+	const rawTextItems = $derived(
 		pages
-			? Promise.all(pages.map((page) => page.getTextContent()))
-					.then((textContents) =>
-						textContents.map(({ items }) => items as TextItem[])
-					)
-					.then((data) => transformTextItems(data, transformTextItemsDefault))
+			? Promise.all(pages.map((page) => page.getTextContent())).then(
+					(textContents) => textContents.map(({ items }) => items as TextItem[])
+				)
 			: null
 	);
+
+	const textItems = $derived(rawTextItems?.then(transformTextItems));
 
 	const render = (node: HTMLDivElement, page: PDFPageProxy) => {
 		let width: number;
@@ -128,7 +125,7 @@
 			<p>{m.loadingPages()}</p>
 		{/if}
 		{#if pages}
-			{#key pages}
+			{#key [pages, textItems]}
 				{#each pages as page}
 					<div use:render={page}></div>
 				{/each}

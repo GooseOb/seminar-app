@@ -7,7 +7,8 @@
 	let {
 		isOpen = $bindable(),
 		children,
-		...props
+		src,
+		transformTextItems
 	}: Omit<ComponentProps<typeof PDFCore>, 'scale'> & {
 		isOpen: boolean;
 		children?: any;
@@ -81,7 +82,7 @@
 				>
 			</div>
 
-			<PDFCore {...props} {scale} />
+			<PDFCore {src} {transformTextItems} {scale} />
 		</div>
 	</Overlay>
 {/if}
