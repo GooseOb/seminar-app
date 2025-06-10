@@ -65,6 +65,7 @@
 					const item = versions.at(-1)!;
 					item.isPending = false;
 					item.uploaded = new Date();
+					// TODO: set item.name
 				})
 				.catch((error) => {
 					console.error('Error uploading file:', error);
@@ -120,7 +121,7 @@
 			]}
 		/>
 
-		<ThesisPDFView bind:versions {roomId} bind:isOpen canDelete={isStudent} />
+		<ThesisPDFView bind:versions {roomId} bind:isOpen {role} />
 	{:else}
 		<p>{m.noThesis()}</p>
 	{/if}

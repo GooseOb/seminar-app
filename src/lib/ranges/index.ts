@@ -6,13 +6,13 @@ export type RangeData = {
 
 export const getApplyRanges =
 	<T, U>(
-		wrapRange: (text: string, i: number) => T,
+		wrapRange: (text: string, index: number) => T,
 		wrapNoRange: (text: string) => U
 	) =>
 	(
-		text: string,
 		arr: string[],
-		ranges: RangeData[]
+		ranges: RangeData[],
+		text: string
 	): { result: (T | U)[][]; content: string[] } => {
 		const result: (T | U)[][] = [];
 

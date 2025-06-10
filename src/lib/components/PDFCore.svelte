@@ -160,16 +160,6 @@
 			transform-origin: 0 0;
 			font-variant-ligatures: none;
 		}
-		:global(span[data-prev]) {
-			background: #a0a0f055;
-			cursor: pointer;
-			font: inherit;
-			position: relative;
-			border-radius: 0.25rem;
-			&.hover {
-				background: #8080f055;
-			}
-		}
 	}
 	p {
 		position: absolute;

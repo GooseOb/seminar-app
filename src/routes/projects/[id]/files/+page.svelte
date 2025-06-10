@@ -7,32 +7,28 @@
 	import * as m from '$lib/paraglide/messages';
 
 	const { data }: PageProps = $props();
-	let versions: FileData[] = $state([]);
-	const files = $derived(
-		data.files.then((files) =>
-			files.filter((file) => {
-				if (file.name.startsWith('thesis/')) {
-					versions.push(file);
-					return false;
-				}
-				return true;
-			})
-		)
-	);
+	let files: null | FileData[] = $state(null);
+	let versions: null | FileData[] = $state(null);
+	$effect(() => {
+		data.files.then((data) => {
+			files = data.files;
+			versions = data.versions;
+		});
+	});
 </script>
 
 <div class="page">
-	{#await files}
-		<p>{m.loadingThesis()}</p>
-	{:then}
+	{#if versions}
 		<Thesis roomId={page.params.id} role={data.role!} bind:versions />
-	{/await}
+	{:else}
+		<p>{m.loadingThesis()}</p>
+	{/if}
 
-	{#await files}
-		<p>{m.loadingFiles()}</p>
-	{:then files}
+	{#if files}
 		<FileList {files} roomId={page.params.id} />
-	{/await}
+	{:else}
+		<p>{m.loadingFiles()}</p>
+	{/if}
 </div>
 
 <style>

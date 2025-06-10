@@ -7,47 +7,47 @@
 	import DownloadIcon from './icons/DownloadIcon.svelte';
 	import DeleteIcon from './icons/DeleteIcon.svelte';
 	import { PDFJS } from '$lib/pdf.svelte';
-	import { diff } from '$lib/diff';
+	import { diff } from '$lib/pdf/diff';
 	import type { TextContent, TextItem } from 'pdfjs-dist/types/src/display/api';
 	import { flatten } from '$lib/utils/flatten';
+	import type { Role } from '$lib/server/db';
 
 	let {
 		versions = $bindable(),
 		isOpen = $bindable(),
 		roomId,
-		canDelete
+		role
 	}: {
 		versions: FileData[];
 		isOpen: boolean;
 		roomId: string;
-		canDelete: boolean;
+		role: Role;
 	} = $props();
 
-	let selectedVersion = $derived(versions.at(-1)!.name);
-	let prevVersion = $derived(versions.at(-1)!.name);
+	let selectedVersion = $derived(versions.at(-1)!);
+	let prevVersion = $derived(versions.at(-1)!);
 
-	const getThesis = (version: string) =>
+	let isCommentMode = $state(false);
+
+	const getThesis = (fileName: string) =>
 		trpc.room.project.thesis.get.query({
 			roomId,
 			isDownload: false,
-			fileName: version.replace('thesis/', '')
+			fileName
 		});
 
 	let src: string = $state('');
 	$effect(() => {
-		getThesis(selectedVersion).then(({ url }) => {
+		getThesis(selectedVersion.name).then(({ url }) => {
 			src = url;
 		});
-		if (
-			versions.findIndex((v) => v.name === selectedVersion) <
-			versions.findIndex((v) => v.name === prevVersion)
-		) {
+		if (versions.indexOf(selectedVersion) < versions.indexOf(prevVersion)) {
 			prevVersion = selectedVersion;
 		}
 	});
 
 	const prevVersions = $derived(
-		versions.slice(0, versions.findIndex((v) => v.name === selectedVersion) + 1)
+		versions.slice(0, versions.indexOf(selectedVersion) + 1)
 	);
 
 	let prevPdfPageTextContents: TextContent[] | null = $state(null);
@@ -55,7 +55,7 @@
 		if (prevVersion === selectedVersion) {
 			prevPdfPageTextContents = null;
 		} else {
-			getThesis(prevVersion)
+			getThesis(prevVersion.name)
 				.then(({ url }) => PDFJS()!.getDocument(url).promise)
 				.then((pdf) =>
 					Promise.all(
@@ -71,9 +71,9 @@
 	});
 
 	const optionsFrom = (versions: FileData[]) =>
-		versions.map((v) => ({
-			value: v.name,
-			label: new Date(+/\d+(?=\.pdf$)/.exec(v.name)![0]).toLocaleString()
+		versions.map(({ name }) => ({
+			value: name,
+			label: new Date(+/\d+(?=\.pdf$)/.exec(name)![0]).toLocaleString()
 		}));
 
 	const options = $derived(optionsFrom(versions));
@@ -84,23 +84,20 @@
 			.query({
 				roomId,
 				isDownload: true,
-				fileName: selectedVersion.replace('thesis/', '')
+				fileName: selectedVersion.name
 			})
 			.then(({ url }) => {
 				const a = document.createElement('a');
 				a.href = url;
-				a.download = selectedVersion.replace('thesis/', '');
+				a.download = selectedVersion.name;
 				a.click();
 			});
 	};
 	const handleDelete = () => {
 		trpc.room.project.thesis.delete
-			.mutate({ roomId, fileName: selectedVersion.replace('thesis/', '') })
+			.mutate({ roomId, fileName: selectedVersion.name })
 			.then(() => {
-				versions.splice(
-					versions.findIndex((v) => v.name === selectedVersion),
-					1
-				);
+				versions.splice(versions.indexOf(selectedVersion), 1);
 			});
 	};
 	let prevTexts: string[] = $state([]);
@@ -109,8 +106,8 @@
 	let currHover: string = $state('');
 	const onmouseover = (e: Event) => {
 		const { dataset } = e.target as HTMLElement;
-		if ('prev' in dataset) {
-			const value = dataset.prev!;
+		if ('index' in dataset) {
+			const value = dataset.index!;
 			if (currHover === value) return;
 			for (const el of hovers) {
 				el.classList.remove('hover');
@@ -118,7 +115,7 @@
 			currHover = value;
 			for (const el of (
 				e.currentTarget as HTMLElement
-			).querySelectorAll<HTMLElement>(`span[data-prev="${value}"]`)) {
+			).querySelectorAll<HTMLElement>(`span[data-index="${value}"]`)) {
 				el.classList.add('hover');
 				hovers.push(el);
 			}
@@ -129,7 +126,7 @@
 			currHover = '';
 		}
 	};
-	let child: HTMLElement = $state(null)!;
+	let tooltip: HTMLElement = $state(null)!;
 </script>
 
 {#if src}
@@ -137,20 +134,20 @@
 	<div
 		onclick={(e) => {
 			const el = e.target as HTMLElement;
-			if ('prev' in el.dataset) {
-				child.style.visibility = 'hidden';
+			if ('index' in el.dataset && prevTexts[+el.dataset.index!]) {
+				tooltip.style.visibility = 'hidden';
 				if (selectedDiffEl === el) {
 					selectedDiffEl = null;
 				} else {
 					const { bottom, left } = el.getBoundingClientRect();
-					child.style.top = `${bottom + 5}px`;
-					child.style.left = `${left}px`;
-					child.style.visibility = 'visible';
-					child.textContent = prevTexts[+el.dataset.prev!];
+					tooltip.style.top = `${bottom + 5}px`;
+					tooltip.style.left = `${left}px`;
+					tooltip.style.visibility = 'visible';
+					tooltip.textContent = prevTexts[+el.dataset.index!];
 					selectedDiffEl = el;
 				}
 			} else if (selectedDiffEl) {
-				child.style.visibility = 'hidden';
+				tooltip.style.visibility = 'hidden';
 				selectedDiffEl = null;
 			}
 		}}
@@ -189,7 +186,7 @@
 					>
 						<DownloadIcon />
 					</button>
-					{#if canDelete}
+					{#if role === 'student'}
 						<button
 							class="btn2"
 							aria-label={m.deleteFile()}
@@ -197,17 +194,67 @@
 						>
 							<DeleteIcon />
 						</button>
+					{:else if role === 'lecturer'}
+						<button
+							class="btn2"
+							class:active={isCommentMode}
+							aria-label="toggle comments"
+							onclick={() => {
+								isCommentMode = !isCommentMode;
+							}}
+						>
+							C
+						</button>
 					{/if}
 				</div>
-				<Select label={m.compare()} bind:value={selectedVersion} {options} />
-				<Select label={m.to()} bind:value={prevVersion} options={prevOptions} />
+				<Select
+					label={m.compare()}
+					value={selectedVersion.name}
+					onchange={(e) => {
+						selectedVersion = versions.find(
+							({ name }) => name === e.currentTarget.value
+						)!;
+					}}
+					{options}
+				/>
+				<Select
+					label={m.to()}
+					value={prevVersion.name}
+					onchange={(e) => {
+						prevVersion = versions.find(
+							({ name }) => name === e.currentTarget.value
+						)!;
+					}}
+					options={prevOptions}
+				/>
 			</div>
 		</PdfView>
 	</div>
-	<div class="prev" bind:this={child}></div>
+	<div class="tooltip" bind:this={tooltip}></div>
 {/if}
 
 <style>
+	div {
+		:global {
+			.diffItem {
+				background: #a0a0f055;
+				cursor: pointer;
+				font: inherit;
+				position: relative;
+				border-radius: 0.25rem;
+				&.hover {
+					background: #8080f055;
+				}
+				&.new {
+					background: #a0f0a055;
+					&.hover {
+						background: #60f06055;
+					}
+				}
+			}
+		}
+	}
+
 	.top-bar {
 		display: flex;
 		text-align: center;
@@ -215,6 +262,7 @@
 		padding: 0 0.5rem;
 		gap: 0.25rem;
 	}
+
 	.buttons {
 		display: flex;
 		gap: 0.5rem;
@@ -234,8 +282,14 @@
 		align-items: center;
 		justify-content: center;
 		width: 2.5em;
+		font-weight: bold;
+		&.active {
+			background-color: var(--primary-color);
+			color: #fff;
+		}
 	}
-	.prev {
+
+	.tooltip {
 		position: fixed;
 		display: block;
 		visibility: hidden;
