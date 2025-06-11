@@ -1,19 +1,15 @@
-export type RangeData = {
+export interface RangeData {
 	fromIndex: number;
 	toIndex: number;
 	data: string;
-};
+}
 
 export const getApplyRanges =
-	<T, U>(
-		wrapRange: (text: string, index: number) => T,
+	<T, U, TRange extends RangeData>(
+		wrapRange: (text: string, index: number, ranges: TRange[]) => T,
 		wrapNoRange: (text: string) => U
 	) =>
-	(
-		arr: string[],
-		ranges: RangeData[],
-		text: string
-	): { result: (T | U)[][]; content: string[] } => {
+	(arr: string[], ranges: TRange[], text: string): (T | U)[][] => {
 		const result: (T | U)[][] = [];
 
 		let textIndex = 0;
@@ -22,10 +18,10 @@ export const getApplyRanges =
 		let length = arr[0]!.length;
 		for (let i = 0; i < ranges.length && textIndex < arr.length; i++) {
 			const range = ranges[i]!;
-			let oldLength = length - arr[textIndex]!.length;
-			if (currItem && range.fromIndex >= length) {
+			let itemStartIndex = length - arr[textIndex]!.length;
+			if (currItemLength && range.fromIndex >= length) {
 				currItem.push(
-					wrapNoRange(text.slice(oldLength + currItemLength, length))
+					wrapNoRange(text.slice(itemStartIndex + currItemLength, length))
 				);
 				result.push(currItem);
 				++textIndex;
@@ -36,33 +32,49 @@ export const getApplyRanges =
 			while (range.fromIndex >= length) {
 				result.push([wrapNoRange(arr[textIndex]!)]);
 				++textIndex;
+				// console.log(arr[textIndex]);
 				length += arr[textIndex]!.length;
 			}
-			oldLength = length - arr[textIndex]!.length;
+			itemStartIndex = length - arr[textIndex]!.length;
 			if (range.toIndex <= length) {
 				currItem.push(
-					wrapNoRange(text.slice(oldLength + currItemLength, range.fromIndex)),
-					wrapRange(text.slice(range.fromIndex, range.toIndex), i)
+					wrapNoRange(
+						text.slice(itemStartIndex + currItemLength, range.fromIndex)
+					),
+					wrapRange(text.slice(range.fromIndex, range.toIndex), i, ranges)
 				);
-				currItemLength = range.toIndex - oldLength;
+				currItemLength = range.toIndex - itemStartIndex;
 			} else {
 				currItem.push(
-					wrapNoRange(text.slice(oldLength + currItemLength, range.fromIndex)),
-					wrapRange(text.slice(range.fromIndex, length), i)
+					wrapNoRange(
+						text.slice(itemStartIndex + currItemLength, range.fromIndex)
+					),
+					wrapRange(text.slice(range.fromIndex, length), i, ranges)
 				);
-				oldLength = length;
+				itemStartIndex = length;
 				result.push(currItem);
 				++textIndex;
 				length += arr[textIndex]!.length;
 				while (range.toIndex > length) {
-					oldLength = length;
-					result.push([wrapRange(arr[textIndex]!, i)]);
+					result.push([wrapRange(arr[textIndex]!, i, ranges)]);
 					++textIndex;
 					length += arr[textIndex]!.length;
 				}
-				currItem = [wrapRange(text.slice(oldLength, range.toIndex), i)];
-				currItemLength = range.toIndex - oldLength;
+				itemStartIndex = length - arr[textIndex]!.length;
+				currItem = [
+					wrapRange(text.slice(itemStartIndex, range.toIndex), i, ranges)
+				];
+				currItemLength = range.toIndex - itemStartIndex;
 			}
+		}
+		if (currItemLength) {
+			currItem.push(
+				wrapNoRange(
+					text.slice(length - arr[textIndex]!.length + currItemLength, length)
+				)
+			);
+			result.push(currItem);
+			++textIndex;
 		}
 
 		while (textIndex < arr.length) {
@@ -70,5 +82,5 @@ export const getApplyRanges =
 			++textIndex;
 		}
 
-		return { result, content: ranges.map((item) => item.data) };
+		return result;
 	};

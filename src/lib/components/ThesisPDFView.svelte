@@ -11,6 +11,9 @@
 	import type { TextContent, TextItem } from 'pdfjs-dist/types/src/display/api';
 	import { flatten } from '$lib/utils/flatten';
 	import type { Role } from '$lib/server/db';
+	import { withComments } from '$lib/pdf/comments';
+	import { slide } from 'svelte/transition';
+	import type { CommentData } from '$lib/pdf/comments';
 
 	let {
 		versions = $bindable(),
@@ -24,8 +27,21 @@
 		role: Role;
 	} = $props();
 
+	let container: HTMLElement = $state(null)!;
 	let selectedVersion = $derived(versions.at(-1)!);
 	let prevVersion = $derived(versions.at(-1)!);
+	let comments: CommentData[] = $state([
+		{
+			fromIndex: 3,
+			toIndex: 10,
+			data: 'This is a comment 1'
+		},
+		{
+			fromIndex: 20,
+			toIndex: 45,
+			data: 'This is a comment 2'
+		}
+	]);
 
 	let isCommentMode = $state(false);
 
@@ -101,7 +117,10 @@
 			});
 	};
 	let prevTexts: string[] = $state([]);
-	let selectedDiffEl: HTMLElement | null = null;
+	const tooltipTexts = $derived(
+		isCommentMode ? comments.map(({ data }) => data) : prevTexts
+	);
+	let selectedEl: HTMLElement | null = $state(null);
 	const hovers: HTMLElement[] = [];
 	let currHover: string = $state('');
 	const onmouseover = (e: Event) => {
@@ -126,56 +145,151 @@
 			currHover = '';
 		}
 	};
-	let tooltip: HTMLElement = $state(null)!;
+	let tooltip: HTMLTextAreaElement = $state(null)!;
+	const handleSelection = () => {
+		if (!isCommentMode) return;
+
+		const selection = window.getSelection();
+		if (!selection?.rangeCount || !selection.toString().trim()) return;
+
+		const {
+			commonAncestorContainer,
+			startContainer,
+			endContainer,
+			startOffset,
+			endOffset
+		} = selection.getRangeAt(0);
+
+		if (container.contains(commonAncestorContainer)) {
+			const startEl = startContainer.parentElement!;
+			const endEl = endContainer.parentElement!;
+			let fromIndex = 0;
+			let toIndex = 0;
+			let isLookingForStart = true;
+			for (const child of startEl.parentElement!.children) {
+				if (isLookingForStart) {
+					if (child === startEl) {
+						if (startEl === endEl) {
+							for (const el of startEl.childNodes) {
+								if (el === startContainer) {
+									break;
+								} else {
+									fromIndex += el.textContent!.length;
+								}
+							}
+							toIndex = fromIndex + endOffset;
+							fromIndex += startOffset;
+							break;
+						}
+						toIndex = fromIndex + child.textContent!.length;
+						fromIndex += startOffset;
+						isLookingForStart = false;
+					} else {
+						fromIndex += child.textContent!.length;
+					}
+				} else if (child === endEl) {
+					for (const el of endEl.childNodes) {
+						if (el === endContainer) {
+							break;
+						} else {
+							toIndex += el.textContent!.length;
+						}
+					}
+					toIndex += endOffset;
+					break;
+				} else {
+					toIndex += child.textContent!.length;
+				}
+			}
+			newComment = {
+				fromIndex,
+				toIndex,
+				data: '',
+				isNew: true
+			};
+			comments.push(newComment);
+			comments.sort((a, b) => a.fromIndex - b.fromIndex);
+			setTimeout(() => {
+				selectedEl = document.getElementById('newComment')!;
+				queueMicrotask(() => {
+					tooltip.focus();
+				});
+			});
+		}
+	};
+	let newComment: CommentData | null = $state(null);
+	const unselectSelectedEl = () => {
+		selectedEl = null;
+		if (newComment) {
+			if (newComment.data.trim()) {
+				newComment.isNew = false;
+			} else {
+				comments.splice(comments.indexOf(newComment), 1);
+			}
+			newComment = null;
+		}
+	};
 </script>
 
 {#if src}
 	<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
 	<div
+		onmouseup={handleSelection}
+		ontouchend={handleSelection}
 		onclick={(e) => {
 			const el = e.target as HTMLElement;
-			if ('index' in el.dataset && prevTexts[+el.dataset.index!]) {
-				tooltip.style.visibility = 'hidden';
-				if (selectedDiffEl === el) {
-					selectedDiffEl = null;
+			if ('index' in el.dataset && tooltipTexts[+el.dataset.index!]) {
+				if (selectedEl === el) {
+					unselectSelectedEl();
 				} else {
-					const { bottom, left } = el.getBoundingClientRect();
-					tooltip.style.top = `${bottom + 5}px`;
-					tooltip.style.left = `${left}px`;
-					tooltip.style.visibility = 'visible';
-					tooltip.textContent = prevTexts[+el.dataset.index!];
-					selectedDiffEl = el;
+					selectedEl = el;
 				}
-			} else if (selectedDiffEl) {
-				tooltip.style.visibility = 'hidden';
-				selectedDiffEl = null;
+			} else if (selectedEl) {
+				unselectSelectedEl();
 			}
 		}}
 		{onmouseover}
 		onfocus={onmouseover}
+		bind:this={container}
 	>
 		<PdfView
 			{src}
 			bind:isOpen
-			transformTextItems={prevPdfPageTextContents
-				? (origTextItems) => {
-						const { value: textItems, unflatten } = flatten(origTextItems);
-						const prevTextItems = prevPdfPageTextContents!.flatMap(
-							({ items }) => items as TextItem[]
-						);
-						const { result, content } = diff(
-							textItems.map((item) => item.str),
-							prevTextItems.map((item) => item.str)
-						);
-						prevTexts = content;
-						return unflatten(
-							textItems.map((item, i) => ({
-								...item,
-								content: result[i]
-							}))
-						);
-					}
-				: undefined}
+			transformTextItems={isCommentMode
+				? comments.length
+					? (origTextItems) => {
+							const { value: textItems, unflatten } = flatten(origTextItems);
+							const result = withComments(
+								textItems.map((item) => item.str),
+								comments
+							);
+							return unflatten(
+								textItems.map((item, i) => ({
+									...item,
+									content: result[i]
+								}))
+							);
+						}
+					: undefined
+				: prevPdfPageTextContents
+					? (origTextItems) => {
+							const { value: textItems, unflatten } = flatten(origTextItems);
+							const prevTextItems = prevPdfPageTextContents!.flatMap(
+								({ items }) => items as TextItem[]
+							);
+							const { result, content } = diff(
+								textItems.map((item) => item.str),
+								prevTextItems.map((item) => item.str)
+							);
+							prevTexts = content;
+							return unflatten(
+								textItems.map((item, i) => ({
+									...item,
+									content: result[i]
+								}))
+							);
+						}
+					: undefined}
 		>
 			<div class="top-bar">
 				<div class="buttons">
@@ -230,7 +344,33 @@
 			</div>
 		</PdfView>
 	</div>
-	<div class="tooltip" bind:this={tooltip}></div>
+	{#if selectedEl}
+		{@const { bottom, left } = selectedEl.getBoundingClientRect()}
+
+		<div
+			transition:slide
+			class="tooltip"
+			style="top: {bottom + 5}px; left: {left}px;"
+		>
+			{#if isCommentMode}
+				<textarea
+					bind:this={tooltip}
+					disabled={role === 'student'}
+					bind:value={comments[+selectedEl.dataset.index!]!.data}
+					placeholder="Add a comment"
+				></textarea>
+			{:else}
+				<textarea
+					transition:slide
+					style="top: {bottom + 5}px; left: {left}px;"
+					class="tooltip"
+					bind:this={tooltip}
+					disabled
+					value={prevTexts[+selectedEl.dataset.index!]!}
+				></textarea>
+			{/if}
+		</div>
+	{/if}
 {/if}
 
 <style>
@@ -240,7 +380,6 @@
 				background: #a0a0f055;
 				cursor: pointer;
 				font: inherit;
-				position: relative;
 				border-radius: 0.25rem;
 				&.hover {
 					background: #8080f055;
@@ -250,6 +389,16 @@
 					&.hover {
 						background: #60f06055;
 					}
+				}
+			}
+			.commentItem {
+				background: #f0c00055;
+				cursor: pointer;
+				font: inherit;
+				border-radius: 0.25rem;
+				transition: background 0.1s ease-in-out;
+				&.hover {
+					background: #f0f00055;
 				}
 			}
 		}
@@ -292,9 +441,11 @@
 	.tooltip {
 		position: fixed;
 		display: block;
-		visibility: hidden;
 		background: var(--bg4-color);
 		color: var(--fg-color);
+		transition:
+			top 0.2s ease-in-out,
+			left 0.2s ease-in-out;
 		border: 3px solid var(--bg3-color);
 		border-radius: 0.5rem;
 		padding: 0.25rem;
