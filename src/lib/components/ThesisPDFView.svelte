@@ -14,6 +14,7 @@
 	import { withComments } from '$lib/pdf/comments';
 	import { slide } from 'svelte/transition';
 	import type { CommentData } from '$lib/pdf/comments';
+	import { getRangeFromSelectionRange } from '$lib/ranges';
 
 	let {
 		versions = $bindable(),
@@ -26,6 +27,9 @@
 		roomId: string;
 		role: Role;
 	} = $props();
+
+	const hasIndex = <T extends object>(obj: T): obj is T & { index: string } =>
+		Object.prototype.hasOwnProperty.call(obj, 'index');
 
 	let container: HTMLElement = $state(null)!;
 	let selectedVersion = $derived(versions.at(-1)!);
@@ -125,8 +129,8 @@
 	let currHover: string = $state('');
 	const onmouseover = (e: Event) => {
 		const { dataset } = e.target as HTMLElement;
-		if ('index' in dataset) {
-			const value = dataset.index!;
+		if (hasIndex(dataset)) {
+			const value = dataset.index;
 			if (currHover === value) return;
 			for (const el of hovers) {
 				el.classList.remove('hover');
@@ -152,63 +156,36 @@
 		const selection = window.getSelection();
 		if (!selection?.rangeCount || !selection.toString().trim()) return;
 
-		const {
-			commonAncestorContainer,
-			startContainer,
-			endContainer,
-			startOffset,
-			endOffset
-		} = selection.getRangeAt(0);
+		const selectionRange = selection.getRangeAt(0);
+		const commonAncestorContainer =
+			selectionRange.commonAncestorContainer as HTMLElement;
 
 		if (container.contains(commonAncestorContainer)) {
-			const startEl = startContainer.parentElement!;
-			const endEl = endContainer.parentElement!;
-			let fromIndex = 0;
-			let toIndex = 0;
-			let isLookingForStart = true;
-			for (const child of startEl.parentElement!.children) {
-				if (isLookingForStart) {
-					if (child === startEl) {
-						if (startEl === endEl) {
-							for (const el of startEl.childNodes) {
-								if (el === startContainer) {
-									break;
-								} else {
-									fromIndex += el.textContent!.length;
-								}
-							}
-							toIndex = fromIndex + endOffset;
-							fromIndex += startOffset;
-							break;
-						}
-						toIndex = fromIndex + child.textContent!.length;
-						fromIndex += startOffset;
-						isLookingForStart = false;
-					} else {
-						fromIndex += child.textContent!.length;
-					}
-				} else if (child === endEl) {
-					for (const el of endEl.childNodes) {
-						if (el === endContainer) {
-							break;
-						} else {
-							toIndex += el.textContent!.length;
-						}
-					}
-					toIndex += endOffset;
-					break;
-				} else {
-					toIndex += child.textContent!.length;
-				}
+			const pageEl = (
+				commonAncestorContainer.classList?.contains('page')
+					? commonAncestorContainer
+					: commonAncestorContainer.parentElement!.closest('.page')
+			) as HTMLElement | null;
+
+			if (!pageEl || !hasIndex(pageEl.dataset)) {
+				return;
 			}
+
+			const pageIndex = +pageEl.dataset.index;
+			const pageEls = pageEl.parentElement!.children;
+			let fromIndex = 0;
+			for (let i = 0; i < pageIndex; i++) {
+				fromIndex += pageEls[i].textContent!.length;
+			}
+
 			newComment = {
-				fromIndex,
-				toIndex,
-				data: '',
+				...getRangeFromSelectionRange(selectionRange, fromIndex),
 				isNew: true
 			};
+
 			comments.push(newComment);
 			comments.sort((a, b) => a.fromIndex - b.fromIndex);
+
 			setTimeout(() => {
 				selectedEl = document.getElementById('newComment')!;
 				queueMicrotask(() => {
@@ -238,7 +215,7 @@
 		ontouchend={handleSelection}
 		onclick={(e) => {
 			const el = e.target as HTMLElement;
-			if ('index' in el.dataset && tooltipTexts[+el.dataset.index!]) {
+			if (hasIndex(el.dataset) && tooltipTexts[+el.dataset.index]) {
 				if (selectedEl === el) {
 					unselectSelectedEl();
 				} else {
@@ -355,7 +332,7 @@
 			{#if isCommentMode}
 				<textarea
 					bind:this={tooltip}
-					disabled={role === 'student'}
+					disabled={role === 'student' || selectedVersion !== versions.at(-1)}
 					bind:value={comments[+selectedEl.dataset.index!]!.data}
 					placeholder="Add a comment"
 				></textarea>

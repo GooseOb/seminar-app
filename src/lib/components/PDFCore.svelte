@@ -126,8 +126,8 @@
 		{/if}
 		{#if pages}
 			{#key [pages, textItems]}
-				{#each pages as page}
-					<div use:render={page}></div>
+				{#each pages as page, i}
+					<div class="page" data-index={i} use:render={page}></div>
 				{/each}
 			{/key}
 		{/if}
@@ -148,11 +148,6 @@
 			height: auto;
 		}
 
-		div {
-			position: relative;
-			transform-origin: top left;
-		}
-
 		:global(.textNode) {
 			position: absolute;
 			color: transparent;
@@ -161,6 +156,11 @@
 			font-variant-ligatures: none;
 		}
 	}
+	.page {
+		position: relative;
+		transform-origin: top left;
+	}
+
 	p {
 		position: absolute;
 		background: var(--bg-color);
