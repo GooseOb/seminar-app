@@ -5,4 +5,3 @@ export interface RangeData {
 }
 
 export * from './apply';
-export * from './selection';

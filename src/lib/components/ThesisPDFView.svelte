@@ -159,13 +159,13 @@
 		const selectionRange = selection.getRangeAt(0);
 		const commonAncestorContainer =
 			selectionRange.commonAncestorContainer as HTMLElement;
+		const { startContainer, startOffset } = selectionRange;
 
 		if (container.contains(commonAncestorContainer)) {
-			const pageEl = (
-				commonAncestorContainer.classList?.contains('page')
-					? commonAncestorContainer
-					: commonAncestorContainer.parentElement!.closest('.page')
-			) as HTMLElement | null;
+			const startEl = startContainer.parentElement!;
+			const pageEl = startEl.parentElement!.classList.contains('page')
+				? startEl.parentElement
+				: startEl.parentElement!.closest<HTMLElement>('page');
 
 			if (!pageEl || !hasIndex(pageEl.dataset)) {
 				return;
@@ -178,8 +178,19 @@
 				fromIndex += pageEls[i].textContent!.length;
 			}
 
+			for (const child of startEl.parentElement!.children) {
+				if (child === startEl) {
+					fromIndex += startOffset;
+					break;
+				} else {
+					fromIndex += child.textContent!.length;
+				}
+			}
+
 			newComment = {
-				...getRangeFromSelectionRange(selectionRange, fromIndex),
+				fromIndex,
+				toIndex: fromIndex + selection.toString().length,
+				data: '',
 				isNew: true
 			};
 
