@@ -150,9 +150,10 @@
 		}
 	};
 	let tooltip: HTMLTextAreaElement = $state(null)!;
-	const handleSelection = () => {
+	const handleSelection = (e: MouseEvent | TouchEvent) => {
 		if (!isCommentMode) return;
 		unselectSelectedEl();
+		if (e.altKey) return;
 
 		const selection = window.getSelection();
 		if (!selection?.rangeCount || !selection.toString().trim()) return;
@@ -239,7 +240,7 @@
 		onclick={(e) => {
 			const el = e.target as HTMLElement;
 			if (hasIndex(el.dataset) && tooltipTexts[+el.dataset.index]) {
-				if (selectedEl === el) {
+				if (selectedEl === el || e.altKey) {
 					unselectSelectedEl();
 				} else {
 					selectedEl = el;
