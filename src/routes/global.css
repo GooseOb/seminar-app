@@ -5,7 +5,9 @@ html {
 	--bg3-color: #111;
 	--bg4-color: #252525;
 	--primary-color: #0d6efd;
+	--primary-color-hover: #0a58ca;
 	--danger-color: #dc3545;
+	--danger-color-hover: #b02a37;
 	--success-color: #19bb54;
 
 	&.light {
@@ -92,21 +94,25 @@ form {
 	border: none;
 	border-radius: 0.5em;
 	cursor: pointer;
-	opacity: 0.8;
-	transition: opacity 0.2s;
+	transition: background-color 0.2s;
 	text-align: center;
 }
 
 .btn:hover {
-	opacity: 1;
+	background: var(--primary-color-hover);
 }
 
 .btn:disabled {
 	opacity: 0.5;
 	cursor: not-allowed;
 }
+
 .danger-btn {
 	background: var(--danger-color);
+}
+
+.danger-btn:hover {
+	background: var(--danger-color-hover);
 }
 
 .btn2 {

@@ -12,9 +12,8 @@
 	import { flatten } from '$lib/utils/flatten';
 	import type { Role } from '$lib/server/db';
 	import { withComments } from '$lib/pdf/comments';
-	import { slide } from 'svelte/transition';
+	import { fade, slide } from 'svelte/transition';
 	import type { CommentData } from '$lib/pdf/comments';
-	import { getRangeFromSelectionRange } from '$lib/ranges';
 
 	let {
 		versions = $bindable(),
@@ -330,6 +329,19 @@
 					options={prevOptions}
 				/>
 			</div>
+			{#snippet afterPages()}
+				{#if isCommentMode}
+					<button
+						transition:fade={{
+							duration: 200
+						}}
+						class="btn submit"
+						onclick={null}
+					>
+						{m.submitReview()}
+					</button>
+				{/if}
+			{/snippet}
 		</PdfView>
 	</div>
 	{#if selectedEl}
@@ -438,5 +450,11 @@
 		border-radius: 0.5rem;
 		padding: 0.25rem;
 		z-index: 20;
+	}
+	.submit {
+		position: absolute;
+		bottom: 0rem;
+		left: 0;
+		width: 100%;
 	}
 </style>

@@ -28,7 +28,6 @@ export const getApplyRanges =
 			while (range.fromIndex >= length) {
 				result.push([wrapNoRange(arr[textIndex]!)]);
 				++textIndex;
-				// console.log(arr[textIndex]);
 				length += arr[textIndex]!.length;
 			}
 			itemStartIndex = length - arr[textIndex]!.length;

@@ -8,10 +8,12 @@
 		isOpen = $bindable(),
 		children,
 		src,
-		transformTextItems
+		transformTextItems,
+		afterPages
 	}: Omit<ComponentProps<typeof PDFCore>, 'scale'> & {
 		isOpen: boolean;
 		children?: any;
+		afterPages?: () => any;
 	} = $props();
 
 	let scale = $state(1.5);
@@ -83,6 +85,7 @@
 			</div>
 
 			<PDFCore {src} {transformTextItems} {scale} />
+			{@render afterPages?.()}
 		</div>
 	</Overlay>
 {/if}
