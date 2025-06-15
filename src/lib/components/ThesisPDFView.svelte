@@ -14,6 +14,7 @@
 	import { withComments } from '$lib/pdf/comments';
 	import { fade, slide } from 'svelte/transition';
 	import type { CommentData } from '$lib/pdf/comments';
+	import { isInterfering } from '$lib/ranges';
 
 	let {
 		versions = $bindable(),
@@ -151,6 +152,7 @@
 	let tooltip: HTMLTextAreaElement = $state(null)!;
 	const handleSelection = () => {
 		if (!isCommentMode) return;
+		unselectSelectedEl();
 
 		const selection = window.getSelection();
 		if (!selection?.rangeCount || !selection.toString().trim()) return;
@@ -179,6 +181,12 @@
 
 			for (const child of startEl.parentElement!.children) {
 				if (child === startEl) {
+					for (const el of child.childNodes) {
+						if (el === startContainer) {
+							break;
+						}
+						fromIndex += el.textContent!.length;
+					}
 					fromIndex += startOffset;
 					break;
 				} else {
@@ -192,6 +200,11 @@
 				data: '',
 				isNew: true
 			};
+
+			if (isInterfering(comments, newComment)) {
+				newComment = null;
+				return;
+			}
 
 			comments.push(newComment);
 			comments.sort((a, b) => a.fromIndex - b.fromIndex);
@@ -330,7 +343,7 @@
 				/>
 			</div>
 			{#snippet afterPages()}
-				{#if isCommentMode}
+				{#if isCommentMode && role === 'lecturer'}
 					<button
 						transition:fade={{
 							duration: 200
