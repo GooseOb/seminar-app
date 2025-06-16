@@ -1,6 +1,7 @@
 import {
 	boolean,
 	integer,
+	json,
 	pgEnum,
 	pgTable,
 	primaryKey,
@@ -11,6 +12,7 @@ import {
 } from 'drizzle-orm/pg-core';
 
 import type { InferEnum, InferSelectModel } from 'drizzle-orm';
+import type { RangeData } from '$lib/ranges';
 
 export const roleEnum = pgEnum('role', ['student', 'lecturer']);
 
@@ -99,6 +101,13 @@ export const session = pgTable('session', {
 	}).notNull()
 });
 
+export const fileMetadata = pgTable('file_metadata', {
+	// name of S3 file
+	id: text().primaryKey(),
+	comments: json().$type<RangeData[]>(),
+	isReviewed: boolean()
+});
+
 export type NoId<T> = Omit<T, 'id'>;
 export type User = InferSelectModel<typeof user>;
 export type Session = InferSelectModel<typeof session>;
@@ -110,3 +119,4 @@ export type RoomKind = InferEnum<typeof roomKindEnum>;
 export type RoomMembership = InferSelectModel<typeof roomMembership>;
 export type StudentLecturer = InferSelectModel<typeof studentLecturer>;
 export type Room = InferSelectModel<typeof room>;
+export type FileMetadata = InferSelectModel<typeof fileMetadata>;

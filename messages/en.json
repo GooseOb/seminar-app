@@ -55,6 +55,7 @@
 	"uploadedBy": "Uploaded {date} by {name}",
 
 	"noFiles": "No files",
+	"noThesis": "No thesis",
 
 	"openFile": "Open",
 	"deleteFile": "Delete",

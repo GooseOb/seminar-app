@@ -38,7 +38,6 @@
 
 	const handleUpload = async (filesToUpload: FileList | null) => {
 		if (filesToUpload && filesToUpload.length === 1) {
-			console.log('Uploading thesis file:', filesToUpload[0].name);
 			const file = filesToUpload[0];
 
 			const fileData: FileData = {
@@ -49,7 +48,7 @@
 			};
 			versions.push(fileData);
 
-			const { url } = await trpc.room.project.thesis.upload.query({
+			const { url, name } = await trpc.room.project.thesis.upload.query({
 				roomId
 			});
 
@@ -61,11 +60,10 @@
 				body: file
 			})
 				.then(() => {
-					console.log('File uploaded successfully:', file.name);
 					const item = versions.at(-1)!;
 					item.isPending = false;
 					item.uploaded = new Date();
-					// TODO: set item.name
+					item.name = name;
 				})
 				.catch((error) => {
 					console.error('Error uploading file:', error);

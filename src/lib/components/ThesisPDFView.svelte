@@ -34,20 +34,22 @@
 	let container: HTMLElement = $state(null)!;
 	let selectedVersion = $derived(versions.at(-1)!);
 	let prevVersion = $derived(versions.at(-1)!);
-	let comments: CommentData[] = $state([
-		{
-			fromIndex: 3,
-			toIndex: 10,
-			data: 'This is a comment 1'
-		},
-		{
-			fromIndex: 20,
-			toIndex: 45,
-			data: 'This is a comment 2'
-		}
-	]);
+
+	let comments: CommentData[] = $state([]);
+	let isReviewed = $state(false);
 
 	let isCommentMode = $state(false);
+
+	$effect(() => {
+		if (isCommentMode) {
+			trpc.room.project.thesis.comments.get
+				.query({ roomId, fileName: selectedVersion.name })
+				.then((data) => {
+					comments = data.comments!;
+					isReviewed = data.isReviewed!;
+				});
+		}
+	});
 
 	const getThesis = (fileName: string) =>
 		trpc.room.project.thesis.get.query({
@@ -224,6 +226,11 @@
 		if (newComment) {
 			if (newComment.data.trim()) {
 				newComment.isNew = false;
+				trpc.room.project.thesis.comments.update.mutate({
+					roomId,
+					fileName: selectedVersion.name,
+					comments: comments.map(({ isNew, ...comment }) => comment)
+				});
 			} else {
 				comments.splice(comments.indexOf(newComment), 1);
 			}
@@ -309,18 +316,17 @@
 						>
 							<DeleteIcon />
 						</button>
-					{:else if role === 'lecturer'}
-						<button
-							class="btn2"
-							class:active={isCommentMode}
-							aria-label="toggle comments"
-							onclick={() => {
-								isCommentMode = !isCommentMode;
-							}}
-						>
-							C
-						</button>
 					{/if}
+					<button
+						class="btn2"
+						class:active={isCommentMode}
+						aria-label="toggle comments"
+						onclick={() => {
+							isCommentMode = !isCommentMode;
+						}}
+					>
+						C
+					</button>
 				</div>
 				<Select
 					label={m.compare()}
@@ -344,13 +350,22 @@
 				/>
 			</div>
 			{#snippet afterPages()}
-				{#if isCommentMode && role === 'lecturer'}
+				{#if isCommentMode && !isReviewed && role === 'lecturer'}
 					<button
 						transition:fade={{
 							duration: 200
 						}}
 						class="btn submit"
-						onclick={null}
+						onclick={() => {
+							trpc.room.project.thesis.comments.submit
+								.mutate({
+									roomId,
+									fileName: selectedVersion.name
+								})
+								.then(() => {
+									isReviewed = true;
+								});
+						}}
 					>
 						{m.submitReview()}
 					</button>
