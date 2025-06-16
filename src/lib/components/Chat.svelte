@@ -9,7 +9,14 @@
 		messages: messagesPromise,
 		roomId,
 		userId,
+		getMessageView,
 		doShowSenderName = true
+	}: {
+		messages: Promise<ReceivedMessage[]>;
+		roomId: number;
+		userId: number;
+		getMessageView?: (msg: ReceivedMessage) => any;
+		doShowSenderName?: boolean;
 	} = $props();
 
 	let chatContainer: HTMLDivElement;
@@ -78,7 +85,7 @@
 
 		trpc.room.chat.sendMessage
 			.mutate({
-				roomId,
+				roomId: roomId.toString(),
 				text
 			})
 			.then(() => {
@@ -118,7 +125,13 @@
 							{message.sender.lastname}
 						</span>
 					{/if}
-					<p>{message.text}</p>
+					<p>
+						{#if getMessageView}
+							{@render getMessageView(message)}
+						{:else}
+							{message.text}
+						{/if}
+					</p>
 					<span class="timestamp">
 						{message.createdAt.toLocaleTimeString()}
 					</span>

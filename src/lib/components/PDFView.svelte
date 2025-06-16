@@ -3,6 +3,7 @@
 	import NoZoom from './NoZoom.svelte';
 	import Overlay from './Overlay.svelte';
 	import PDFCore from './PDFCore.svelte';
+	import * as m from '$lib/paraglide/messages';
 
 	let {
 		isOpen = $bindable(),
@@ -80,7 +81,7 @@
 					onclick={() => {
 						isOpen = false;
 					}}
-					aria-label="Close">✕</button
+					aria-label={m.close()}>✕</button
 				>
 			</div>
 

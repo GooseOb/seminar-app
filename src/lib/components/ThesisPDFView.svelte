@@ -320,7 +320,7 @@
 					<button
 						class="btn2"
 						class:active={isCommentMode}
-						aria-label="toggle comments"
+						aria-label={m.toggleComments()}
 						onclick={() => {
 							isCommentMode = !isCommentMode;
 						}}
@@ -386,7 +386,7 @@
 					bind:this={tooltip}
 					disabled={role === 'student' || selectedVersion !== versions.at(-1)}
 					bind:value={comments[+selectedEl.dataset.index!]!.data}
-					placeholder="Add a comment"
+					placeholder={m.addComment()}
 				></textarea>
 			{:else}
 				<textarea

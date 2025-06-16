@@ -1,5 +1,5 @@
 <script lang="ts">
-	import * as m from '$lib/paraglide/messages.js';
+	import * as m from '$lib/paraglide/messages';
 	let { name = 'password', required = true, value = $bindable() } = $props();
 
 	let hidden = $state(true);
@@ -22,7 +22,7 @@
 			onclick={() => {
 				hidden = !hidden;
 			}}
-			aria-label={hidden ? 'Show password' : 'Hide password'}
+			aria-label={hidden ? m.showPassword() : m.hidePassword()}
 		>
 			{#if hidden}
 				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">

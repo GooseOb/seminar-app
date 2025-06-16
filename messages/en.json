@@ -7,6 +7,8 @@
 	"loadingPages": "Loading pages...",
 	"loadingThesis": "Loading thesis...",
 
+	"close": "Close",
+
 	"dropFiles": "Drop files here",
 	"dropThesis": "Drop your thesis here",
 	"onlyRoleCanUpload": "Only {role} can upload this file",
@@ -27,7 +29,10 @@
 	"thesisStatement": "Thesis statement",
 	"thesis": "Thesis",
 
+	"toggleComments": "Toggle comments",
+	"addComment": "Add a comment",
 	"submitReview": "Submit review",
+	"reviewed": "Review completed for version {version}",
 
 	"compare": "Compare",
 	"to": "to",
@@ -40,6 +45,8 @@
 	"login": "Login",
 	"studentNumber": "Student number",
 	"password": "Password",
+	"hidePassword": "Hide password",
+	"showPassword": "Show password",
 
 	"project": "Project",
 	"add": "Add",

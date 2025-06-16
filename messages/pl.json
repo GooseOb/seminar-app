@@ -7,6 +7,8 @@
 	"loadingPages": "Ładowanie stron...",
 	"loadingThesis": "Ładowanie pracy dyplomowej...",
 
+	"close": "Zamknij",
+
 	"dropFiles": "Upuść pliki tutaj",
 	"dropThesis": "Upuść swoją pracę dyplomową tutaj",
 	"onlyRoleCanUpload": "Tylko {role} może przesyłać ten plik",
@@ -27,7 +29,10 @@
 	"thesisStatement": "Teza badawcza",
 	"thesis": "Praca dyplomowa",
 
+	"toggleComments": "Przełącz komentarze",
+	"addComment": "Dodaj komentarz",
 	"submitReview": "Udostępnij studentowi",
+	"reviewed": "Wersja pracy {version} została sprawdzona",
 
 	"compare": "Porównaj",
 	"to": "do",
@@ -40,6 +45,8 @@
 	"login": "Login",
 	"studentNumber": "Numer albumu",
 	"password": "Hasło",
+	"hidePassword": "Ukryj hasło",
+	"showPassword": "Pokaż hasło",
 
 	"project": "Projekt",
 	"add": "Dodaj",

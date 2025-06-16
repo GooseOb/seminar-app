@@ -33,7 +33,7 @@ export const commentsRouter = t.router({
 				insertMessage({
 					roomId: +roomId,
 					senderId: user.id,
-					text: `The thesis file ${fileName} has been reviewed.`
+					text: '/reviewed ' + fileName.replace('.pdf', '')
 				})
 			]);
 		}
