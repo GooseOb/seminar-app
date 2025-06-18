@@ -19,13 +19,13 @@
 
 <div class="page">
 	{#if versions}
-		<Thesis roomId={page.params.id} role={data.role!} bind:versions />
+		<Thesis roomId={+page.params.id} role={data.role!} bind:versions />
 	{:else}
 		<p>{m.loadingThesis()}</p>
 	{/if}
 
 	{#if files}
-		<FileList {files} roomId={page.params.id} />
+		<FileList {files} roomId={+page.params.id} />
 	{:else}
 		<p>{m.loadingFiles()}</p>
 	{/if}

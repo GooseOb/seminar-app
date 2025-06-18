@@ -16,7 +16,7 @@
 	}: {
 		versions: FileData[];
 		role: Role;
-		roomId: string;
+		roomId: number;
 	} = $props();
 
 	let isOpen = $state(false);

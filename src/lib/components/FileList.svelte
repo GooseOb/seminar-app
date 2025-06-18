@@ -10,7 +10,13 @@
 	import FileCard from './FileCard.svelte';
 	import FileButton from './FileButton.svelte';
 
-	const { files: _files, roomId } = $props();
+	const {
+		files: _files,
+		roomId
+	}: {
+		files: FileData[];
+		roomId: number;
+	} = $props();
 
 	type BlobData = {
 		url: string;
@@ -30,9 +36,6 @@
 	let showMenuIndex: number | null = $state(null);
 	let isMenuOpen = $state(false);
 
-	// let isImageView = $state(false);
-	// let imageSrc = $state('');
-
 	const emptyView = () => ({
 		src: '',
 		name: '',
@@ -40,8 +43,6 @@
 	});
 	let pdf = $state(emptyView());
 	let image = $state(emptyView());
-	// let isPdfView = $state(false);
-	// let pdfSrc = $state('');
 
 	const toggleMenu = (index: number | null) => {
 		if (showMenuIndex === null) {

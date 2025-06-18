@@ -31,7 +31,7 @@ export const commentsRouter = t.router({
 			await Promise.all([
 				updateFileMetadata(getKey(roomId, fileName), { isReviewed: true }),
 				insertMessage({
-					roomId: +roomId,
+					roomId,
 					senderId: user.id,
 					text: '/reviewed ' + fileName.replace('.pdf', '')
 				})

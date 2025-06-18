@@ -9,6 +9,6 @@ export const projectRouter = t.router({
 	setEditable: lecturerProcedure
 		.input(z.object({ editable: z.boolean() }))
 		.mutation(async ({ input: { roomId, editable } }) => {
-			await updateProjectEditable(+roomId, editable);
+			await updateProjectEditable(roomId, editable);
 		})
 });

@@ -17,7 +17,7 @@ export const chatRouter = t.router({
 		}) => {
 			const message = await insertMessage({
 				senderId: user.id,
-				roomId: +roomId,
+				roomId,
 				text
 			});
 

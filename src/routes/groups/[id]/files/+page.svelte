@@ -11,7 +11,7 @@
 	{#await data.files}
 		<p>{m.loadingFiles()}</p>
 	{:then files}
-		<FileList {files} roomId={page.params.id} />
+		<FileList {files} roomId={+page.params.id} />
 	{/await}
 </div>
 

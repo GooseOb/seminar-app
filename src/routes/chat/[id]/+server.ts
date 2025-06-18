@@ -17,7 +17,7 @@ export const GET = async ({
 		error(403, 'You are not a member of this room');
 	}
 
-	const res = await getRoom(platform!.env, roomId.toString()).fetch(request);
+	const res = await getRoom(platform!.env, roomId).fetch(request);
 
 	return new Response(res.body, res);
 };

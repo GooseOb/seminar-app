@@ -24,7 +24,7 @@
 	}: {
 		versions: FileData[];
 		isOpen: boolean;
-		roomId: string;
+		roomId: number;
 		role: Role;
 	} = $props();
 
