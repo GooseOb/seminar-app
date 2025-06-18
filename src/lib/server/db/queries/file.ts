@@ -8,14 +8,15 @@ export const insertFileMetadata = async (id: string) => {
 	});
 };
 
-const getFileMetadataQuery = db()
-	.select()
-	.from(fileMetadata)
-	.where(eq(fileMetadata.id, sql.placeholder('id')))
-	.prepare('getFileMetadataQuery');
+const getFileMetadataQuery = () =>
+	db()
+		.select()
+		.from(fileMetadata)
+		.where(eq(fileMetadata.id, sql.placeholder('id')))
+		.prepare('getFileMetadataQuery');
 
 export const getFileMetadata = (id: string) =>
-	first(getFileMetadataQuery.execute({ id }));
+	first(getFileMetadataQuery().execute({ id }));
 
 export const updateFileMetadata = async (
 	id: string,
