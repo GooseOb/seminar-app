@@ -222,20 +222,27 @@
 	};
 	let newComment: CommentData | null = $state(null);
 	const unselectSelectedEl = () => {
-		selectedEl = null;
-		if (newComment) {
-			if (newComment.data.trim()) {
-				newComment.isNew = false;
+		if (!selectedEl) return;
+
+		const selectedComment = comments[+selectedEl.dataset.index!];
+		if (selectedComment) {
+			if (selectedComment.data.trim()) {
 				trpc.room.project.thesis.comments.update.mutate({
 					roomId,
 					fileName: selectedVersion.name,
 					comments: comments.map(({ isNew, ...comment }) => comment)
 				});
 			} else {
-				comments.splice(comments.indexOf(newComment), 1);
+				comments.splice(comments.indexOf(selectedComment), 1);
 			}
+		}
+
+		if (newComment) {
+			newComment.isNew = false;
 			newComment = null;
 		}
+
+		selectedEl = null;
 	};
 </script>
 

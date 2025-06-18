@@ -46,6 +46,7 @@ export const commentsRouter = t.router({
 		)
 		.query(async ({ input: { roomId, fileName }, ctx }) => {
 			const metadata = await getFileMetadata(getKey(roomId, fileName));
+			metadata.comments ||= [];
 			return metadata.isReviewed || ctx.locals.user.role === 'lecturer'
 				? metadata
 				: { comments: [], isReviewed: metadata.isReviewed };
