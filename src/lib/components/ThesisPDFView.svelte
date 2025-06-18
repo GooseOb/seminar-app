@@ -224,7 +224,8 @@
 	const unselectSelectedEl = () => {
 		if (!selectedEl) return;
 
-		const selectedComment = comments[+selectedEl.dataset.index!];
+		const index = +selectedEl.dataset.index!;
+		const selectedComment = comments[index];
 		if (selectedComment) {
 			if (selectedComment.data.trim()) {
 				trpc.room.project.thesis.comments.update.mutate({
@@ -233,7 +234,7 @@
 					comments: comments.map(({ isNew, ...comment }) => comment)
 				});
 			} else {
-				comments.splice(comments.indexOf(selectedComment), 1);
+				comments.splice(index, 1);
 			}
 		}
 
