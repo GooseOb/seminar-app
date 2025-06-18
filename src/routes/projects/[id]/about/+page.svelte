@@ -8,7 +8,6 @@
 	import * as m from '$lib/paraglide/messages.js';
 	import { trpc } from '$lib/trpc/client.svelte';
 	import { page } from '$app/state';
-	import { invalidateAll } from '$app/navigation';
 
 	const { data, form }: PageProps = $props();
 
@@ -27,7 +26,7 @@
 				editable
 			})
 			.then(() => {
-				projectData.editable = editable;
+				projectData!.editable = editable;
 			})
 			.catch((error) => {
 				error = error.message;

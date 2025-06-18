@@ -4,7 +4,7 @@ import { error } from '@sveltejs/kit';
 import { z } from 'zod';
 
 export const roomProcedure = t.procedure
-	.input(z.object({ roomId: z.string() }))
+	.input(z.object({ roomId: z.number() }))
 	.use(
 		async ({
 			ctx: {
@@ -15,7 +15,7 @@ export const roomProcedure = t.procedure
 			input: { roomId },
 			next
 		}) => {
-			if (!(await isRoomMember(id, +roomId))) {
+			if (!(await isRoomMember(id, roomId))) {
 				error(403, 'You are not a member of this room');
 			}
 			return next();

@@ -1,2 +1,2 @@
-export const getKey = (roomId: string, fileName: string) =>
+export const getKey = (roomId: number, fileName: string) =>
 	`rooms/${roomId}/thesis/${fileName}`;

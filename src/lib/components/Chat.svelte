@@ -44,7 +44,7 @@
 
 	if (browser) {
 		$effect(() => {
-			const socket = new WebSocket(`/api/rooms/${roomId}/chat`);
+			const socket = new WebSocket(`/chat/${roomId}`);
 
 			socket.addEventListener('message', (event) => {
 				try {
@@ -85,7 +85,7 @@
 
 		trpc.room.chat.sendMessage
 			.mutate({
-				roomId: roomId.toString(),
+				roomId,
 				text
 			})
 			.then(() => {
