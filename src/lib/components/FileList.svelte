@@ -161,7 +161,7 @@
 				}).then(() => {
 					const item = files.find((item) => item.name === file.name)!;
 					item.isPending = false;
-					item.uploader = uploader;
+					item.uploader = decodeURIComponent(uploader);
 					item.uploaded = new Date();
 				});
 			});

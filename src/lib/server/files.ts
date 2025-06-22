@@ -55,7 +55,9 @@ export const getRoomFiles = dev
 							name: file.key.replace(`rooms/${id}/`, ''),
 							size: file.size,
 							uploaded: file.uploaded,
-							uploader: file.customMetadata?.uploader
+							uploader:
+								file.customMetadata &&
+								decodeURIComponent(file.customMetadata.uploader)
 						})
 					)
 				);

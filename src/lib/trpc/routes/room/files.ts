@@ -25,7 +25,9 @@ export const filesRouter = t.router({
 			}) => {
 				const s3 = getS3Client();
 
-				const uploader = user.firstname + ' ' + user.lastname;
+				const uploader = encodeURIComponent(
+					user.firstname + ' ' + user.lastname
+				);
 				const urls = await map(fileNames, (fileName) =>
 					getSignedUrl(
 						s3,
