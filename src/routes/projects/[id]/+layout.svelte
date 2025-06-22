@@ -2,7 +2,7 @@
 	import { page } from '$app/state';
 	import HorizontalNavigation from '$lib/components/HorizontalNavigation.svelte';
 	import RoomTransition from '$lib/components/RoomTransition.svelte';
-	import * as m from '$lib/paraglide/messages.js';
+	import * as m from '$lib/paraglide/messages';
 
 	const { children } = $props();
 

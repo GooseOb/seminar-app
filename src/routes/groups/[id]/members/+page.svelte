@@ -2,7 +2,7 @@
 	import MemberCard from '$lib/components/MemberCard.svelte';
 	import StudentList from '$lib/components/StudentList.svelte';
 	import type { PageProps } from './$types';
-	import * as m from '$lib/paraglide/messages.js';
+	import * as m from '$lib/paraglide/messages';
 
 	const { data }: PageProps = $props();
 	const { students, lecturer, role } = data;

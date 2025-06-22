@@ -1,5 +1,5 @@
 <script lang="ts">
-	import * as m from '$lib/paraglide/messages.js';
+	import * as m from '$lib/paraglide/messages';
 	let { value = $bindable() }: { value: string } = $props();
 </script>
 

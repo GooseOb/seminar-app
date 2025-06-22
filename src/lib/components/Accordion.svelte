@@ -4,7 +4,7 @@
 	import type { Role } from '$lib/server/db';
 	import type { GroupWithProjects } from '$lib/server/db/queries/getGroupsWithProjects';
 	import { slide } from 'svelte/transition';
-	import * as m from '$lib/paraglide/messages.js';
+	import * as m from '$lib/paraglide/messages';
 
 	const {
 		group,

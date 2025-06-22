@@ -7,7 +7,7 @@
 		type AvailableLanguageTag
 	} from '$lib/paraglide/runtime';
 	import { themes, type Theme } from '$lib/theme';
-	import * as m from '$lib/paraglide/messages.js';
+	import * as m from '$lib/paraglide/messages';
 	import MemberCard from '$lib/components/MemberCard.svelte';
 	import Input from '$lib/components/Input.svelte';
 	import PasswordInput from '$lib/components/PasswordInput.svelte';

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import PdfView from './PDFView.svelte';
 	import Select from './Select.svelte';
-	import * as m from '$lib/paraglide/messages.js';
+	import * as m from '$lib/paraglide/messages';
 	import type { FileData } from '$lib/server/files';
 	import { trpc } from '$lib/trpc/client.svelte';
 	import DownloadIcon from './icons/DownloadIcon.svelte';

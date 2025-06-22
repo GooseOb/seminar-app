@@ -1,35 +1,35 @@
 import { t } from '$lib/trpc/t';
 import { z } from 'zod';
-import { lecturerProcedure } from '../middleware';
 import { zRangeData } from '$lib/ranges';
 import {
 	getFileMetadata,
 	updateFileMetadata
 } from '$lib/server/db/queries/file';
-import { getKey } from './common';
-import { roomProcedure } from '../../middleware';
 import { insertMessage } from '$lib/server/db/queries/message/insert';
+import { checkLecturer } from '$lib/trpc/checks/role';
+import { thesisProcedure } from '$lib/trpc/middleware/thesis';
 
 export const commentsRouter = t.router({
-	update: lecturerProcedure
+	update: thesisProcedure
+		.use(checkLecturer)
 		.input(
 			z.object({
-				fileName: z.string(),
 				comments: z.array(zRangeData)
 			})
 		)
-		.mutation(async ({ input: { roomId, fileName, comments } }) => {
-			await updateFileMetadata(getKey(roomId, fileName), { comments });
+		.mutation(async ({ input: { comments }, ctx: { s3Key } }) => {
+			await updateFileMetadata(s3Key, { comments });
 		}),
-	submit: lecturerProcedure.input(z.object({ fileName: z.string() })).mutation(
+	submit: thesisProcedure.use(checkLecturer).mutation(
 		async ({
 			input: { roomId, fileName },
 			ctx: {
-				locals: { user }
+				locals: { user },
+				s3Key
 			}
 		}) => {
 			await Promise.all([
-				updateFileMetadata(getKey(roomId, fileName), { isReviewed: true }),
+				updateFileMetadata(s3Key, { isReviewed: true }),
 				insertMessage({
 					roomId,
 					senderId: user.id,
@@ -38,17 +38,19 @@ export const commentsRouter = t.router({
 			]);
 		}
 	),
-	get: roomProcedure
-		.input(
-			z.object({
-				fileName: z.string()
-			})
-		)
-		.query(async ({ input: { roomId, fileName }, ctx }) => {
-			const metadata = await getFileMetadata(getKey(roomId, fileName));
+	get: thesisProcedure.query(
+		async ({
+			ctx: {
+				locals: { user },
+				s3Key
+			}
+		}) => {
+			const metadata = await getFileMetadata(s3Key);
+
 			metadata.comments ||= [];
-			return metadata.isReviewed || ctx.locals.user.role === 'lecturer'
+			return metadata.isReviewed || user.role === 'lecturer'
 				? metadata
 				: { comments: [], isReviewed: metadata.isReviewed };
-		})
+		}
+	)
 });

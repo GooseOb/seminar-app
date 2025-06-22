@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import Avatar from './Avatar.svelte';
-	import * as m from '$lib/paraglide/messages.js';
+	import * as m from '$lib/paraglide/messages';
 	import type { ReceivedMessage } from '$lib/server/db/queries/message/get';
 	import { trpc } from '$lib/trpc/client.svelte';
 

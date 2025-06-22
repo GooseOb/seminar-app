@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Input from './Input.svelte';
 	import StudentList from './StudentList.svelte';
-	import * as m from '$lib/paraglide/messages.js';
+	import * as m from '$lib/paraglide/messages';
 
 	const { currentStudent = $bindable(), students, actionButtons } = $props();
 </script>

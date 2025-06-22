@@ -2,7 +2,7 @@
 	import { enhance } from '$app/forms';
 	import PasswordInput from '$lib/components/PasswordInput.svelte';
 	import Input from '$lib/components/Input.svelte';
-	import * as m from '$lib/paraglide/messages.js';
+	import * as m from '$lib/paraglide/messages';
 
 	const { form } = $props();
 </script>

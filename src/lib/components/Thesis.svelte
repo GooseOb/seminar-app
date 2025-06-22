@@ -1,7 +1,7 @@
 <script lang="ts">
 	import FileButton from './FileButton.svelte';
 	import FileCard from './FileCard.svelte';
-	import * as m from '$lib/paraglide/messages.js';
+	import * as m from '$lib/paraglide/messages';
 	import type { FileData } from '$lib/server/files';
 	import type { Role } from '$lib/server/db';
 	import Dropzone from './Dropzone.svelte';

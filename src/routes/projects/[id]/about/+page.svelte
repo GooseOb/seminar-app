@@ -5,7 +5,7 @@
 	import Textarea from '$lib/components/Textarea.svelte';
 	import type { PageProps } from './$types';
 	import Success from '$lib/components/Success.svelte';
-	import * as m from '$lib/paraglide/messages.js';
+	import * as m from '$lib/paraglide/messages';
 	import { trpc } from '$lib/trpc/client.svelte';
 	import { page } from '$app/state';
 

@@ -1,7 +1,7 @@
 <script lang="ts">
 	const { students, role, actionButtons } = $props();
 	import StudentMemberCard from './StudentMemberCard.svelte';
-	import * as m from '$lib/paraglide/messages.js';
+	import * as m from '$lib/paraglide/messages';
 </script>
 
 <div class="member-list">

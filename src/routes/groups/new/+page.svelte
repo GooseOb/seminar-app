@@ -5,7 +5,7 @@
 	import type { User } from '$lib/server/db';
 	import type { PageProps } from './$types';
 	import StudentSubmissionForm from '$lib/components/StudentSubmissionForm.svelte';
-	import * as m from '$lib/paraglide/messages.js';
+	import * as m from '$lib/paraglide/messages';
 	import StudentList from '$lib/components/StudentList.svelte';
 	import StudentInvitationInputForm from '$lib/components/StudentInvitationInputForm.svelte';
 	import { trpc } from '$lib/trpc/client.svelte';

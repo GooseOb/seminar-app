@@ -5,7 +5,7 @@
 	import { isPathnameStart } from '$lib/utils/pathname';
 	import type { Role } from '$lib/server/db';
 	import type { GroupWithProjects } from '$lib/server/db/queries/getGroupsWithProjects';
-	import * as m from '$lib/paraglide/messages.js';
+	import * as m from '$lib/paraglide/messages';
 	import { slide } from 'svelte/transition';
 	import { browser } from '$app/environment';
 

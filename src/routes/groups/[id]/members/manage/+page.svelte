@@ -6,7 +6,7 @@
 	import StudentSubmissionForm from '$lib/components/StudentSubmissionForm.svelte';
 	import Success from '$lib/components/Success.svelte';
 	import type { PageProps } from './$types';
-	import * as m from '$lib/paraglide/messages.js';
+	import * as m from '$lib/paraglide/messages';
 	import { trpc } from '$lib/trpc/client.svelte';
 
 	const { data, form }: PageProps = $props();

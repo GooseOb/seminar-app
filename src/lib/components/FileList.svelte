@@ -1,5 +1,5 @@
 <script lang="ts">
-	import * as m from '$lib/paraglide/messages.js';
+	import * as m from '$lib/paraglide/messages';
 	import type { FileData } from '$lib/server/files';
 	import { onDestroy } from 'svelte';
 	import Dropzone from './Dropzone.svelte';

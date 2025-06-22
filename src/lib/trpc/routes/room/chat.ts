@@ -1,7 +1,7 @@
 import { insertMessage } from '$lib/server/db/queries/message/insert';
+import { roomProcedure } from '$lib/trpc/middleware/room';
 import { t } from '$lib/trpc/t';
 import { z } from 'zod';
-import { roomProcedure } from './middleware';
 
 export const getRoom = (env: Env, roomId: string) =>
 	env.CHATROOM.get(env.CHATROOM.idFromName(roomId));

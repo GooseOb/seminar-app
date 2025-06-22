@@ -3,7 +3,7 @@
 	import Input from '$lib/components/Input.svelte';
 	import Textarea from '$lib/components/Textarea.svelte';
 	import type { PageProps } from './$types';
-	import * as m from '$lib/paraglide/messages.js';
+	import * as m from '$lib/paraglide/messages';
 
 	const { form }: PageProps = $props();
 </script>

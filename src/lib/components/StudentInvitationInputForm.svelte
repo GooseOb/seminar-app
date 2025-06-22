@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Input from './Input.svelte';
-	import * as m from '$lib/paraglide/messages.js';
+	import * as m from '$lib/paraglide/messages';
 
 	let { value = $bindable(), children } = $props();
 </script>
