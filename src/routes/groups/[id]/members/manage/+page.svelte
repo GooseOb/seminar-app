@@ -33,7 +33,7 @@
 	const removeStudent = async (student: (typeof students)[number]) => {
 		try {
 			await trpc.room.group.removeStudent.mutate({
-				groupId: +page.params.id,
+				roomId: +page.params.id,
 				id: student.id
 			});
 
