@@ -2,7 +2,7 @@
 	import { page } from '$app/state';
 	import Chat from '$lib/components/Chat.svelte';
 	import type { PageProps } from './$types';
-	import * as m from '$lib/paraglide/messages.js';
+	import * as m from '$lib/paraglide/messages';
 
 	const { data }: PageProps = $props();
 	const roomId = $derived(+page.params.id);
