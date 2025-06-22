@@ -4,7 +4,7 @@ import { eq, and, sql, exists } from 'drizzle-orm';
 const groupMembersWithProjectsQuery = () =>
 	db()
 		.select({
-			userId: user.id,
+			id: user.id,
 			firstname: user.firstname,
 			lastname: user.lastname,
 			login: user.login,
