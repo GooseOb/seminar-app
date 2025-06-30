@@ -28,7 +28,6 @@
 	} = $props();
 
 	let actualScale = $state(scale);
-	let scalingDelta = $derived(scale - actualScale);
 
 	$effect(() => {
 		isLoading = true;
@@ -69,8 +68,8 @@
 			const dpr = window.devicePixelRatio || 1;
 			canvas.width = viewport.width * dpr;
 			canvas.height = viewport.height * dpr;
-			width = canvas.width;
-			height = canvas.height;
+			width = viewport.width;
+			height = viewport.height;
 			node.style.width = `${viewport.width}px`;
 			node.style.height = `${viewport.height}px`;
 			node.replaceChildren(canvas);
@@ -108,6 +107,7 @@
 		const debouncedRender = debounce(start, 100);
 
 		$effect(() => {
+			const scalingDelta = scale - actualScale;
 			const scaleRatio = 1 + scalingDelta;
 			node.style.width = `${width * scaleRatio}px`;
 			node.style.height = `${height * scaleRatio}px`;
