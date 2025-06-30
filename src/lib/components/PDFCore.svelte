@@ -87,7 +87,7 @@
 			textItems?.then((items) => {
 				for (const item of items[page.pageNumber - 1]) {
 					const transform = PDFJS().Util.transform(
-						viewport.transform,
+						scaledViewport.transform,
 						item.transform
 					);
 					const fontSize = Math.hypot(transform[2], transform[3]);
