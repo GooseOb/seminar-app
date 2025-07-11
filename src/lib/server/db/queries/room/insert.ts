@@ -9,5 +9,4 @@ export const insertRoomQuery = () =>
 			ownerId: sql.placeholder('ownerId'),
 			kind: sql.placeholder('kind')
 		})
-		.returning()
-		.prepare('insertRoomQuery');
+		.returning();

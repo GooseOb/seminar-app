@@ -27,8 +27,7 @@ const userGroupsAndProjectsQuery = () =>
 		.leftJoin(projectRoom, eq(project.id, projectRoom.id))
 		.leftJoin(user, eq(user.id, projectRoom.ownerId))
 		.where(eq(roomMembership.userId, sql.placeholder('userId')))
-		.orderBy(room.id)
-		.prepare('userGroupsAndProjectsQuery');
+		.orderBy(room.id);
 
 export type GroupWithProjects = {
 	id: number;

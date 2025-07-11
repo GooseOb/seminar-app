@@ -37,8 +37,7 @@ const groupMembersWithProjectsQuery = () =>
 			)
 		)
 		.leftJoin(project, eq(project.id, room.id))
-		.where(eq(roomMembership.roomId, sql.placeholder('groupId')))
-		.prepare('groupMembersWithProjectsQuery');
+		.where(eq(roomMembership.roomId, sql.placeholder('groupId')));
 
 export const getStudentsWithProjectsInGroup = async (groupId: number) => {
 	return await groupMembersWithProjectsQuery().execute({

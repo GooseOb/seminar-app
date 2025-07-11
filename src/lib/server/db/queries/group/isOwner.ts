@@ -11,8 +11,7 @@ const isOwnerOfRoomQuery = () =>
 				eq(room.ownerId, sql.placeholder('userId'))
 			)
 		)
-		.limit(1)
-		.prepare('isOwnerOfRoomQuery');
+		.limit(1);
 
 export const isRoomOwner = (userId: number, roomId: number): Promise<boolean> =>
 	isOwnerOfRoomQuery()

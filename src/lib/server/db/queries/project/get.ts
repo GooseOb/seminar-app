@@ -15,8 +15,7 @@ const getProjectQuery = () =>
 		.from(room)
 		.where(and(eq(room.id, sql.placeholder('id'))))
 		.innerJoin(project, eq(project.id, room.id))
-		.limit(1)
-		.prepare('getProjectQuery');
+		.limit(1);
 
 export const getProject = (id: number) =>
 	first(getProjectQuery().execute({ id }));

@@ -11,8 +11,7 @@ const membershipQuery = () =>
 				eq(roomMembership.roomId, sql.placeholder('roomId'))
 			)
 		)
-		.limit(1)
-		.prepare('membershipQuery');
+		.limit(1);
 
 export const isRoomMember = (
 	userId: number,

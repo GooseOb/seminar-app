@@ -12,8 +12,7 @@ const getFileMetadataQuery = () =>
 	db()
 		.select()
 		.from(fileMetadata)
-		.where(eq(fileMetadata.id, sql.placeholder('id')))
-		.prepare('getFileMetadataQuery');
+		.where(eq(fileMetadata.id, sql.placeholder('id')));
 
 export const getFileMetadata = (id: string) =>
 	first(getFileMetadataQuery().execute({ id }));

@@ -15,8 +15,7 @@ const getMessagesQuery = () =>
 		.from(message)
 		.innerJoin(user, eq(message.senderId, user.id))
 		.where(eq(message.roomId, sql.placeholder('roomId')))
-		.orderBy(message.createdAt)
-		.prepare('getMessagesQuery');
+		.orderBy(message.createdAt);
 
 export type ReceivedMessage = {
 	id: number;

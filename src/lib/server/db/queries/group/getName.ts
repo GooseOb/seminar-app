@@ -8,8 +8,7 @@ const getGroupNameQuery = () =>
 		})
 		.from(room)
 		.where(and(eq(room.id, sql.placeholder('groupId'))))
-		.limit(1)
-		.prepare('getGroupNameQuery');
+		.limit(1);
 
 export const getGroupName = async (groupId: number) => {
 	const [result] = await getGroupNameQuery().execute({ groupId });

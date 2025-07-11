@@ -35,8 +35,7 @@ const insertMessageQuery = () => {
 			createdAt: insertedMessage.createdAt
 		})
 		.from(insertedMessage)
-		.innerJoin(user, eq(insertedMessage.senderId, user.id))
-		.prepare('sendMessageQuery');
+		.innerJoin(user, eq(insertedMessage.senderId, user.id));
 };
 
 export const insertMessage = (value: {

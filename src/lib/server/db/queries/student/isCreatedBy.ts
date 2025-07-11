@@ -13,9 +13,7 @@ export const getStudentCreatedBySubQuery = (userId: any) =>
 		);
 
 const isStudentCreatedByQuery = () =>
-	getStudentCreatedBySubQuery(sql.placeholder('studentId'))
-		.limit(1)
-		.prepare('isStudentCreatedByLecturerQuery');
+	getStudentCreatedBySubQuery(sql.placeholder('studentId')).limit(1);
 
 export const isStudentCreatedBy = (studentId: number, lecturerId: number) =>
 	isStudentCreatedByQuery()

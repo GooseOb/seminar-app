@@ -7,8 +7,7 @@ export const updateRoomNameQuery = () =>
 		.set({
 			name: sql.placeholder('name') as any
 		})
-		.where(eq(room.id, sql.placeholder('id')))
-		.prepare('updateRoomNameQuery');
+		.where(eq(room.id, sql.placeholder('id')));
 
 export const updateRoomName = async (id: number, name: string) => {
 	await updateRoomNameQuery().execute({

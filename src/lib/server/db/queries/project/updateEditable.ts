@@ -7,8 +7,7 @@ const updateProjectEditableQuery = () =>
 		.set({
 			editable: sql.placeholder('editable') as any
 		})
-		.where(eq(project.id, sql.placeholder('id')))
-		.prepare('updateProjectEditableQuery');
+		.where(eq(project.id, sql.placeholder('id')));
 
 export const updateProjectEditable = async (id: number, editable: boolean) => {
 	await updateProjectEditableQuery().execute({

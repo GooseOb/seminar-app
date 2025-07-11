@@ -19,8 +19,7 @@ export const studentsInGroupQuery = () =>
 				eq(user.role, 'student')
 			)
 		)
-		.innerJoin(user, eq(roomMembership.userId, user.id))
-		.prepare('studentsInGroupQuery');
+		.innerJoin(user, eq(roomMembership.userId, user.id));
 
 export const getStudentsInGroup = async (
 	groupId: number,

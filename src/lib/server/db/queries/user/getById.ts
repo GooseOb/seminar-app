@@ -7,8 +7,7 @@ const getUserByIdQuery = () =>
 		.select(userData)
 		.from(user)
 		.where(eq(user.id, sql.placeholder('id')))
-		.limit(1)
-		.prepare('getUserByIdQuery');
+		.limit(1);
 
 export const getUserById = (id: number) =>
 	first(getUserByIdQuery().execute({ id }));

@@ -10,8 +10,7 @@ const updateProjectQuery = () =>
 			description: sql.placeholder('description') as any,
 			thesis: sql.placeholder('thesis') as any
 		})
-		.where(eq(project.id, sql.placeholder('id')))
-		.prepare('updateProjectQuery');
+		.where(eq(project.id, sql.placeholder('id')));
 
 export const updateProject = async (
 	id: number,

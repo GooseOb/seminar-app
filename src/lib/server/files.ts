@@ -56,7 +56,7 @@ export const getRoomFiles = dev
 							size: file.size,
 							uploaded: file.uploaded,
 							uploader:
-								file.customMetadata &&
+								file.customMetadata?.uploader &&
 								decodeURIComponent(file.customMetadata.uploader)
 						})
 					)

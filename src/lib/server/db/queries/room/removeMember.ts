@@ -9,8 +9,7 @@ const removeMemberFromRoomQuery = () =>
 				eq(roomMembership.userId, sql.placeholder('studentId')),
 				eq(roomMembership.roomId, sql.placeholder('groupId'))
 			)
-		)
-		.prepare('removeStudentFromGroupQuery');
+		);
 
 export const removeMemberFromRoom = async (
 	studentId: number,

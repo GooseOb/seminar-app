@@ -14,8 +14,7 @@ export const insertProjectQuery = () =>
 			description: sql.placeholder('description'),
 			thesis: sql.placeholder('thesis'),
 			editable: sql.placeholder('editable')
-		})
-		.prepare('insertProjectQuery');
+		});
 
 export const insertProject = async (
 	groupId: number,

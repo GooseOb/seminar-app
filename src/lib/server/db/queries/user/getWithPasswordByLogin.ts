@@ -7,8 +7,7 @@ const userWithPasswordByLoginQuery = () =>
 		.select()
 		.from(user)
 		.where(eq(user.login, sql.placeholder('login')))
-		.limit(1)
-		.prepare('userByLoginQuery');
+		.limit(1);
 
 export const getUserWithPasswordByLogin = (login: string) =>
 	first(userWithPasswordByLoginQuery().execute({ login }));

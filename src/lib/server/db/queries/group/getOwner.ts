@@ -15,8 +15,7 @@ const getGroupOwnerQuery = () =>
 			room,
 			and(eq(user.id, room.ownerId), eq(sql.placeholder('groupId'), room.id))
 		)
-		.limit(1)
-		.prepare('getGroupOwnerQuery');
+		.limit(1);
 
 export const getGroupOwner = (groupId: number) =>
 	first(getGroupOwnerQuery().execute({ groupId }));
