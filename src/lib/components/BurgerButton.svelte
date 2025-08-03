@@ -1,5 +1,5 @@
 <script lang="ts">
-	let { isOpen = $bindable() } = $props();
+	let { isOpen = $bindable() }: { isOpen: boolean } = $props();
 </script>
 
 <label>

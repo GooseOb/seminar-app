@@ -1,7 +1,13 @@
 <script lang="ts">
 	import { fade } from 'svelte/transition';
 
-	const { value, children } = $props();
+	const {
+		value,
+		children
+	}: {
+		value: any;
+		children: () => any;
+	} = $props();
 
 	let isVisible = $state(false);
 

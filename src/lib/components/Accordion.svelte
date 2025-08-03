@@ -64,7 +64,7 @@
 						<li class="item">General</li>
 					</a>
 				{/if}
-				{#each searchedProjects as project}
+				{#each searchedProjects as project (project.id)}
 					{@const href = `/projects/${project.id}`}
 					<a {href} class:active={isPathnameStart(href)}>
 						<li class="item">

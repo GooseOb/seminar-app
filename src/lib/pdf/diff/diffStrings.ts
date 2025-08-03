@@ -4,10 +4,9 @@ export const diffStrings = (curr: string, prev: string): RangeData[] => {
 	const m = prev.length;
 	const n = curr.length;
 
-	// Use dynamic programming to find edit operations
-	const dp: number[][] = Array(m + 1)
-		.fill(null)
-		.map(() => Array(n + 1).fill(0));
+	const dp: number[][] = Array.from({ length: m + 1 }, () =>
+		Array.from({ length: n + 1 }, () => 0)
+	);
 
 	// Initialize base cases
 	for (let i = 0; i <= m; i++) dp[i][0] = i;

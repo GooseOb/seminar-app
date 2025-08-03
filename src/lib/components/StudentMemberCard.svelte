@@ -1,21 +1,35 @@
 <script lang="ts">
 	import type { Role } from '$lib/server/db';
 	import MemberCard from './MemberCard.svelte';
+	import type { StudentWithProject } from '$lib/server/db/queries/group/getStudentsWithProjects';
+	import { languageTag } from '$lib/paraglide/runtime';
+
+	type OptionalNull<T extends object> = {
+		[K in keyof T]: T[K] extends null ? null | undefined : T[K];
+	};
+
+	type Student = OptionalNull<StudentWithProject> & {
+		password?: string;
+	};
 
 	const {
 		student,
 		role,
 		children
 	}: {
-		student: any;
+		student: Student;
 		role: Role;
-		children?: (student: any) => any;
+		children?: (student: Student) => any;
 	} = $props();
+
+	const projectName = student[
+		('projectName' + languageTag().toUpperCase()) as keyof Student
+	] as string | undefined;
 </script>
 
 <MemberCard
 	member={student}
-	text={student.projectName ||
+	text={projectName ||
 		(student.password ? 'Password: ' + student.password : '')}
 >
 	{#snippet afterName()}

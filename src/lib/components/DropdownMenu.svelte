@@ -11,7 +11,7 @@
 </script>
 
 <div transition:slide>
-	{#each buttons as { text, onclick }}
+	{#each buttons as { text, onclick } (text)}
 		<button
 			onclick={(e) => {
 				e.stopPropagation();

@@ -60,7 +60,7 @@
 		{/if}
 		<ul class="nolist">
 			{#await groups then groups}
-				{#each groups as group}
+				{#each groups as group (group.id)}
 					<li>
 						<Accordion {group} {searchQueryLowerCase} {role} />
 					</li>

@@ -1,6 +1,14 @@
 <script lang="ts">
 	import * as m from '$lib/paraglide/messages';
-	let { name = 'password', required = true, value = $bindable() } = $props();
+	let {
+		name = 'password',
+		required = true,
+		value = $bindable()
+	}: {
+		name?: string;
+		required?: boolean;
+		value?: string | number;
+	} = $props();
 
 	let hidden = $state(true);
 </script>

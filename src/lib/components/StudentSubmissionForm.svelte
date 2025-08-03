@@ -3,7 +3,22 @@
 	import StudentList from './StudentList.svelte';
 	import * as m from '$lib/paraglide/messages';
 
-	const { currentStudent = $bindable(), students, actionButtons } = $props();
+	type Student = {
+		firstname: string;
+		lastname: string;
+		login: string;
+		password?: string;
+	};
+
+	const {
+		currentStudent = $bindable(),
+		students,
+		actionButtons
+	}: {
+		currentStudent: Student;
+		students: Student[];
+		actionButtons: (student: Student) => any;
+	} = $props();
 </script>
 
 <h2>Students</h2>

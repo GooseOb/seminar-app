@@ -2,7 +2,13 @@
 	import Input from './Input.svelte';
 	import * as m from '$lib/paraglide/messages';
 
-	let { value = $bindable(), children } = $props();
+	let {
+		value = $bindable(),
+		children
+	}: {
+		children: () => any;
+		value: string | number;
+	} = $props();
 </script>
 
 <div class="input-group">

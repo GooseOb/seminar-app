@@ -1,15 +1,19 @@
 import type { RangeData } from '.';
 
 export const getApplyRanges =
-	<T, U, TRange extends RangeData>(
-		wrapRange: (text: string, index: number, ranges: TRange[]) => T,
-		wrapNoRange: (text: string) => U
+	<TRange, TNoRange, TRangeData extends RangeData>(
+		wrapRange: (text: string, index: number, ranges: TRangeData[]) => TRange,
+		wrapNoRange: (text: string) => TNoRange
 	) =>
-	(arr: string[], ranges: TRange[], text: string): (T | U)[][] => {
-		const result: (T | U)[][] = [];
+	(
+		arr: string[],
+		ranges: TRangeData[],
+		text: string
+	): (TRange | TNoRange)[][] => {
+		const result: (TRange | TNoRange)[][] = [];
 
 		let textIndex = 0;
-		let currItem: (T | U)[] = [];
+		let currItem: (TRange | TNoRange)[] = [];
 		let currItemLength = 0;
 		let length = arr[0]!.length;
 		for (let i = 0; i < ranges.length && textIndex < arr.length; i++) {

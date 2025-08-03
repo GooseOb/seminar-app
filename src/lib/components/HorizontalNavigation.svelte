@@ -5,7 +5,7 @@
 	const { items }: { items: { name: string; href: string }[] } = $props();
 
 	let underline: HTMLElement;
-	let activeElement = $state<HTMLAnchorElement | null>(null);
+	let activeElement: HTMLAnchorElement | null = $state(null);
 
 	const repaintUnderline = () => {
 		if (!activeElement) return;
@@ -28,7 +28,7 @@
 
 <nav class="horizontal-navigation">
 	<ul>
-		{#each items as { name, href }}
+		{#each items as { name, href }, i (i)}
 			<li>
 				{#if isPathnameStart(href)}
 					<a {href} bind:this={activeElement} class="active">{name}</a>

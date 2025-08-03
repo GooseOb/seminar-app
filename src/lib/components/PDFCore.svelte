@@ -126,7 +126,7 @@
 		{/if}
 		{#if pages}
 			{#key [pages, textItems]}
-				{#each pages as page, i}
+				{#each pages as page, i (page)}
 					<div class="page" data-index={i} use:render={page}></div>
 				{/each}
 			{/key}

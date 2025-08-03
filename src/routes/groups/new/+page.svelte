@@ -118,7 +118,7 @@
 	</StudentInvitationInputForm>
 
 	<StudentList students={existingStudents} role="lecturer">
-		{#snippet actionButtons(_: (typeof existingStudents)[number], i: number)}
+		{#snippet actionButtons(_, i: number)}
 			<button
 				type="button"
 				class="btn danger-btn"

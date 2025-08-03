@@ -20,7 +20,7 @@
 <div class="selector">
 	<span>{label}</span>
 	<select class="btn2" bind:value {onchange}>
-		{#each options as { value, label }}
+		{#each options as { value, label } (value)}
 			<option {value}>{label}</option>
 		{/each}
 	</select>

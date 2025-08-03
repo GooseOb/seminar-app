@@ -11,7 +11,7 @@ const groupMembersWithProjectsQuery = () =>
 			hasPhoto: user.hasPhoto,
 			projectId: room.id,
 			projectNameEN: room.name,
-			projectNamePl: project.namePl
+			projectNamePL: project.namePl
 		})
 		.from(roomMembership)
 		.innerJoin(

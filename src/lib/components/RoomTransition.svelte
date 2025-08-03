@@ -3,7 +3,11 @@
 	import { page } from '$app/state';
 	import { fly } from 'svelte/transition';
 
-	const { children } = $props();
+	const {
+		children
+	}: {
+		children: () => any;
+	} = $props();
 	let navigationDirection: 'forward' | 'backward' = $state('forward');
 
 	const ANIMATION_DURATION = 300;

@@ -13,7 +13,7 @@
 		afterPages
 	}: Omit<ComponentProps<typeof PDFCore>, 'scale'> & {
 		isOpen: boolean;
-		children?: any;
+		children?: () => any;
 		afterPages?: () => any;
 	} = $props();
 

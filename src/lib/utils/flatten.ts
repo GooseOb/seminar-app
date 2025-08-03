@@ -1,9 +1,4 @@
-export const flatten = <T extends any[]>(
-	arr: T[]
-): {
-	value: T;
-	unflatten: <U extends any[]>(arr: U) => U[];
-} => ({
+export const flatten = <T extends any[]>(arr: T[]) => ({
 	value: arr.flat() as T,
 	unflatten: <U extends any[]>(value: U) => {
 		let index = 0;

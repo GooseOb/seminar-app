@@ -184,7 +184,7 @@
 	{#if files.length === 0}
 		<p>{m.noFiles()}</p>
 	{:else}
-		{#each files as file, index}
+		{#each files as file, index (file.name)}
 			{@const onclick = () => handleOpen(file)}
 			<li>
 				<FileCard
