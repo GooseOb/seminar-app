@@ -130,11 +130,11 @@
 		handleUpload(e.dataTransfer!.files);
 	};
 
-	const handleUpload = async (filesToUpload: FileList | null) => {
-		if (filesToUpload && filesToUpload.length > 0) {
-			const arr = Array.from(filesToUpload);
+	const handleUpload = async (filesToUploadList: FileList | null) => {
+		if (filesToUploadList && filesToUploadList.length > 0) {
+			const filesToUpload = Array.from(filesToUploadList);
 
-			const fileItems: FileData[] = arr.map((file) => ({
+			const fileItems: FileData[] = filesToUpload.map((file) => ({
 				name: file.name,
 				size: file.size,
 				uploaded: new Date(),
@@ -147,10 +147,10 @@
 
 			const { urls, uploader } = await trpc.room.files.upload.query({
 				roomId,
-				fileNames: arr.map(({ name }) => name)
+				fileNames: filesToUpload.map(({ name }) => name)
 			});
 
-			arr.forEach((file, i) => {
+			filesToUpload.forEach((file, i) => {
 				fetch(urls[i], {
 					method: 'PUT',
 					headers: {

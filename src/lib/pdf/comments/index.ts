@@ -19,5 +19,5 @@ const applyRanges = getApplyRanges((text, i, ranges: CommentData[]) => {
 	return el;
 }, createTextNode);
 
-export const withComments = (textArr: string[], comments: CommentData[]) =>
-	applyRanges(textArr, comments, textArr.join(''));
+export const withComments = (lines: string[], comments: CommentData[]) =>
+	applyRanges(lines, comments, lines.join(''));

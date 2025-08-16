@@ -20,17 +20,17 @@ export const diff = (curr: string[], prev: string[]) => {
 		return acc;
 	});
 
-	let lineI = 0;
+	let lineIndex = 0;
 	for (const range of ranges) {
-		while (range.fromIndex >= currLengths[lineI]) {
-			++lineI;
+		while (range.fromIndex >= currLengths[lineIndex]) {
+			++lineIndex;
 		}
-		range.fromIndex -= lineI;
+		range.fromIndex -= lineIndex;
 
-		while (range.toIndex >= currLengths[lineI]) {
-			++lineI;
+		while (range.toIndex >= currLengths[lineIndex]) {
+			++lineIndex;
 		}
-		range.toIndex -= lineI;
+		range.toIndex -= lineIndex;
 	}
 
 	return {

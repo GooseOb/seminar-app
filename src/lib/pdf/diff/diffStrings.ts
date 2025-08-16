@@ -16,10 +16,10 @@ export const diffStrings = (curr: string, prev: string): RangeData[] => {
 			result.push({
 				fromIndex: currIndex,
 				toIndex: currIndex + nextChange.value.length,
-				data: change.value.trim() // Previous text that was replaced
+				data: change.value.trim() // previous text
 			});
 			currIndex += nextChange.value.length;
-			i += 2; // Skip both DELETE and INSERT
+			i += 2; // skip both DELETE and INSERT
 		} else if (change.added) {
 			// insertion
 			result.push({
