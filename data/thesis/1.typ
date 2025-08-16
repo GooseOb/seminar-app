@@ -8,37 +8,37 @@
     UNIWERSYTET ŁÓDZKI \
     WYDZIAŁ MATEMATYKI I INFORMATYKI
   ]
-  
+
   #v(2cm)
-  
+
   #text(18pt, weight: "bold")[
     PRACA DYPLOMOWA MAGISTERSKA
   ]
-  
+
   #v(1cm)
-  
+
   #text(14pt, weight: "bold")[
     Opracowanie wydajnego systemu nawigacji dla kampusów uniwersyteckich z wykorzystaniem rzeczywistości rozszerzonej
   ]
-  
+
   #v(1cm)
-  
+
   #text(12pt)[
     Kierunek: Informatyka \
     Specjalność: Inżynieria Oprogramowania
   ]
-  
+
   #v(2cm)
-  
+
   #align(left)[
     Autor: Zofia Rodriguez \
     Nr albumu: 420524 \
-    
+
     Promotor: dr hab. Jan Kowalski
   ]
-  
+
   // #v(fill)
-  
+
   Łódź 2025
 ]
 

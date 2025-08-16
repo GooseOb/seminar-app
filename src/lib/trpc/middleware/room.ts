@@ -4,9 +4,10 @@ import { t } from '$lib/trpc/t';
 import { error } from '@sveltejs/kit';
 import { z } from 'zod';
 import * as m from '$lib/paraglide/messages';
+import type { MaybePromise } from '$lib/utils/types';
 
 const getRoomProcedure = (
-	check: (id: number, roomId: number) => Promise<boolean> | boolean,
+	check: (id: number, roomId: number) => MaybePromise<boolean>,
 	getMessage: () => string
 ) =>
 	t.procedure.input(z.object({ roomId: z.number() })).use(

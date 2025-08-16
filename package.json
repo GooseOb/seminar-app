@@ -50,6 +50,7 @@
 		"@oslojs/encoding": "^1.1.0",
 		"@trpc/client": "^11.4.3",
 		"@trpc/server": "^11.4.3",
+		"diff": "^8.0.2",
 		"drizzle-orm": "^0.44.4",
 		"pdfjs-dist": "^5.4.54",
 		"pg": "^8.16.3",

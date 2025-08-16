@@ -4,6 +4,7 @@
 	import type { TextItem } from 'pdfjs-dist/types/src/display/api';
 	import * as m from '$lib/paraglide/messages';
 	import { PDFJS } from '$lib/pdf.svelte';
+	import type { MaybePromise } from '$lib/utils/types';
 
 	type TextItemWithContent = TextItem & {
 		content: Slottable[];
@@ -24,7 +25,7 @@
 		scale: number;
 		transformTextItems?: (
 			textItems: TextItem[][]
-		) => Promise<TextItemWithContent[][]> | TextItemWithContent[][];
+		) => MaybePromise<TextItemWithContent[][]>;
 	} = $props();
 
 	let actualScale = $state(scale);
@@ -76,6 +77,7 @@
 			const scaledViewport = page.getViewport({ scale: scale * dpr });
 			page
 				.render({
+					canvas,
 					canvasContext,
 					viewport: scaledViewport,
 					transform: [1, 0, 0, 1, 0, 0]

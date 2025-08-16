@@ -8,45 +8,45 @@
     UNIWERSYTET ŁÓDZKI \
     WYDZIAŁ MATEMATYKI I INFORMATYKI
   ]
-  
+
   #v(2cm)
-  
+
   #text(18pt, weight: "bold")[
     PRACA DYPLOMOWA MAGISTERSKA
   ]
-  
+
   #v(1cm)
-  
+
   #text(14pt, weight: "bold")[
     Opracowanie wydajnego systemu nawigacji dla kampusów uniwersyteckich z wykorzystaniem rzeczywistości rozszerzonej i technologii uczenia maszynowego
   ]
-  
+
   #v(0.5cm)
-  
+
   #text(12pt, style: "italic")[
     Smart Campus Navigation System
   ]
-  
+
   #v(1cm)
-  
+
   #text(12pt)[
     Kierunek: Informatyka \
     Specjalność: Inżynieria Oprogramowania \
     Profil: Praktyczny
   ]
-  
+
   #v(2cm)
-  
+
   #align(left)[
     Autor: Zofia Rodriguez \
     Nr albumu: 420524 \
-    
+
     Promotor: dr hab. Jan Kowalski \
     Konsultant: dr inż. Anna Nowak (Politechnika Łódzka)
   ]
-  
+
   // #v(fill)
-  
+
   Łódź 2025
 ]
 
@@ -482,18 +482,18 @@ Algorytm bazowy w pseudokodzie:
 ```
 function findOptimalRoute(start, end, userPreferences, realTimeData):
     graph = buildNavigationGraph(campusData, realTimeData)
-    
+
     // Dostosowanie wag krawędzi do preferencji użytkownika
     adjustWeights(graph, userPreferences)
-    
+
     // Podstawowe wyznaczenie trasy
     primaryRoute = aStar(graph, start, end)
-    
+
     // Optymalizacja ML
     if userHasHistory(user):
         mlOptimizedRoute = mlOptimizeRoute(primaryRoute, userHistory)
         return mlOptimizedRoute
-    
+
     return primaryRoute
 ```
 
@@ -504,23 +504,23 @@ System pozycjonowania wykorzystuje filtr Kalmana do fuzji danych z różnych źr
 ```
 function updatePosition(wifiSignals, bleBeacons, sensorData, previousState):
     // Predykcja na podstawie modelu ruchu
-    predictedState = motionModel(previousState, sensorData.accelerometer, 
+    predictedState = motionModel(previousState, sensorData.accelerometer,
                                 sensorData.gyroscope, deltaTime)
-    
+
     // Korekcja na podstawie sygnałów WiFi
     wifiPosition = wifiTrilateration(wifiSignals)
     if wifiPosition.confidence > WIFI_THRESHOLD:
         predictedState = kalmanUpdate(predictedState, wifiPosition)
-    
+
     // Korekcja na podstawie BLE beacons
     blePosition = bleTrilateration(bleBeacons)
     if blePosition.confidence > BLE_THRESHOLD:
         predictedState = kalmanUpdate(predictedState, blePosition)
-    
+
     // Filtracja outliers
     if isOutlier(predictedState, previousStates):
         return smoothedPosition(previousStates)
-    
+
     return predictedState
 ```
 
@@ -537,17 +537,17 @@ class ARTrackingSystem {
         this.planeDetector = new PlaneDetector();
         this.markerTracker = new MarkerTracker();
     }
-    
+
     updateTracking(cameraFrame, imuData) {
         // VIO tracking dla podstawowej pozycji
         const vioResult = this.vioTracker.update(cameraFrame, imuData);
-        
+
         // Detekcja płaszczyzn dla anchoring
         const planes = this.planeDetector.detectPlanes(cameraFrame);
-        
+
         // Tracking markerów dla precyzyjnej kalibracji
         const markers = this.markerTracker.detectMarkers(cameraFrame);
-        
+
         // Fuzja danych tracking
         return this.fuseTrackingData(vioResult, planes, markers);
     }
@@ -569,27 +569,27 @@ class ARRenderer {
             antialias: true
         });
     }
-    
+
     renderNavigationElements(route, currentPosition) {
         this.clearScene();
-        
+
         // Renderowanie strzałek kierunkowych
         route.waypoints.forEach((waypoint, index) => {
             const arrow = this.createDirectionArrow(waypoint, index);
             this.scene.add(arrow);
         });
-        
+
         // Renderowanie informacji o celu
         const destinationInfo = this.createDestinationInfo(route.destination);
         this.scene.add(destinationInfo);
-        
+
         // Renderowanie punktów orientacyjnych
         const landmarks = this.getLandmarksInView(currentPosition);
         landmarks.forEach(landmark => {
             const landmarkObject = this.createLandmarkVisualization(landmark);
             this.scene.add(landmarkObject);
         });
-        
+
         this.renderer.render(this.scene, this.camera);
     }
 }
@@ -624,15 +624,15 @@ const ARNavigationScreen = ({ route }) => {
     const { currentPosition, destination, navigationPath } = useNavigation();
     const { announceDirection, provideHapticFeedback } = useAccessibility();
     const [arObjects, setArObjects] = useState([]);
-    
+
     useEffect(() => {
         // Aktualizacja obiektów AR gdy zmienia się pozycja
         updateARObjects();
     }, [currentPosition, navigationPath]);
-    
+
     const updateARObjects = () => {
         const objects = [];
-        
+
         // Strzałki kierunkowe
         navigationPath.forEach((waypoint, index) => {
             const distance = calculateDistance(currentPosition, waypoint);
@@ -646,7 +646,7 @@ const ARNavigationScreen = ({ route }) => {
                 });
             }
         });
-        
+
         // Informacje o celu
         if (destination) {
             const distanceToDestination = calculateDistance(currentPosition, destination);
@@ -658,16 +658,16 @@ const ARNavigationScreen = ({ route }) => {
                 fontSize: 0.1
             });
         }
-        
+
         setArObjects(objects);
-        
+
         // Feedback dla dostępności
         announceDirection(getNextDirection());
         if (isNearWaypoint()) {
             provideHapticFeedback('waypoint');
         }
     };
-    
+
     return (
         <ARView style={{ flex: 1 }}>
             {arObjects.map(obj => {
@@ -740,7 +740,7 @@ export class NavigationController {
         private locationService: LocationService,
         private userService: UserService
     ) {}
-    
+
     @Post('/route')
     @ValidateBody(NavigationRequestSchema)
     async calculateRoute(
@@ -753,7 +753,7 @@ export class NavigationController {
                 ...request.preferences,
                 ...user.savedPreferences
             };
-            
+
             // Wyznacz trasę
             const route = await this.navigationService.calculateOptimalRoute({
                 start: request.startLocation,
@@ -761,33 +761,33 @@ export class NavigationController {
                 preferences: enhancedPreferences,
                 accessibilityNeeds: request.accessibilityNeeds
             });
-            
+
             // Generuj instrukcje
             const instructions = await this.navigationService
                 .generateInstructions(route, request.accessibilityNeeds);
-            
+
             // Przygotuj elementy AR
             const arElements = await this.navigationService
                 .generateARElements(route, request.startLocation);
-            
+
             // Zapisz w historii
             await this.navigationService.saveNavigationRequest(
-                request.userId, 
+                request.userId,
                 route
             );
-            
+
             return {
                 route,
                 estimatedDuration: route.estimatedDuration,
                 instructions,
                 arElements
             };
-            
+
         } catch (error) {
             throw new BadRequestException(`Navigation calculation failed: ${error.message}`);
         }
     }
-    
+
     @Get('/realtime/:userId')
     @UseWebSocket()
     async startRealtimeNavigation(
@@ -796,27 +796,27 @@ export class NavigationController {
     ) {
         const navigationSession = await this.navigationService
             .createRealtimeSession(userId, socket);
-        
+
         // Słuchaj aktualizacji pozycji
         socket.on('position-update', async (position: GeoPoint) => {
             try {
                 const navigationUpdate = await this.navigationService
                     .updateNavigation(navigationSession.id, position);
-                
+
                 socket.emit('navigation-update', navigationUpdate);
-                
+
                 // Machine learning - uczenie się z wzorców
                 await this.navigationService.recordNavigationStep(
-                    userId, 
-                    position, 
+                    userId,
+                    position,
                     navigationUpdate
                 );
-                
+
             } catch (error) {
                 socket.emit('navigation-error', { message: error.message });
             }
         });
-        
+
         // Cleanup po rozłączeniu
         socket.on('disconnect', () => {
             this.navigationService.endRealtimeSession(navigationSession.id);
@@ -833,11 +833,11 @@ Implementacja algorytmów ML wykorzystuje TensorFlow.js:
 class RouteOptimizationML {
     private model: tf.LayersModel;
     private isTraining: boolean = false;
-    
+
     constructor() {
         this.initializeModel();
     }
-    
+
     private initializeModel() {
         // Architektura sieci neuronowej dla optymalizacji tras
         this.model = tf.sequential({
@@ -863,35 +863,35 @@ class RouteOptimizationML {
                 })
             ]
         });
-        
+
         this.model.compile({
             optimizer: tf.train.adam(0.001),
             loss: 'binaryCrossentropy',
             metrics: ['accuracy']
         });
     }
-    
+
     async optimizeRoute(
         baseRoute: NavigationRoute,
         userHistory: NavigationHistory[],
         contextData: ContextData
     ): Promise<NavigationRoute> {
-        
+
         // Przygotuj dane wejściowe
         const features = this.extractRouteFeatures(baseRoute, contextData);
         const prediction = await this.model.predict(
             tf.tensor2d([features])
         ) as tf.Tensor;
-        
+
         const successProbability = await prediction.data();
-        
+
         // Jeśli prawdopodobieństwo sukcesu jest niskie, spróbuj alternatyw
         if (successProbability[0] < 0.7) {
             const alternatives = await this.generateAlternativeRoutes(
-                baseRoute, 
+                baseRoute,
                 userHistory
             );
-            
+
             // Ocen alternatywy
             const evaluatedAlternatives = await Promise.all(
                 alternatives.map(async route => {
@@ -900,43 +900,43 @@ class RouteOptimizationML {
                         tf.tensor2d([altFeatures])
                     ) as tf.Tensor;
                     const altProbability = await altPrediction.data();
-                    
+
                     return {
                         route,
                         successProbability: altProbability[0]
                     };
                 })
             );
-            
+
             // Wybierz najlepszą alternatywę
             const bestAlternative = evaluatedAlternatives
                 .sort((a, b) => b.successProbability - a.successProbability)[0];
-            
+
             if (bestAlternative.successProbability > successProbability[0]) {
                 return bestAlternative.route;
             }
         }
-        
+
         return baseRoute;
     }
-    
+
     async trainOnNavigationData(navigationData: NavigationTrainingData[]) {
         if (this.isTraining) return;
-        
+
         this.isTraining = true;
-        
+
         try {
             // Przygotuj dane treningowe
-            const features = navigationData.map(data => 
+            const features = navigationData.map(data =>
                 this.extractRouteFeatures(data.route, data.context)
             );
-            const labels = navigationData.map(data => 
+            const labels = navigationData.map(data =>
                 data.wasSuccessful ? 1 : 0
             );
-            
+
             const xs = tf.tensor2d(features);
             const ys = tf.tensor2d(labels, [labels.length, 1]);
-            
+
             // Trening modelu
             await this.model.fit(xs, ys, {
                 epochs: 10,
@@ -948,10 +948,10 @@ class RouteOptimizationML {
                     }
                 }
             });
-            
+
             // Zapisz wytrenowany model
             await this.model.save('file://./models/route-optimization');
-            
+
         } finally {
             this.isTraining = false;
         }
@@ -968,22 +968,22 @@ class RouteOptimizationML {
 export const useAccessibility = () => {
     const [isScreenReaderEnabled, setIsScreenReaderEnabled] = useState(false);
     const [preferredAnnouncementSpeed, setPreferredAnnouncementSpeed] = useState('normal');
-    
+
     useEffect(() => {
         // Sprawdź czy czytnik ekranu jest aktywny
         AccessibilityInfo.isScreenReaderEnabled().then(enabled => {
             setIsScreenReaderEnabled(enabled);
         });
-        
+
         // Słuchaj zmian w ustawieniach dostępności
         const subscription = AccessibilityInfo.addEventListener(
             'screenReaderChanged',
             setIsScreenReaderEnabled
         );
-        
+
         return () => subscription?.remove();
     }, []);
-    
+
     const announceDirection = useCallback((direction: string, priority: 'low' | 'high' = 'low') => {
         if (isScreenReaderEnabled) {
             AccessibilityInfo.announceForAccessibility(direction);
@@ -1000,21 +1000,21 @@ export const useAccessibility = () => {
             });
         }
     }, [isScreenReaderEnabled, preferredAnnouncementSpeed]);
-    
+
     const provideHapticFeedback = useCallback((type: 'waypoint' | 'destination' | 'obstacle') => {
         const patterns = {
             waypoint: 'impactLight',
-            destination: 'impactHeavy', 
+            destination: 'impactHeavy',
             obstacle: [100, 50, 100, 50, 100] // Custom pattern
         };
-        
+
         if (Array.isArray(patterns[type])) {
             Vibration.vibrate(patterns[type]);
         } else {
             HapticFeedback.trigger(patterns[type]);
         }
     }, []);
-    
+
     return {
         isScreenReaderEnabled,
         announceDirection,
@@ -1045,7 +1045,7 @@ const AccessibleNavigationButton = ({ destination, onPress, children }) => {
 const AccessibleARInterface = () => {
     const { isScreenReaderEnabled } = useAccessibility();
     const [isVoiceControlActive, setIsVoiceControlActive] = useState(false);
-    
+
     // Alternatywny interfejs dla użytkowników czytników ekranu
     if (isScreenReaderEnabled) {
         return (
@@ -1054,10 +1054,10 @@ const AccessibleARInterface = () => {
                     <Text style={styles.accessibleHeader} accessibilityRole="header">
                         Instrukcje nawigacji
                     </Text>
-                    
+
                     {navigationInstructions.map((instruction, index) => (
                         <View key={index} style={styles.instructionCard}>
-                            <Text 
+                            <Text
                                 style={styles.instructionText}
                                 accessibilityLabel={instruction.accessibleDescription}
                             >
@@ -1068,7 +1068,7 @@ const AccessibleARInterface = () => {
                             </Text>
                         </View>
                     ))}
-                    
+
                     <TouchableOpacity
                         style={styles.voiceControlButton}
                         onPress={() => setIsVoiceControlActive(!isVoiceControlActive)}
@@ -1080,7 +1080,7 @@ const AccessibleARInterface = () => {
             </View>
         );
     }
-    
+
     // Standardowy interfejs AR
     return <ARNavigationInterface />;
 };
