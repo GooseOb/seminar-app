@@ -1,6 +1,10 @@
+<script>
+	import * as m from '$lib/paraglide/messages';
+</script>
+
 <div class="container">
-	<h1>Welcome to Seminarium App</h1>
-	<h2>Use the sidebar to join or create a seminarium group</h2>
+	<h1>{m.mainTitle()}</h1>
+	<h2>{m.mainContent()}</h2>
 </div>
 
 <style>

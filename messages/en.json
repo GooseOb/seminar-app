@@ -1,6 +1,9 @@
 {
 	"$schema": "https://inlang.com/schema/inlang-message-format",
 
+	"mainTitle": "Welcome to Seminarium App",
+	"mainContent": "Use the sidebar to join or create a seminarium group",
+
 	"loading": "Loading...",
 	"loadingFiles": "Loading files...",
 	"loadingProjectDetails": "Loading project details...",
