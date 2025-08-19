@@ -61,7 +61,7 @@
 						class:active={isPathnameStart(href) &&
 							!isPathnameEnd('new_project')}
 					>
-						<li class="item">General</li>
+						<li class="item">{m.general()}</li>
 					</a>
 				{/if}
 				{#each searchedProjects as project (project.id)}

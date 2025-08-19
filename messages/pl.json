@@ -4,6 +4,8 @@
 	"mainTitle": "Witaj w aplikacji Seminarium",
 	"mainContent": "Użyj paska bocznego, aby dołączyć lub utworzyć grupę seminarium",
 
+	"general": "Ogólny",
+
 	"loading": "Ładowanie...",
 	"loadingFiles": "Ładowanie plików...",
 	"loadingProjectDetails": "Ładowanie szczegółów projektu...",
