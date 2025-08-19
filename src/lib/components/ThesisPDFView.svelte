@@ -35,6 +35,16 @@
 	let selectedVersion = $derived(versions.at(-1)!);
 	let prevVersion = $derived(versions.at(-1)!);
 
+	const canDelete = $derived(
+		role === 'student'
+			? () =>
+					trpc.room.project.thesis.canDelete.query({
+						roomId,
+						fileName: selectedVersion.name
+					})
+			: () => Promise.resolve(true)
+	);
+
 	let comments: CommentData[] = $state([]);
 	let isReviewed = $state(false);
 
@@ -317,13 +327,17 @@
 						<DownloadIcon />
 					</button>
 					{#if role === 'student'}
-						<button
-							class="btn2"
-							aria-label={m.deleteFile()}
-							onclick={handleDelete}
-						>
-							<DeleteIcon />
-						</button>
+						{#await canDelete() then canDelete}
+							{#if canDelete}
+								<button
+									class="btn2"
+									aria-label={m.deleteFile()}
+									onclick={handleDelete}
+								>
+									<DeleteIcon />
+								</button>
+							{/if}
+						{/await}
 					{/if}
 					<button
 						class="btn2"

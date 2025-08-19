@@ -117,5 +117,6 @@
 	"notRoomMember": "You are not a member of this room",
 	"notAllowedToCreateGroup": "You are not allowed to create a group",
 	"notAllowedToUpdateProfile": "You are not allowed to update this profile",
-	"notAllowedToCreateProject": "You are not allowed to create a project"
+	"notAllowedToCreateProject": "You are not allowed to create a project",
+	"cannotDeleteThesisReviewedOrCommented": "Cannot delete thesis that has been reviewed or has comments."
 }

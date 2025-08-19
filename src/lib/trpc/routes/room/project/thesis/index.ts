@@ -8,12 +8,22 @@ import {
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { z } from 'zod';
-import { insertFileMetadata } from '$lib/server/db/queries/file';
+import {
+	getFileMetadata,
+	insertFileMetadata
+} from '$lib/server/db/queries/file';
 import { getKey } from './common';
 import { commentsRouter } from './comments';
 import { checkStudent } from '$lib/trpc/checks/role';
 import { roomProcedure } from '$lib/trpc/middleware/room';
 import { thesisProcedure } from '$lib/trpc/middleware/thesis';
+import { error } from '@sveltejs/kit';
+import * as m from '$lib/paraglide/messages';
+
+const canDeleteThesis = (id: string) =>
+	getFileMetadata(id).then(
+		({ isReviewed, comments }) => !isReviewed && !comments?.length
+	);
 
 export const thesisRouter = t.router({
 	upload: roomProcedure
@@ -42,6 +52,10 @@ export const thesisRouter = t.router({
 	delete: thesisProcedure
 		.use(checkStudent)
 		.mutation(async ({ ctx: { s3Key } }) => {
+			if (!canDeleteThesis(s3Key)) {
+				error(403, m.cannotDeleteThesisReviewedOrCommented());
+			}
+
 			const s3 = getS3Client();
 
 			await s3.send(
@@ -50,6 +64,13 @@ export const thesisRouter = t.router({
 					Key: s3Key
 				})
 			);
+		}),
+	canDelete: thesisProcedure
+		.use(checkStudent)
+		.query(async ({ ctx: { s3Key } }) => {
+			return {
+				canDelete: await canDeleteThesis(s3Key)
+			};
 		}),
 	get: thesisProcedure
 		.input(z.object({ isDownload: z.boolean() }))

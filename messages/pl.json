@@ -117,5 +117,6 @@
 	"notRoomMember": "Nie jesteś członkiem tego pokoju",
 	"notAllowedToCreateGroup": "Nie masz uprawnień do tworzenia grup",
 	"notAllowedToUpdateProfile": "Nie masz uprawnień do aktualizacji tego profilu",
-	"notAllowedToCreateProject": "Nie masz uprawnień do tworzenia projektu"
+	"notAllowedToCreateProject": "Nie masz uprawnień do tworzenia projektu",
+	"cannotDeleteThesisReviewedOrCommented": "Nie można usunąć pracy dyplomowej, która została sprawdzona lub ma komentarze."
 }
