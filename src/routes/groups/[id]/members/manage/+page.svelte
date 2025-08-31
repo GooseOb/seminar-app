@@ -8,6 +8,7 @@
 	import type { PageProps } from './$types';
 	import * as m from '$lib/paraglide/messages';
 	import { trpc } from '$lib/trpc/client.svelte';
+	import { enhanceNoReset } from '$lib/utils/enhance';
 
 	const { data, form }: PageProps = $props();
 
@@ -47,14 +48,7 @@
 </script>
 
 <div class="container">
-	<form
-		method="POST"
-		use:enhance={() =>
-			({ update }) => {
-				update({ reset: false });
-			}}
-		action="?/updateName"
-	>
+	<form method="POST" use:enhanceNoReset action="?/updateName">
 		<Input type="text" name="group_name" label="Name" bind:value={groupName} />
 		<button type="submit" class="btn">{m.update()}</button>
 	</form>

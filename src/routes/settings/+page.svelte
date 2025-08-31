@@ -12,10 +12,10 @@
 	import Input from '$lib/components/Input.svelte';
 	import PasswordInput from '$lib/components/PasswordInput.svelte';
 	import Success from '$lib/components/Success.svelte';
-	import { enhance } from '$app/forms';
 	import Dropzone from '$lib/components/Dropzone.svelte';
 	import { trpc } from '$lib/trpc/client.svelte';
 	import FileButton from '$lib/components/FileButton.svelte';
+	import { enhanceNoReset } from '$lib/utils/enhance';
 
 	const { data, form } = $props();
 	const user = $state(data.user);
@@ -81,13 +81,7 @@
 		</MemberCard>
 	</div>
 	{#if user.role === 'lecturer'}
-		<form
-			method="POST"
-			use:enhance={() =>
-				({ update }) => {
-					update({ reset: false });
-				}}
-		>
+		<form method="POST" use:enhanceNoReset>
 			<Input
 				type="text"
 				name="firstname"

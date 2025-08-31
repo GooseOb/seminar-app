@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
 	import Input from '$lib/components/Input.svelte';
 	import StudentMemberCard from '$lib/components/StudentMemberCard.svelte';
 	import Textarea from '$lib/components/Textarea.svelte';
@@ -8,6 +7,7 @@
 	import * as m from '$lib/paraglide/messages';
 	import { trpc } from '$lib/trpc/client.svelte';
 	import { page } from '$app/state';
+	import { enhanceNoReset } from '$lib/utils/enhance';
 
 	const { data, form }: PageProps = $props();
 
@@ -34,14 +34,7 @@
 	};
 </script>
 
-<form
-	class="container"
-	use:enhance={() =>
-		({ update }) => {
-			update({ reset: false });
-		}}
-	method="POST"
->
+<form class="container" use:enhanceNoReset method="POST">
 	{#await data.student then student}
 		<StudentMemberCard {student} role={data.role!} />
 	{/await}
