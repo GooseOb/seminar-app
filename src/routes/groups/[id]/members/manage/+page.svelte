@@ -34,13 +34,13 @@
 	const removeStudent = async (student: (typeof students)[number]) => {
 		try {
 			await trpc.room.group.removeStudent.mutate({
-				roomId: +page.params.id,
+				roomId: +page.params.id!,
 				id: student.id
 			});
 
 			students = students.filter(({ id }) => id !== student.id);
 		} catch (err) {
-			error = m.failedToRemoveStudent() + ':' + err.message;
+			error = m.failedToRemoveStudent() + ':' + (err as Error).message;
 		}
 	};
 
@@ -66,7 +66,7 @@
 	<form method="POST" use:enhance action="?/submitStudent">
 		<input hidden name="id" bind:value={currentStudent.id} />
 		<StudentSubmissionForm bind:currentStudent {students}>
-			{#snippet actionButtons(student: (typeof students)[number])}
+			{#snippet actionButtons(student)}
 				{#if student.canEdit}
 					<button
 						type="button"

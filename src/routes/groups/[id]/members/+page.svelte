@@ -19,7 +19,7 @@
 
 	{#await students then students}
 		<StudentList {students} {role}>
-			{#snippet actionButtons(student: (typeof students)[number])}
+			{#snippet actionButtons(student)}
 				{#if student.projectId}
 					<a href="/projects/{student.projectId}" class="btn">
 						{m.project()}

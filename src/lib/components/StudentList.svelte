@@ -1,17 +1,21 @@
-<script lang="ts">
+<script
+	lang="ts"
+	generics="Student extends Omit<OptionalNull<StudentWithProject>, 'id' | 'hasPhoto'>"
+>
 	import StudentMemberCard from './StudentMemberCard.svelte';
 	import * as m from '$lib/paraglide/messages';
 	import type { Role } from '$lib/server/db';
 	import type { StudentWithProject } from '$lib/server/db/queries/group/getStudentsWithProjects';
+	import type { OptionalNull } from '$lib/utils/types';
 
 	const {
 		students,
 		role,
 		actionButtons
 	}: {
-		students: StudentWithProject[];
+		students: Student[];
 		role: Role;
-		actionButtons: (student: StudentWithProject, index: number) => any;
+		actionButtons: (student: Student, index: number) => any;
 	} = $props();
 </script>
 
@@ -19,7 +23,7 @@
 	{#if students.length === 0}
 		<div class="message">{m.noStudents()}</div>
 	{:else}
-		{#each students as student, i (student.id)}
+		{#each students as student, i (student.login)}
 			<StudentMemberCard {student} {role}>
 				{@render actionButtons(student, i)}
 			</StudentMemberCard>

@@ -6,6 +6,7 @@ import { redirect } from '$lib/i18n';
 import type { NoId, User } from '$lib/server/db';
 import { insertGroupWithStudents } from '$lib/server/db/queries/group/insertWithStudents';
 import { getUserByLogin } from '$lib/server/db/queries/user/getByLogin';
+import type { PostgresError } from 'postgres';
 
 export const actions: Actions = {
 	create: async ({ request, locals: { user } }) => {
@@ -36,7 +37,7 @@ export const actions: Actions = {
 			).group.id;
 		} catch (error) {
 			const number = /Key \(login\)=\(([^)]*)\) already exists/.exec(
-				error.detail
+				(error as PostgresError).detail!
 			)?.[1];
 
 			if (number) {

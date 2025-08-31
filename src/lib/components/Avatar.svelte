@@ -8,15 +8,15 @@
 		user
 	}: {
 		user: {
-			id: number;
-			hasPhoto?: string;
+			id?: number;
+			hasPhoto?: boolean;
 			firstname: string;
 		};
 	} = $props();
 </script>
 
 {#if user.hasPhoto}
-	{@const src = `${PUBLIC_S3_URL}/users/${user.id}/image`}
+	{@const src = `${PUBLIC_S3_URL}/users/${user.id!}/image`}
 	<button
 		onclick={() => {
 			isOpen = true;

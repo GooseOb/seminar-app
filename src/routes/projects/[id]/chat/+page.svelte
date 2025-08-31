@@ -5,7 +5,7 @@
 	import * as m from '$lib/paraglide/messages';
 
 	const { data }: PageProps = $props();
-	const roomId = $derived(+page.params.id);
+	const roomId = $derived(+page.params.id!);
 	const messages = $derived(data.messages);
 </script>
 

@@ -5,7 +5,7 @@
 	const {
 		children,
 		...props
-	}: HTMLAttributes<HTMLDivElement> & { children?: any } = $props();
+	}: HTMLAttributes<HTMLDivElement> & { children?: () => any } = $props();
 </script>
 
 <div aria-hidden="true" transition:blur class="overlay" {...props}>

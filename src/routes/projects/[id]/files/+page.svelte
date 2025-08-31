@@ -15,17 +15,19 @@
 			versions = data.versions;
 		});
 	});
+
+	const roomId = $derived(+page.params.id!);
 </script>
 
 <div class="page">
 	{#if versions}
-		<Thesis roomId={+page.params.id} role={data.role!} bind:versions />
+		<Thesis {roomId} role={data.role!} bind:versions />
 	{:else}
 		<p>{m.loadingThesis()}</p>
 	{/if}
 
 	{#if files}
-		<FileList {files} roomId={+page.params.id} />
+		<FileList {files} {roomId} />
 	{:else}
 		<p>{m.loadingFiles()}</p>
 	{/if}

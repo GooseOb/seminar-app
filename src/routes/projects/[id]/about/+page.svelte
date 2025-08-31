@@ -22,7 +22,7 @@
 	const setEditable = (editable: boolean) => {
 		trpc.room.project.setEditable
 			.mutate({
-				roomId: +page.params.id,
+				roomId: +page.params.id!,
 				editable
 			})
 			.then(() => {

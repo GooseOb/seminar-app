@@ -83,7 +83,7 @@
 
 <form onsubmit={onUserSubmit}>
 	<StudentSubmissionForm {currentStudent} {students}>
-		{#snippet actionButtons(_: (typeof students)[number], i: number)}
+		{#snippet actionButtons(_, i)}
 			<button
 				type="button"
 				class="btn"
@@ -118,7 +118,7 @@
 	</StudentInvitationInputForm>
 
 	<StudentList students={existingStudents} role="lecturer">
-		{#snippet actionButtons(_, i: number)}
+		{#snippet actionButtons(_, i)}
 			<button
 				type="button"
 				class="btn danger-btn"

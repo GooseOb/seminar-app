@@ -44,3 +44,7 @@ export const getStudentsWithProjectsInGroup = async (groupId: number) => {
 		groupId
 	});
 };
+
+export type StudentWithProject = Awaited<
+	ReturnType<typeof getStudentsWithProjectsInGroup>
+>[number];

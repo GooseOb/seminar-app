@@ -4,7 +4,7 @@
 	import type { PageProps } from './$types';
 
 	const { data }: PageProps = $props();
-	const roomId = $derived(+page.params.id);
+	const roomId = $derived(+page.params.id!);
 </script>
 
 <Chat {roomId} userId={data.userId} messages={data.messages} />

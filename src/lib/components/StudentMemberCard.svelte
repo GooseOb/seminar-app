@@ -3,12 +3,9 @@
 	import MemberCard from './MemberCard.svelte';
 	import type { StudentWithProject } from '$lib/server/db/queries/group/getStudentsWithProjects';
 	import { languageTag } from '$lib/paraglide/runtime';
+	import type { OptionalNull } from '$lib/utils/types';
 
-	type OptionalNull<T extends object> = {
-		[K in keyof T]: T[K] extends null ? null | undefined : T[K];
-	};
-
-	type Student = OptionalNull<StudentWithProject> & {
+	type Student = Omit<OptionalNull<StudentWithProject>, 'id' | 'hasPhoto'> & {
 		password?: string;
 	};
 

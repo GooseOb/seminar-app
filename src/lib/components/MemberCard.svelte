@@ -1,4 +1,11 @@
-<script lang="ts">
+<script
+	lang="ts"
+	generics="Member extends {
+	firstname: string;
+	lastname: string,
+	hasPhoto?: boolean
+}"
+>
 	import Avatar from './Avatar.svelte';
 
 	const {
@@ -6,7 +13,12 @@
 		afterName,
 		children,
 		text = ''
-	}: { member: any; afterName?: any; children?: any; text?: string } = $props();
+	}: {
+		member: Member;
+		afterName?: (member: Member) => any;
+		children?: () => any;
+		text?: string;
+	} = $props();
 </script>
 
 <div class="member-card">

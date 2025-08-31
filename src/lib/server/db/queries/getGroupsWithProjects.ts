@@ -1,5 +1,5 @@
 import { db, roomMembership, project, room, user } from '$lib/server/db';
-import { and, eq, or, sql } from 'drizzle-orm';
+import { and, eq, or, type SQL, sql } from 'drizzle-orm';
 import { projectRoom } from '$lib/server/db/queries/common';
 
 const userGroupsAndProjectsQuery = () =>
@@ -10,7 +10,7 @@ const userGroupsAndProjectsQuery = () =>
 			isOwner: or(
 				eq(room.ownerId, sql.placeholder('userId')),
 				eq(projectRoom.ownerId, sql.placeholder('userId'))
-			),
+			) as SQL<boolean>,
 			projectId: project.id,
 			projectOwnerFirstName: user.firstname,
 			projectOwnerLastName: user.lastname,
@@ -54,9 +54,9 @@ export const getUserGroupsAndProjects = async (userId: number) => {
 		projectId: id,
 		projectNameEN,
 		projectNamePL,
-		projectOwnerFirstName: firstname,
-		projectOwnerLastName: lastname,
-		projectOwnerStudentNumber: studentNumber
+		projectOwnerFirstName,
+		projectOwnerLastName,
+		projectOwnerStudentNumber
 	} of results) {
 		const group = (groups[groupId] ||= {
 			id: groupId,
@@ -71,7 +71,11 @@ export const getUserGroupsAndProjects = async (userId: number) => {
 					en: projectNameEN!,
 					pl: projectNamePL!
 				},
-				owner: { firstname, lastname, studentNumber }
+				owner: {
+					firstname: projectOwnerFirstName!,
+					lastname: projectOwnerLastName!,
+					studentNumber: projectOwnerStudentNumber!
+				}
 			});
 		}
 	}
