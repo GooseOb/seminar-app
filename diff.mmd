@@ -1,0 +1,21 @@
+flowchart TD
+    A[Start] --> B[Scal wszystkie fragmenty tekstu w jeden ciąg]
+    B --> C[Zainicjalizuj pustą tablicę wynikową oraz zmienne pomocnicze]
+    C --> D{Czy są przedziały do przetworzenia?}
+    D -->|Nie| X[Dodaj pozostałe fragmenty do wyniku jako nieobjęte przedziałem]
+    D -->|Tak| E[Pobierz kolejny przedział do zastosowania]
+    E --> F{Czy bieżący fragment zawiera wcześniej przetworzone dane?}
+    F -->|Tak| G[Zakończ bieżący fragment i dodaj go do wyniku]
+    G --> H
+    F -->|Nie| H{Czy przedział zaczyna się po zakończeniu bieżącego fragmentu?}
+    H -->|Tak| I[Dodaj fragmenty tekstu poza przedziałem do wyniku]
+    I --> J
+    H -->|Nie| J{Czy przedział mieści się w bieżącym fragmencie?}
+    J -->|Tak| K[Dodaj fragment przed przedziałem jako nieobjęty przedziałem i fragment w przedziałie jako objęty przedziałem]
+    J -->|Nie| L[Dodaj fragment przed przedziałem i początkową część przedziału do wyniku]
+    L --> M[Przetwarzaj kolejne fragmenty należące do przedziału aż do końca]
+    M --> N[Zapisz końcową część przedziału do bieżącego fragmentu]
+    X --> O[Zwróć tablicę fragmentów z przypisanymi przedziałami i fragmentami nieobjętymi przedziałem]
+    K --> D
+    N --> D
+    O --> P[Stop]

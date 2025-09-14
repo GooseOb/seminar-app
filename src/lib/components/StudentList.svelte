@@ -1,12 +1,11 @@
 <script
 	lang="ts"
-	generics="Student extends Omit<OptionalNull<StudentWithProject>, 'id' | 'hasPhoto'>"
+	generics="Student extends StudentWithProjectOptionalNullWithoutIdAndHasPhoto"
 >
 	import StudentMemberCard from './StudentMemberCard.svelte';
 	import * as m from '$lib/paraglide/messages';
 	import type { Role } from '$lib/server/db';
-	import type { StudentWithProject } from '$lib/server/db/queries/group/getStudentsWithProjects';
-	import type { OptionalNull } from '$lib/utils/types';
+	import type { StudentWithProjectOptionalNullWithoutIdAndHasPhoto } from '$lib/server/db/queries/group/getStudentsWithProjects';
 
 	const {
 		students,

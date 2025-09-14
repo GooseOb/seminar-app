@@ -1,4 +1,5 @@
 import { db, roomMembership, project, room, user } from '$lib/server/db';
+import type { OptionalNull } from '$lib/utils/types';
 import { eq, and, sql, exists } from 'drizzle-orm';
 
 const groupMembersWithProjectsQuery = () =>
@@ -48,3 +49,8 @@ export const getStudentsWithProjectsInGroup = async (groupId: number) => {
 export type StudentWithProject = Awaited<
 	ReturnType<typeof getStudentsWithProjectsInGroup>
 >[number];
+export type StudentWithProjectOptionalNull = OptionalNull<StudentWithProject>;
+export type StudentWithProjectOptionalNullWithoutIdAndHasPhoto = Omit<
+	StudentWithProjectOptionalNull,
+	'id' | 'hasPhoto'
+>;

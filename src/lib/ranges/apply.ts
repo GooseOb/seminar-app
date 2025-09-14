@@ -5,12 +5,9 @@ export const getApplyRanges =
 		wrapRange: (text: string, index: number, ranges: TRangeData[]) => TRange,
 		wrapNoRange: (text: string) => TNoRange
 	) =>
-	(
-		chunks: string[],
-		ranges: TRangeData[],
-		text: string
-	): (TRange | TNoRange)[][] => {
+	(chunks: string[], ranges: TRangeData[]): (TRange | TNoRange)[][] => {
 		const result: (TRange | TNoRange)[][] = [];
+		const text = chunks.join('');
 
 		let chunkIndex = 0;
 		let currItem: (TRange | TNoRange)[] = [];

@@ -2,9 +2,6 @@ import { getApplyRanges, type RangeData } from '$lib/ranges';
 import { createTextNode } from '../common';
 
 export interface CommentData extends RangeData {
-	fromIndex: number;
-	toIndex: number;
-	data: string;
 	isNew?: boolean;
 }
 
@@ -19,5 +16,4 @@ const applyRanges = getApplyRanges((text, i, ranges: CommentData[]) => {
 	return el;
 }, createTextNode);
 
-export const withComments = (lines: string[], comments: CommentData[]) =>
-	applyRanges(lines, comments, lines.join(''));
+export const withComments = applyRanges;

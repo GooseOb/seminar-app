@@ -34,7 +34,7 @@ export const diff = (curr: string[], prev: string[]) => {
 	}
 
 	return {
-		result: applyRanges(curr, ranges, curr.join('')),
+		result: applyRanges(curr, ranges),
 		content: ranges.map(({ data }) => data)
 	};
 };

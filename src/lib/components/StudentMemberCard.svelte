@@ -1,11 +1,10 @@
 <script lang="ts">
 	import type { Role } from '$lib/server/db';
 	import MemberCard from './MemberCard.svelte';
-	import type { StudentWithProject } from '$lib/server/db/queries/group/getStudentsWithProjects';
+	import type { StudentWithProjectOptionalNullWithoutIdAndHasPhoto } from '$lib/server/db/queries/group/getStudentsWithProjects';
 	import { languageTag } from '$lib/paraglide/runtime';
-	import type { OptionalNull } from '$lib/utils/types';
 
-	type Student = Omit<OptionalNull<StudentWithProject>, 'id' | 'hasPhoto'> & {
+	type Student = StudentWithProjectOptionalNullWithoutIdAndHasPhoto & {
 		password?: string;
 	};
 

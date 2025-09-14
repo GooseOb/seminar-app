@@ -100,7 +100,7 @@
 				label={m.login()}
 				bind:value={user.login}
 			/>
-			<PasswordInput bind:value={user.password} />
+			<PasswordInput bind:value={user.password} required={false} />
 
 			<button type="submit" class="btn">{m.update()}</button>
 			{#if form?.error}
