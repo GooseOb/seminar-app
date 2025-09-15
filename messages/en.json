@@ -27,6 +27,7 @@
 	"addProject": "Add project",
 	"addFile": "Add file",
 	"addFiles": "Add files",
+	"name": "Name",
 
 	"nameEn": "Name (English)",
 	"namePl": "Name (Polish)",
@@ -62,6 +63,7 @@
 	"invite": "Invite",
 	"successfullyUpdated": "Successfully updated",
 	"noStudents": "No students",
+	"students": "Students",
 
 	"uploaded": "Uploaded {date}",
 	"uploadedBy": "Uploaded {date} by {name}",

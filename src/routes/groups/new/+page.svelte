@@ -60,7 +60,12 @@
 
 <form onsubmit={onSubmit} method="POST" use:enhance action="?/create">
 	<h1>{groupName || 'New Group'}</h1>
-	<Input type="text" name="group_name" label="Name" bind:value={groupName} />
+	<Input
+		type="text"
+		name="group_name"
+		label={m.name()}
+		bind:value={groupName}
+	/>
 	<button type="submit" class="btn main-btn">{m.createGroup()}</button>
 
 	<input

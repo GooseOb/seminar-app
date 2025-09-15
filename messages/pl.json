@@ -27,6 +27,7 @@
 	"addProject": "Dodaj projekt",
 	"addFile": "Dodaj plik",
 	"addFiles": "Dodaj pliki",
+	"name": "Nazwa",
 
 	"nameEn": "Nazwa (angielski)",
 	"namePl": "Nazwa (polski)",
@@ -62,6 +63,7 @@
 	"invite": "Zaproś",
 	"successfullyUpdated": "Pomyślnie zaktualizowano",
 	"noStudents": "Brak studentów",
+	"students": "Students",
 
 	"uploaded": "Dodano {date}",
 	"uploadedBy": "Dodał {name} o {date}",

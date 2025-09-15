@@ -25,7 +25,7 @@
 	} = $props();
 </script>
 
-<h2>Students</h2>
+<h2>{m.students()}</h2>
 <Input
 	type="text"
 	label={m.firstName()}

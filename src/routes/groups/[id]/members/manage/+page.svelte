@@ -49,7 +49,12 @@
 
 <div class="container">
 	<form method="POST" use:enhanceNoReset action="?/updateName">
-		<Input type="text" name="group_name" label="Name" bind:value={groupName} />
+		<Input
+			type="text"
+			name="group_name"
+			label={m.name()}
+			bind:value={groupName}
+		/>
 		<button type="submit" class="btn">{m.update()}</button>
 	</form>
 
