@@ -23,7 +23,6 @@ export const createSession = async (
 		userId,
 		expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30)
 	};
-	console.log(await db().insert(session).values(sessionData).returning());
 	return sessionData;
 };
 
